@@ -2,19 +2,25 @@ package org.acme.entities;
 
 import java.time.LocalDate;
 
+import org.acme.DTO.PersonDTO;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
-public class Person {
+@Entity
+public class Person extends PanacheEntityBase{
     @Id
     @Column(length = 8)
     private String cin;
 
-    @OneToOne(mappedBy = "person")
-    private User user;
+    @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
+    private Users user;
 
     private String nom;
     private String prenom;
@@ -104,4 +110,18 @@ public class Person {
         this.date_n = date_n;
     }
 
+    public Person(PersonDTO personDTO, RolePerson role) {
+        this.cin = personDTO.cin;
+        
+        this.nom = personDTO.nom;
+        this.prenom = personDTO.prenom;
+        this.sexe = personDTO.sexe;
+        this.date_n = personDTO.dateN;
+        this.email = personDTO.email;
+        this.role = role;
+        this.grad = personDTO.grad;
+        this.status_p = personDTO.statusP;
+    }
+
+    
 }

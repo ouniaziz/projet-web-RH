@@ -1,16 +1,18 @@
 package org.acme.entities;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 
-public class User extends PanacheEntity{
+public class Users extends PanacheEntityBase{
     @Id
     @Column(length = 8)
     private String cin;
@@ -23,6 +25,7 @@ public class User extends PanacheEntity{
     @Column(unique = true)
     private String email;
     
+    @Column(name = "PASSW_HASH")
     private String passw;
     private String deviceId;
     private int status_passw;
@@ -58,7 +61,7 @@ public class User extends PanacheEntity{
         this.status_passw = status_passw;
     }
 
-    public User() {
+    public Users() {
     }
 
 
