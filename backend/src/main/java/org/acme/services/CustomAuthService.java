@@ -1,7 +1,7 @@
 package org.acme.services;
 
 import org.acme.entities.Person;
-import org.acme.entities.User;
+import org.acme.entities.Users;
 import org.acme.repositories.PersonRepository;
 import org.acme.repositories.UserRepository;
 
@@ -32,12 +32,10 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
     public Uni<SecurityIdentity> authenticate(UsernamePasswordAuthenticationRequest request,
             AuthenticationRequestContext context) {
         
-                User user = userRepo.findByEmailOrCin(request.getUsername())
+                Users user = userRepo.findByEmailOrCin(request.getUsername())
                         .orElseThrow(()-> new AuthenticationFailedException("invalid email or cin"));
                 
-                String hash = PasswordUtils.hashPassword(String.valueOf(request.getPassword().getPassword()));
-                
-                if(!PasswordUtils.checkPassword(hash, user.getPassw()))
+                if(!PasswordUtils.checkPassword(String.valueOf(request.getPassword().getPassword()), user.getPassw()))
                     throw new AuthenticationFailedException("Invalid password");
                 
                 Person pers = personRepo.findByIdOptional(user.getCin())

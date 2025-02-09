@@ -3,16 +3,21 @@ package org.acme.entities;
 
 import java.util.List;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
-public class RolePerson {
+@Entity
+@Table(name = "Role_Person")
+public class RolePerson extends PanacheEntityBase{
     @Id
     private Long id_r;
     private String nom_r;
 
-    @OneToMany(mappedBy = "role_p", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     private List<Person> persons;
     public RolePerson() {}
 
