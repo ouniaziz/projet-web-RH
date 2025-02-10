@@ -82,14 +82,15 @@
             <artifactId>quarkus-resteasy</artifactId>
         </dependency>
         <!--Mailer-->
+        <!-- <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-mailer</artifactId>
+        </dependency> -->
         <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-mail</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-core</artifactId>
+            <groupId>com.sendinblue</groupId>
+            <artifactId>sib-api-v3-sdk</artifactId>
+            <version>7.0.0</version>
+            <scope>compile</scope>
         </dependency>
         <!-- For security and role-based access control -->
         <dependency>

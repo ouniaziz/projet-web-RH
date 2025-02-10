@@ -35,6 +35,7 @@ public class Person extends PanacheEntityBase{
     private RolePerson role;
     private Long grad;
     private Integer status_p;
+    private String pass_token;
 
     public Person() {}
 
@@ -108,6 +109,15 @@ public class Person extends PanacheEntityBase{
 
     public void setDate_n(LocalDate date_n) {
         this.date_n = date_n;
+    }
+    
+
+    public String getPass_token() {
+        return pass_token;
+    }
+
+    public void setPass_token(String pass_token) {
+        this.pass_token = pass_token;
     }
 
     public Person(PersonDTO personDTO, RolePerson role) {
