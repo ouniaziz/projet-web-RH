@@ -1,19 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import Fab from "@mui/material/Fab";
@@ -25,14 +9,15 @@ import Button from "@mui/material/Button";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-
+import MDAvatar from "components/MDAvatar";
+// Images
+import team2 from "assets/images/team-2.jpg";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -41,12 +26,9 @@ import DataTable from "examples/Tables/DataTable";
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
-import { ShortText } from "@mui/icons-material";
+import PropTypes from "prop-types";
 
 function Tables() {
-  const { columns, rows } = authorsTableData();
-  const { columns: pColumns, rows: pRows } = projectsTableData();
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -54,6 +36,235 @@ function Tables() {
   const handleOpen1 = () => setOpen1(true);
   const handleClose1 = () => setOpen1(false);
   const paginationModel = { page: 0, pageSize: 5 };
+  const Author = ({ image, name, email }) => (
+    <MDBox display="flex" alignItems="center" lineHeight={1}>
+      <MDAvatar src={image} name={name} size="sm" />
+      <MDBox ml={2} lineHeight={1}>
+        <MDTypography display="block" variant="button" fontWeight="medium">
+          {name}
+        </MDTypography>
+        <MDTypography variant="caption">{email}</MDTypography>
+      </MDBox>
+    </MDBox>
+  );
+  Author.propTypes = {
+    image: PropTypes.object.isRequired,
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+  };
+  const employes_columns = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: 70,
+    },
+    {
+      field: "nom",
+      headerName: "nom et prénom",
+      sortable: false,
+      width: 200,
+      renderCell: (params) => (
+        <Author image={params.row.image} name={params.row.nom} email={params.row.email} />
+      ),
+    },
+    {
+      field: "CIN",
+      headerName: "CIN",
+      sortable: false,
+      width: 0,
+    },
+    {
+      field: "adresse",
+      headerName: "adresse",
+      sortable: false,
+      width: 100,
+    },
+    {
+      field: "age",
+      headerName: "Age",
+      width: 30,
+    },
+    {
+      field: "telephone",
+      headerName: "telephone",
+      sortable: false,
+      type: "number",
+      width: 100,
+    },
+    {
+      field: "Grade",
+      headerName: "Grade",
+      sortable: false,
+      width: 100,
+    },
+    {
+      field: "naissance",
+      headerName: "naissance",
+      sortable: false,
+      width: 120,
+    },
+    {
+      field: "sexe",
+      headerName: "sexe",
+      sortable: false,
+      width: 70,
+    },
+    {
+      field: "poste",
+      headerName: "poste",
+      sortable: false,
+      width: 130,
+    },
+    {
+      field: "ancienneté",
+      headerName: "ancienneté",
+      sortable: false,
+      width: 120,
+    },
+    {
+      field: "handicap",
+      headerName: "handicap",
+      sortable: false,
+      width: 100,
+    },
+    {
+      field: "edit",
+      headerName: "",
+      sortable: false,
+      width: 100,
+      renderCell: (params) => (
+        <Button variant="text" onClick={() => handleEdit(params.row)}>
+          Edit
+        </Button>
+      ),
+    },
+  ];
+  const employes_rows = [
+    {
+      id: 1,
+      image: team2,
+      nom: "John Michael",
+      email: "john@creative-tim.com",
+      CIN: "12345678",
+      adresse: "sousse",
+      age: "32",
+      telephone: "29292501",
+      Grade: "DOCTEUR",
+      naissance: "15/02/1990",
+      sexe: "H",
+      poste: "assistant general",
+      ancienneté: "15 ans",
+      handicap: "non",
+    },
+  ];
+  const enseignants_columns = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: 70,
+    },
+    {
+      field: "nom",
+      headerName: "nom et prénom",
+      sortable: false,
+      width: 200,
+      renderCell: (params) => (
+        <Author image={params.row.image} name={params.row.nom} email={params.row.email} />
+      ),
+    },
+    {
+      field: "CIN",
+      headerName: "CIN",
+      sortable: false,
+      width: 0,
+    },
+    {
+      field: "adresse",
+      headerName: "adresse",
+      sortable: false,
+      width: 100,
+    },
+    {
+      field: "age",
+      headerName: "Age",
+      width: 30,
+    },
+    {
+      field: "telephone",
+      headerName: "telephone",
+      sortable: false,
+      type: "number",
+      width: 100,
+    },
+    {
+      field: "Grade",
+      headerName: "Grade",
+      sortable: false,
+      width: 100,
+    },
+    {
+      field: "naissance",
+      headerName: "naissance",
+      sortable: false,
+      width: 120,
+    },
+    {
+      field: "sexe",
+      headerName: "sexe",
+      sortable: false,
+      width: 70,
+    },
+    {
+      field: "département",
+      headerName: "département",
+      sortable: false,
+      width: 130,
+    },
+    {
+      field: "ancienneté",
+      headerName: "ancienneté",
+      sortable: false,
+      width: 120,
+    },
+    {
+      field: "handicap",
+      headerName: "handicap",
+      sortable: false,
+      width: 100,
+    },
+    {
+      field: "edit",
+      headerName: "",
+      sortable: false,
+      width: 100,
+      renderCell: (params) => (
+        <Button variant="text" onClick={() => handleEdit(params.row)}>
+          Edit
+        </Button>
+      ),
+    },
+  ];
+  const enseignants_rows = [
+    {
+      id: 1,
+      image: team2,
+      nom: "John Michael",
+      email: "john@creative-tim.com",
+      CIN: "12345678",
+      adresse: "sousse",
+      age: "32",
+      telephone: "29292501",
+      Grade: "DOCTEUR",
+      naissance: "15/02/1990",
+      sexe: "H",
+      département: "informatique",
+      ancienneté: "15 ans",
+      handicap: "non",
+    },
+  ];
+  const handleEdit = (row) => {
+    console.log("Édition de :", row);
+  };
   const style = {
     position: "absolute",
     top: "50%",
@@ -107,8 +318,8 @@ function Tables() {
                     alignItems="center"
                     justifyContent="center"
                     position="absolute"
-                    top="15%"
-                    left="30%"
+                    top="8%"
+                    left="27%"
                     transform="translate(-50%, -50%)"
                     width={800}
                     boxShadow={24}
@@ -263,15 +474,15 @@ function Tables() {
                 </Modal>
               </MDBox>
               <MDBox pt={3}>
-                <MDBox sx={{ fontSize: "12px" }}>
-                  <DataTable
-                    table={{ columns, rows }}
-                    isSorted={false}
-                    entriesPerPage={false}
-                    showTotalEntries={false}
-                    noEndBorder
+                <Paper sx={{ height: 400, width: "100%" }}>
+                  <DataGrid
+                    rows={employes_rows}
+                    columns={employes_columns}
+                    initialState={{ pagination: { paginationModel } }}
+                    pageSizeOptions={[5, 10]}
+                    sx={{ border: 0 }}
                   />
-                </MDBox>
+                </Paper>
               </MDBox>
             </Card>
           </Grid>
@@ -312,8 +523,8 @@ function Tables() {
                     alignItems="center"
                     justifyContent="center"
                     position="absolute"
-                    top="15%"
-                    left="30%"
+                    top="8%"
+                    left="27%"
                     transform="translate(-50%, -50%)"
                     width={800}
                     boxShadow={24}
@@ -470,11 +681,10 @@ function Tables() {
               <MDBox pt={3}>
                 <Paper sx={{ height: 400, width: "100%" }}>
                   <DataGrid
-                    rows={rows}
-                    columns={columns}
+                    rows={enseignants_rows}
+                    columns={enseignants_columns}
                     initialState={{ pagination: { paginationModel } }}
                     pageSizeOptions={[5, 10]}
-                    checkboxSelection
                     sx={{ border: 0 }}
                   />
                 </Paper>
