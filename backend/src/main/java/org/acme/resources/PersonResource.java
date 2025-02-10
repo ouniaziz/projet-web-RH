@@ -1,11 +1,15 @@
 package org.acme.resources;
 
+import java.util.concurrent.CompletionStage;
+
 import org.acme.DTO.ApiResponseDTO;
 import org.acme.DTO.PersonDTO;
-import org.acme.services.EmailService;
+import org.acme.interfaces.BrevoTemplate;
+import org.acme.services.BrevoService;
 import org.acme.services.PersonService;
 
 import io.smallrye.common.annotation.Blocking;
+import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -22,21 +26,16 @@ import jakarta.ws.rs.core.Response;
 public class PersonResource {
     
     @Inject PersonService personService;
-    @Inject EmailService emailService;
-
-    @GET   
-    @Path("/send")                                                             
-    @Blocking                                                           
-    public void sendEmail() {
-        emailService.sendEmail("mohamedyacine.kharrat@isimm.u-monastir.tn", "Subject: Sub, from quarkus", "Hey fella");
-    }
-
 
     @POST
     @Transactional
     public Response addPerson(PersonDTO personDTO){
-        personService.addPerson(personDTO);
-        ApiResponseDTO apiResponse = new ApiResponseDTO(201, "Added person whose cin = "+personDTO.cin+ " to database", null, null);
-        return Response.status(Response.Status.CREATED).entity(apiResponse).build();
+        try{
+            personService.addPerson(personDTO);
+            ApiResponseDTO apiResponse = new ApiResponseDTO(201, "Added person whose cin = "+personDTO.cin+ " to database", null, null);
+            return Response.status(Response.Status.CREATED).entity(apiResponse).build();
+        }catch(Exception e){
+            return Response.status(500).entity(e).build();
+        }
     }
 }

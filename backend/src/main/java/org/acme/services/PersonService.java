@@ -5,12 +5,14 @@ import org.acme.entities.Person;
 import org.acme.entities.RolePerson;
 import org.acme.exceptions.PersonException;
 import org.acme.exceptions.RoleException;
+import org.acme.interfaces.BrevoTemplate;
 import org.acme.repositories.PersonRepository;
 import org.acme.repositories.RolesRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import sendinblue.ApiException;
 
 
 @ApplicationScoped
@@ -18,10 +20,11 @@ public class PersonService {
     
     @Inject PersonRepository personRepository;
     @Inject RolesRepository rolesRepository;
-    @Inject EmailService mailService;
+    @Inject BrevoService brevoService;
+
 
     @Transactional
-    public void addPerson(PersonDTO personDTO){
+    public void addPerson(PersonDTO personDTO)throws ApiException{
         if(personRepository.findByIdOptional(personDTO.cin).isPresent())
             throw new PersonException("Person with CIN = "+personDTO.cin+ " already exists", 409);
         
@@ -31,6 +34,6 @@ public class PersonService {
         Person person = new Person(personDTO, role);
         personRepository.persist(person);
 
-        mailService.sendEmail("mohamedyacine.kharrat@isimm.u-monastir.tn", "Welcome "+ personDTO.prenom+ " "+personDTO.nom, "Added person whose cin = "+personDTO.cin+"  to database");
+        brevoService.sendActivateAccountEmail(personDTO.email, "Activate your account", new BrevoTemplate(personDTO.prenom + " "+personDTO.nom, "youtube.com"));
     }
 }
