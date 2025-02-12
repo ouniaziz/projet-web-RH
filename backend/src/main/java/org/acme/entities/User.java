@@ -1,6 +1,8 @@
 package org.acme.entities;
 
 
+import org.acme.DTO.PersonDTO;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +12,10 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-@Entity
 
-public class Users extends PanacheEntityBase{
+@Entity
+@Table(name = "USERS")
+public class User extends PanacheEntityBase{
     @Id
     @Column(length = 8)
     private String cin;
@@ -27,9 +30,11 @@ public class Users extends PanacheEntityBase{
     
     @Column(name = "PASSW_HASH")
     private String passw;
+    @Column(name ="DEVICE_ID")
     private String deviceId;
     private int status_passw;
-    
+    private String pass_token;
+
     public String getCin() {
         return cin;
     }
@@ -60,9 +65,22 @@ public class Users extends PanacheEntityBase{
     public void setStatus_passw(int status_passw) {
         this.status_passw = status_passw;
     }
-
-    public Users() {
+    
+    public String getPass_token() {
+        return pass_token;
     }
 
+    public void setPass_token(String pass_token) {
+        this.pass_token = pass_token;
+    }
 
+    public User() {
+    }
+
+    public User(PersonDTO person, String passw_token){
+        cin = person.cin;
+        email = person.email;
+        status_passw = 0;
+        pass_token = passw_token;
+    }
 }

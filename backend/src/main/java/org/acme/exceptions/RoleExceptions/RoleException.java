@@ -1,4 +1,4 @@
-package org.acme.exceptions;
+package org.acme.exceptions.RoleExceptions;
 
 public class RoleException extends RuntimeException{
     public int status;

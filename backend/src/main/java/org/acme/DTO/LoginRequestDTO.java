@@ -1,6 +1,6 @@
-package org.acme.entities;
+package org.acme.DTO;
 
-public class LoginRequest {
+public class LoginRequestDTO {
     private String username;
     private String password;
     

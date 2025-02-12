@@ -20,7 +20,7 @@ public class Person extends PanacheEntityBase{
     private String cin;
 
     @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
-    private Users user;
+    private User user;
 
     private String nom;
     private String prenom;
@@ -35,7 +35,7 @@ public class Person extends PanacheEntityBase{
     private RolePerson role;
     private Long grad;
     private Integer status_p;
-    private String pass_token;
+    
 
     public Person() {}
 
@@ -112,13 +112,7 @@ public class Person extends PanacheEntityBase{
     }
     
 
-    public String getPass_token() {
-        return pass_token;
-    }
-
-    public void setPass_token(String pass_token) {
-        this.pass_token = pass_token;
-    }
+    
 
     public Person(PersonDTO personDTO, RolePerson role) {
         this.cin = personDTO.cin;
@@ -130,8 +124,7 @@ public class Person extends PanacheEntityBase{
         this.email = personDTO.email;
         this.role = role;
         this.grad = personDTO.grad;
-        this.status_p = personDTO.statusP;
+        this.status_p = 0;
     }
-
     
 }

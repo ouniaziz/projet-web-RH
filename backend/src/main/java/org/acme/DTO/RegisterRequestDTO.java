@@ -1,6 +1,6 @@
-package org.acme.entities;
+package org.acme.DTO;
 
-public class RegisterRequest {
+public class RegisterRequestDTO {
         private String username;
         private String password;
         public String getUsername() {
