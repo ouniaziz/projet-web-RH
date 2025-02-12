@@ -3,11 +3,16 @@ import "../assets/page_connexion_form.css";
 import { useNavigate } from "react-router-dom";
 import isimm_photo from "../assets/isimm_photo.jpeg";
 import "../assets/sign.css";
+
+
 export default function PageConnexion() {
+
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   localStorage.setItem("isAuthenticated", "false");
+
   const handledLogin = (event) => {
     event.preventDefault();
     if (email === "aziz@gmail.com" && password === "aziz") {
@@ -19,6 +24,8 @@ export default function PageConnexion() {
       console.log(password);
     }
   };
+
+
   return (
     <div
       style={{
