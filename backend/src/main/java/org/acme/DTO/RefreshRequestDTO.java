@@ -1,6 +1,6 @@
-package org.acme.entities;
+package org.acme.DTO;
 
-public class RefreshRequest {
+public class RefreshRequestDTO {
     
     private String refreshToken;
 

@@ -11,7 +11,7 @@ public class BrevoTemplate implements BrevoTemplateInt{
     String  username;
     String url;
 
-    public BrevoTemplate(String us, String ur){username = us;url = ur;}
+    public BrevoTemplate(String username, String url){this.username = username;this.url = url;}
 
     @Override
     public long template() {

@@ -11,10 +11,9 @@ public class PersonDTO {
     public String email;
     public Long roleId;  // RolePerson ID
     public Long grad;
-    public Integer statusP;
     
     public PersonDTO(String cin, String nom, String prenom, String sexe, LocalDate dateN, String email, Long roleId,
-            Long grad, Integer statusP) {
+            Long grad) {
         this.cin = cin;
         this.nom = nom;
         this.prenom = prenom;
@@ -23,7 +22,6 @@ public class PersonDTO {
         this.email = email;
         this.roleId = roleId;
         this.grad = grad;
-        this.statusP = statusP;
     }
 
     

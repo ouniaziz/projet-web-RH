@@ -1,4 +1,4 @@
-package org.acme.exceptions;
+package org.acme.exceptions.PersonExceptions;
 
 import org.acme.DTO.ApiResponseDTO;
 
@@ -8,6 +8,7 @@ import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class PersonExceptionMapper implements ExceptionMapper<PersonException>{
+    
 
     @Override
     public Response toResponse(PersonException exception) {

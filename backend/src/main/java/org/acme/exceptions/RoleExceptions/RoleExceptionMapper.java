@@ -1,10 +1,12 @@
-package org.acme.exceptions;
+package org.acme.exceptions.RoleExceptions;
 
 import org.acme.DTO.ApiResponseDTO;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+
+
 
 @Provider
 public class RoleExceptionMapper implements ExceptionMapper<RoleException>{
