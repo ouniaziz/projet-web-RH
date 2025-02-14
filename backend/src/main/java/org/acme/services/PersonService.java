@@ -1,5 +1,7 @@
 package org.acme.services;
 
+import java.util.List;
+
 import org.acme.DTO.PersonDTO;
 import org.acme.entities.Person;
 import org.acme.entities.RolePerson;
@@ -43,5 +45,9 @@ public class PersonService {
         userRepository.persist(new User(personDTO, PasswordUtils.hashPassword(activationToken)));
 
         brevoService.sendActivateAccountEmail(personDTO.email, "Activate your account", new BrevoTemplate(personDTO.prenom + " "+personDTO.nom, "localhost:8081/"+activationToken));
+    }
+
+    public List<Person> getPersons(){
+        return personRepository.findAll().list();
     }
 }

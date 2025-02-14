@@ -10,6 +10,7 @@ import org.acme.services.PersonService;
 
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -37,5 +38,10 @@ public class PersonResource {
         }catch(Exception e){
             return Response.status(500).entity(e).build();
         }
+    }
+    @GET
+    @RolesAllowed({"Personnel RH", "Administrator"})
+    public Response getPresons(){
+        return Response.ok().entity(personService.getPersons()).build();
     }
 }

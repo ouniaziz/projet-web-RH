@@ -2,6 +2,7 @@ package org.acme.services;
 
 import java.time.Duration;
 import java.util.Date;
+import java.util.Set;
 
 import org.jboss.logging.Logger;
 
@@ -19,22 +20,22 @@ public class JwtService {
 
 	public  String generateAccessToken(SecurityIdentity securityIden) {
 		String cin = securityIden.getPrincipal().getName();
-		String role = securityIden.getRoles().iterator().next();
+		Set<String> roles = securityIden.getRoles();
 
 		return Jwt.issuer(JwtConfig.getIssuer())
 				.upn(cin)
-				.groups(role)
+				.groups(roles)
 				.expiresIn(Duration.ofDays(3))
 				.sign();
 	}
 
 	public  String generateRefreshToken(SecurityIdentity securityIden) {
 		String cin = securityIden.getPrincipal().getName();
-		String role = securityIden.getRoles().iterator().next();
+		Set<String> roles = securityIden.getRoles();
 
 		return Jwt.issuer(JwtConfig.getIssuer())
 				.upn(cin)
-				.groups(role)
+				.groups(roles)
 				.expiresIn(Duration.ofDays(7))
 				.sign();
 	}

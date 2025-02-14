@@ -7,6 +7,7 @@ import org.acme.exceptions.ActivationFailedExceptions.ActivationFailedException;
 import org.acme.exceptions.PersonExceptions.PersonException;
 import org.acme.repositories.PersonRepository;
 import org.acme.repositories.UserRepository;
+import org.jboss.logging.Logger;
 
 import io.quarkus.security.AuthenticationFailedException;
 import io.quarkus.security.identity.AuthenticationRequestContext;
@@ -27,6 +28,8 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
     @Inject UserRepository userRepo;
     @Inject PersonRepository personRepo;
     @Inject JwtService jwtService;
+    @Inject Logger log;
+
     @Override
     public Class<UsernamePasswordAuthenticationRequest> getRequestType() {
         return UsernamePasswordAuthenticationRequest.class;
@@ -45,6 +48,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
                 Person pers = personRepo.findByIdOptional(user.getCin())
                             .orElseThrow(()-> new AuthenticationFailedException("User not found"));
 
+                log.warn("Reached end of authenticate!!!");
                 return Uni.createFrom().item(
                     QuarkusSecurityIdentity.builder()
                     .setPrincipal(new QuarkusPrincipal(pers.getCin()))
