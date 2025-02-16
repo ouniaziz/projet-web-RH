@@ -1,9 +1,14 @@
 package org.acme.services;
 
+
 import org.acme.DTO.ActivationRequestDTO;
+import org.acme.DTO.PersonStatusDTO;
+import org.acme.brevo.entities.BrevoPasswordResetTemplate;
+import org.acme.brevo.services.BrevoService;
 import org.acme.entities.Person;
 import org.acme.entities.User;
 import org.acme.exceptions.ActivationFailedExceptions.ActivationFailedException;
+import org.acme.exceptions.PasswordResetFailedException.PasswordResetFailedException;
 import org.acme.exceptions.PersonExceptions.PersonException;
 import org.acme.repositories.PersonRepository;
 import org.acme.repositories.UserRepository;
@@ -20,6 +25,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import sendinblue.ApiException;
 
 
 @ApplicationScoped
@@ -29,6 +35,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
     @Inject PersonRepository personRepo;
     @Inject JwtService jwtService;
     @Inject Logger log;
+    @Inject BrevoService brevoService;
 
     @Override
     public Class<UsernamePasswordAuthenticationRequest> getRequestType() {
@@ -41,6 +48,9 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         
                 User user = userRepo.findByEmailOrCin(request.getUsername())
                         .orElseThrow(()-> new AuthenticationFailedException("invalid email or cin"));
+                
+                if(user.getStatus_passw()==0)
+                    throw new AuthenticationFailedException("Account not activated");
                 
                 if(!PasswordUtils.checkPassword(String.valueOf(request.getPassword().getPassword()), user.getPassw()))
                     throw new AuthenticationFailedException("Invalid password");
@@ -59,6 +69,41 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
                 );
     }
     
+    @Transactional
+    /*
+        status_passw = 0 and pass_token !="" ==> account not activated OR user forgot his password and still didn't reinitialized it
+
+        status_passw = 1 and pass_token =="" ==> account activated
+
+        if status_passw != 1 AND 0 (for example -1), then token exceeded expiry date and should be re-generated
+     */
+    public void forgotPassword(String email) throws ApiException{
+        PersonStatusDTO personStatus = personRepo.findStatusByEmail(email)
+                                        .orElseThrow(()-> new PasswordResetFailedException("No record of user with email "+ email, 404));
+        if(personStatus.status_p()==0)
+            throw new PasswordResetFailedException("Your account is yet to be activated. Please activate it using the link we sent in the email", 403);
+        
+        User user = userRepo.findByEmail(email).get();
+        // prevent from reaching max email requests
+        if(user.getStatus_passw()==0)
+            throw new PasswordResetFailedException("A password-reseting email has already been sent to "+email, 403);
+        
+            // generate token, add it to user and send it via email. Maybe create custom email template
+            
+            // Don't need to create extra column for token expiry date, because
+            // when verifying the token after giving new password, if the tokens (the provided and the hashed) are the same, 
+            // BUT the expiry date of the provided token far exceeds current date, then the account won't be activated (status_passw =0)
+            // BUT the token will be removed, then we'd need to yet again send a password_reset request
+            // In that case, we should add another state= -1 (-1: account not activated, 0: password reset, 1: all is good)
+            
+        String token =jwtService.generateResetPasswordToken(email);
+        user.setStatus_passw(0);
+        user.setPass_token(PasswordUtils.hashPassword(token));
+
+        brevoService.sendEmail(email, "Password reset", new BrevoPasswordResetTemplate("localhost:8081/"+token));
+        //return "";
+    }
+
     @Transactional
     public void activate(ActivationRequestDTO activationRequestDTO){
         User user = userRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()->new PersonException("user cin="+activationRequestDTO.cin()+" not found", 404));

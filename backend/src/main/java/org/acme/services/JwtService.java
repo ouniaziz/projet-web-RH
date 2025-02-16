@@ -49,6 +49,14 @@ public class JwtService {
 				.sign();
 	}
 
+	public  String generateResetPasswordToken(String email){
+
+		return Jwt.issuer(JwtConfig.getIssuer())
+				.upn(email)
+				.expiresIn(Duration.ofDays(1))
+				.sign();
+	}
+
     public boolean isTokenExpired(String token) {
         try{
 			DecodedJWT decodedToken = JWT.decode(token);

@@ -2,13 +2,15 @@ package org.acme.services;
 
 import java.util.List;
 
+
 import org.acme.DTO.PersonDTO;
+import org.acme.brevo.entities.BrevoAccountActivationTemplate;
+import org.acme.brevo.services.BrevoService;
 import org.acme.entities.Person;
 import org.acme.entities.RolePerson;
 import org.acme.entities.User;
 import org.acme.exceptions.PersonExceptions.PersonException;
 import org.acme.exceptions.RoleExceptions.RoleException;
-import org.acme.interfaces.BrevoTemplate;
 import org.acme.repositories.PersonRepository;
 import org.acme.repositories.RolesRepository;
 import org.acme.repositories.UserRepository;
@@ -27,6 +29,7 @@ public class PersonService {
     @Inject BrevoService brevoService;
     @Inject UserRepository userRepository;
     @Inject JwtService jwtService;
+    
     @Transactional
     public void addPerson(PersonDTO personDTO)throws ApiException{
         if(personRepository.findByIdOptional(personDTO.cin).isPresent())
@@ -44,7 +47,7 @@ public class PersonService {
         // Save user record corresponding to the person
         userRepository.persist(new User(personDTO, PasswordUtils.hashPassword(activationToken)));
 
-        brevoService.sendActivateAccountEmail(personDTO.email, "Activate your account", new BrevoTemplate(personDTO.prenom + " "+personDTO.nom, "localhost:8081/"+activationToken));
+        brevoService.sendEmail(personDTO.email, "Activate your account", new BrevoAccountActivationTemplate(personDTO.prenom + " "+personDTO.nom, "localhost:8081/"+activationToken));
     }
 
     public List<Person> getPersons(){
