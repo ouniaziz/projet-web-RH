@@ -80,7 +80,7 @@ public class User extends PanacheEntityBase{
     public User(PersonDTO person, String passw_token){
         cin = person.cin;
         email = person.email;
-        status_passw = 0;
+        status_passw = -1;
         pass_token = passw_token;
     }
 }

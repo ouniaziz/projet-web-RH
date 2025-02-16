@@ -7,6 +7,7 @@ import org.acme.DTO.LoginRequestDTO;
 import org.acme.DTO.LoginResponseDTO;
 import org.acme.services.CustomAuthService;
 import org.acme.services.JwtService;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.jboss.logging.Logger;
 import io.quarkus.security.credential.PasswordCredential;
 import io.quarkus.security.identity.request.UsernamePasswordAuthenticationRequest;
@@ -15,12 +16,15 @@ import io.smallrye.mutiny.Uni;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import sendinblue.ApiException;
 
 @Path("/api/users")
 
@@ -58,6 +62,18 @@ public class UserResource {
             });
     }
 
+
+    @POST
+    @Path("/forgot-password/{email}")
+    @PermitAll
+    public Response forgotPassword(@PathParam("email") String email){
+        try{    
+            authService.forgotPassword(email);
+            return Response.status(200).entity(new ApiResponseDTO(200, "You shall receive an email", null, null)).build();
+        }catch(ApiException e){
+            return Response.status(500).entity(e).build();
+        }
+    }
 
     @PUT 
     @Path("/activate")

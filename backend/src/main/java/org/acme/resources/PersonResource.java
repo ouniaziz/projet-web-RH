@@ -4,8 +4,7 @@ import java.util.concurrent.CompletionStage;
 
 import org.acme.DTO.ApiResponseDTO;
 import org.acme.DTO.PersonDTO;
-import org.acme.interfaces.BrevoTemplate;
-import org.acme.services.BrevoService;
+import org.acme.brevo.services.BrevoService;
 import org.acme.services.PersonService;
 
 import io.smallrye.common.annotation.Blocking;
