@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 export default function PageConnexion() {
+
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +17,7 @@ export default function PageConnexion() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   localStorage.setItem("isAuthenticated", "false");
+
   const handledLogin = (event) => {
     event.preventDefault();
     if (email === "aziz@gmail.com" && password === "aziz") {
