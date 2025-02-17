@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useEffect } from "react";
 
 // react-router-dom components
@@ -46,6 +31,7 @@ import {
   setWhiteSidenav,
 } from "context";
 import { Warning } from "@mui/icons-material";
+import logo_isimm from "assets/logo_isimm.jpeg";
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useMaterialUIController();
@@ -159,13 +145,13 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             <Icon sx={{ fontWeight: "bold" }}>close</Icon>
           </MDTypography>
         </MDBox>
-        <MDBox component={NavLink} to="/" display="flex" alignItems="center">
+        <MDBox component={NavLink} to="/" display="flex" flexDirection="column" alignItems="left">
           <MDBox
             component="img"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_6zEbRDm5xzjfTFeBK8bJEUEnZD7_3K7phA&s"
+            src={logo_isimm}
             alt="isimm"
-            width="2.5rem"
-            style={{ borderRadius: "45%" }}
+            width="3.5rem"
+            style={{marginLeft: "35%", borderRadius: "50%" }}
           />
           <MDBox
             width={!brandName && "100%"}
@@ -178,7 +164,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
               variant="button"
               fontWeight="bold"
               color="info"
-              style={{ marginLeft: "8px", fontSize: "20px" }}
+              style={{ marginLeft: "15px",marginTop: "8px", fontSize: "25px" }}
             >
               ISIMM TEAM
             </MDTypography>

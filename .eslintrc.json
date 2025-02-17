@@ -16,7 +16,7 @@
     "prettier/prettier": [
       "error",
       {
-        "endOfLine": "auto"
+        "endOfLine": "lf"
       }
     ],
     "react/display-name": "off",

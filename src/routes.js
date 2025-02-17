@@ -1,5 +1,6 @@
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
+import Table_employés from "layouts/table_employes";
+import Table_enseignants from "layouts/table_enseignants";
 import Billing from "layouts/billing";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
@@ -10,7 +11,7 @@ import Icon from "@mui/material/Icon";
 const routes = [
   {
     type: "collapse",
-    name: "statistiques des utilisateurs ",
+    name: "dashboard ",
     key: "main/dashboard",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "dashboard",
@@ -18,11 +19,19 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "utilisateurs",
-    key: "main/utilisateurs",
+    name: "Employés",
+    key: "main/eployes",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "utilisateurs",
-    component: <Tables />,
+    route: "employes",
+    component: <Table_employés />,
+  },
+  {
+    type: "collapse",
+    name: "Enseignants",
+    key: "main/enseignants",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "enseignants",
+    component: <Table_enseignants />,
   },
   {
     type: "collapse",
