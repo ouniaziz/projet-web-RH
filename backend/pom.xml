@@ -46,12 +46,7 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-openapi</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-multipart</artifactId>
-        </dependency>   
-    
+
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-oracle</artifactId>
@@ -73,14 +68,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <scope>test</scope>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy</artifactId>
-        </dependency>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency> 
+        
+
+
         <!--Mailer-->
         <!-- <dependency>
             <groupId>io.quarkus</groupId>
@@ -93,10 +90,7 @@
             <scope>compile</scope>
         </dependency>
         <!-- For security and role-based access control -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-jackson</artifactId>
-        </dependency>
+        
         
         <!-- For JWT token creation and parsing -->
         <dependency>

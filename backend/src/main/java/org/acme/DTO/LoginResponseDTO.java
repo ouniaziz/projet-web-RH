@@ -1,9 +1,11 @@
 package org.acme.DTO;
 
 public class LoginResponseDTO {
-
+    public String accessToken;
+    public String refreshToken;
     public LoginResponseDTO(String accessToken, String refreshToken) {
-        //TODO Auto-generated constructor stub
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
 }
