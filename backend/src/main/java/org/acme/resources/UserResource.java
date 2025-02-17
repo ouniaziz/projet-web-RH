@@ -5,6 +5,7 @@ import org.acme.DTO.ActivationRequestDTO;
 import org.acme.DTO.ApiResponseDTO;
 import org.acme.DTO.LoginRequestDTO;
 import org.acme.DTO.LoginResponseDTO;
+import org.acme.DTO.PasswordResetRequestDTO;
 import org.acme.services.CustomAuthService;
 import org.acme.services.JwtService;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -63,7 +64,7 @@ public class UserResource {
     }
 
 
-    @POST
+    @PUT
     @Path("/forgot-password/{email}")
     @PermitAll
     public Response forgotPassword(@PathParam("email") String email){
@@ -75,10 +76,17 @@ public class UserResource {
         }
     }
 
+    @PUT
+    @Path("/reset-password/")
+    @PermitAll
+    public Response resetPassowrd(PasswordResetRequestDTO passwordResetRequestDTO){
+        authService.resetPassword(passwordResetRequestDTO);
+        return Response.status(200).entity(new ApiResponseDTO(200, "reset password successfully", null, null)).build();
+    }
+
     @PUT 
     @Path("/activate")
     @PermitAll
-    
     public Response activateAccount(ActivationRequestDTO activationRequest){
         authService.activate(activationRequest);
         

@@ -4,12 +4,15 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Set;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,6 +20,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class JwtService {
 	@Inject Logger log;
+	@Inject JWTParser jwtParser; 
 
 	public  String generateAccessToken(SecurityIdentity securityIden) {
 		String cin = securityIden.getPrincipal().getName();
@@ -62,9 +66,19 @@ public class JwtService {
 			DecodedJWT decodedToken = JWT.decode(token);
 			
 			return decodedToken.getExpiresAt().before(new Date());
-		}catch(Exception e){
+		}catch(JWTDecodeException e){
 			e.printStackTrace();
 			return true;
 		}
     }
+
+	public String getUpn(String token){
+		try{
+			DecodedJWT decodedToken = JWT.decode(token);
+			return decodedToken.getClaim("upn").asString();
+		}catch(JWTDecodeException e){
+			e.printStackTrace();
+			return "-1";
+		}
+	}
 }
