@@ -43,8 +43,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         return UsernamePasswordAuthenticationRequest.class;
     }
 
-    // TODO: Check for the possibility of: 
-    //if tried to reset password, but failed (didn't update password) and try to authenticate with passw_status = -1 and you somehow guess the password
+    
     @Override
     public Uni<SecurityIdentity> authenticate(UsernamePasswordAuthenticationRequest request,
             AuthenticationRequestContext context) {
@@ -52,9 +51,14 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
                 User user = userRepo.findByEmailOrCin(request.getUsername())
                         .orElseThrow(()-> new AuthenticationFailedException("invalid email or cin"));
                 
-                if(user.getStatus_passw()==0)
+                if(user.getStatus_passw()==User.PASSWORD_NOT_ACTIVE)
                     throw new AuthenticationFailedException("Account not activated");
                 
+                if(user.getStatus_passw() == User.PASSWORD_FORGOT){
+                    /*  TODO: How to treat an authentication to an account that requested password reset
+                        Remove password reset token or not let him log in
+                    */
+                }
                 if(!PasswordUtils.checkPassword(String.valueOf(request.getPassword().getPassword()), user.getPassw()))
                     throw new AuthenticationFailedException("Invalid password");
                 
@@ -80,7 +84,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
 
         if status_passw != 1 AND 0 (for example -1), then token exceeded expiry date and should be re-generated
      */
-    @Transactional
+    
     public void forgotPassword(String email) throws ApiException{
         PersonStatusDTO personStatus = personRepo.findStatusByEmail(email)
                                         .orElseThrow(()-> new PasswordResetFailedException("No record of user with email "+ email, 404));
@@ -89,7 +93,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         
         User user = userRepo.findByEmail(email).get();
         // prevent from reaching max email requests
-        if(user.getStatus_passw()==0)
+        if(user.getStatus_passw()==User.PASSWORD_FORGOT && !user.getPass_token().trim().isEmpty())
             throw new PasswordResetFailedException("A password-reseting email has already been sent to "+email, 403);
         
         // generate token, add it to user and send it via email. Maybe create custom email template
@@ -101,13 +105,13 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         // In that case, we should add another state= -1 (-1: account not activated, 0: password reset, 1: all is good)
             
         String token =jwtService.generateResetPasswordToken(email);
-        user.setStatus_passw(0);
+        user.setStatus_passw(User.PASSWORD_FORGOT);
         user.setPass_token(PasswordUtils.hashPassword(token));
 
         brevoService.sendEmail(email, "Password reset", new BrevoPasswordResetTemplate("localhost:8081/"+token));
     }
 
-    @Transactional 
+    
     public void resetPassword(PasswordResetRequestDTO passwordResetRequestDTO){
         String email = jwtService.getUpn(passwordResetRequestDTO.token());
         
@@ -118,7 +122,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         
         User user = userRepo.findByEmail(email).get();
 
-        if(user.getStatus_passw()!=0)
+        if(user.getStatus_passw()!=User.PASSWORD_FORGOT)
             throw new PasswordResetFailedException("Account didn't issue password reset request", 403);
         
         if(!PasswordUtils.checkPassword(passwordResetRequestDTO.token(), user.getPass_token()))
@@ -126,10 +130,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         
         if(jwtService.isTokenExpired(passwordResetRequestDTO.token())){
             // remove expired token
-            // put status_passw = -1
             user.setPass_token("");
-            user.setStatus_passw(-1);
-
             throw new PasswordResetFailedException("Token expired, please try to reset password", 403);
         }
 
@@ -138,19 +139,18 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         user.setPass_token("");
     }
 
-    @Transactional
+    
     public void activate(ActivationRequestDTO activationRequestDTO){
-        //TODO: check if person is activated, here passw_status = -1 isn't enough, just use person status is Person Table
         User user = userRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()->new PersonException("user cin="+activationRequestDTO.cin()+" not found", 404));
-        if(user.getStatus_passw()==1)
+        if(user.getStatus_passw()!=User.PASSWORD_NOT_ACTIVE)
             throw new ActivationFailedException("user "+activationRequestDTO.cin()+" already activated", 409);
         else if(user.getPass_token() ==null || user.getPass_token().isEmpty())
             throw new ActivationFailedException("activation token not found", 404);
         else if(!PasswordUtils.checkPassword(activationRequestDTO.token(), user.getPass_token()))
-            throw new ActivationFailedException("wrong activation token", 401);
+            throw new ActivationFailedException("invalid activation token", 401);
         
         if(jwtService.isTokenExpired(activationRequestDTO.token()))
-            throw new ActivationFailedException("Provided token is invalid", 401);
+            throw new ActivationFailedException("Provided token is expired, please contact the administrator", 401);
 
         Person person = personRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()-> new PersonException("Person cin="+activationRequestDTO.cin()+ " not found", 404));
         
@@ -159,7 +159,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         //personRepo.persist(person);
         
         user.setPassw(PasswordUtils.hashPassword(activationRequestDTO.password()));
-        user.setStatus_passw(1);
+        user.setStatus_passw(User.PASSWORD_OK);
         user.setPass_token("");
         //userRepo.persist(user);
     }            

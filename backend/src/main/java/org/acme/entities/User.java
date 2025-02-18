@@ -16,6 +16,10 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "USERS")
 public class User extends PanacheEntityBase{
+    public static int PASSWORD_OK = 1;
+    public static int PASSWORD_FORGOT = 0;
+    public static int PASSWORD_NOT_ACTIVE = -1;
+
     @Id
     @Column(length = 8)
     private String cin;
@@ -80,7 +84,7 @@ public class User extends PanacheEntityBase{
     public User(PersonDTO person, String passw_token){
         cin = person.cin;
         email = person.email;
-        status_passw = -1;
+        status_passw = PASSWORD_NOT_ACTIVE;
         pass_token = passw_token;
     }
 }

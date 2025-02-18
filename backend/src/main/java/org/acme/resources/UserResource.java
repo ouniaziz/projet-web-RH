@@ -16,6 +16,7 @@ import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
@@ -67,6 +68,7 @@ public class UserResource {
     @PUT
     @Path("/forgot-password/{email}")
     @PermitAll
+    @Transactional
     public Response forgotPassword(@PathParam("email") String email){
         try{    
             authService.forgotPassword(email);
@@ -79,6 +81,7 @@ public class UserResource {
     @PUT
     @Path("/reset-password/")
     @PermitAll
+    @Transactional
     public Response resetPassowrd(PasswordResetRequestDTO passwordResetRequestDTO){
         authService.resetPassword(passwordResetRequestDTO);
         return Response.status(200).entity(new ApiResponseDTO(200, "reset password successfully", null, null)).build();
@@ -87,6 +90,7 @@ public class UserResource {
     @PUT 
     @Path("/activate")
     @PermitAll
+    @Transactional
     public Response activateAccount(ActivationRequestDTO activationRequest){
         authService.activate(activationRequest);
         

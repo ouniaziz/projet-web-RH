@@ -23,6 +23,10 @@ import jakarta.ws.rs.core.Response;
 @Path("/api/persons")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+/*  TODO: add CRUD to Persons
+ *  GET getPersonsByFilter, PUT modify person, POST add person, DELETE delete person
+ * 
+*/
 public class PersonResource {
     
     @Inject PersonService personService;
