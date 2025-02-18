@@ -1,4 +1,4 @@
-import Dashboard from "layouts/dashboard";
+import Dashboard from "features/Dashboard";
 import Table_employés from "layouts/table_employes";
 import Table_enseignants from "layouts/table_enseignants";
 import Billing from "layouts/billing";

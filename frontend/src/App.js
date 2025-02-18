@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "layouts/MainLayout/MainLayout";
-import Page_connexion from "layouts/Page_connexion";
+import Page_connexion from "features/Auth/views/Page_connexion";
 import routes from "routes";
 import ProtectedRoute from "./ProtectedRoute";
+
 
 const getRoutes = (allRoutes) =>
   allRoutes.map((route) => <Route key={route.key} path={route.route} element={route.component} />);
