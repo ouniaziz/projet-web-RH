@@ -1,6 +1,7 @@
 package org.acme.entities;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.acme.DTO.PersonDTO;
 
@@ -11,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 @Entity
@@ -26,6 +28,7 @@ public class Person extends PanacheEntityBase{
     private String prenom;
     private String sexe;
     private LocalDate date_n;
+    private Integer status_p;
     
     @Column(unique = true)
     private String email;
@@ -33,9 +36,12 @@ public class Person extends PanacheEntityBase{
     @ManyToOne
     @JoinColumn(name="role_p", referencedColumnName = "id_r")
     private RolePerson role;
-    private Long grad;
-    private Integer status_p;
     
+    @OneToMany(mappedBy = "person")
+    private List<HandicapPerson> handicaps;
+
+    @ManyToOne
+    private GradEns grad;
 
     public Person() {}
 
@@ -95,14 +101,6 @@ public class Person extends PanacheEntityBase{
         this.status_p = status_p;
     }
 
-    public Long getGrad() {
-        return grad;
-    }
-
-    public void setGrad(Long grad) {
-        this.grad = grad;
-    }
-
     public LocalDate getDate_n() {
         return date_n;
     }
@@ -111,7 +109,7 @@ public class Person extends PanacheEntityBase{
         this.date_n = date_n;
     }
     
-
+    public List<HandicapPerson> getHandicaps(){return handicaps;}
     
 
     public Person(PersonDTO personDTO, RolePerson role) {
@@ -123,7 +121,6 @@ public class Person extends PanacheEntityBase{
         this.date_n = personDTO.dateN;
         this.email = personDTO.email;
         this.role = role;
-        this.grad = personDTO.grad;
         this.status_p = 0;
     }
     

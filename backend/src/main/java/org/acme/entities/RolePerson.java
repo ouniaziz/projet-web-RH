@@ -13,6 +13,18 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "Role_Person")
 public class RolePerson extends PanacheEntityBase{
+    public static int ADMIN_ID = 0;
+    public static String ADMIN_NAME = "Administrateur";
+
+    public static int RH_ID = 1;
+    public static String RH_NAME = "Personnel RH";
+
+    public static int ENSEIGNANT_ID = 2;
+    public static String ENSEIGNANT_NAME = "Enseignant";
+    
+    public static int EMPLOYE_ID = 3;
+    public static String EMPLOYE = "Employé";
+    
     @Id
     private Long id_r;
     private String nom_r;

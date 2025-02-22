@@ -1,12 +1,21 @@
 package org.acme.entities;
 
-import java.time.LocalDate;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
-public class Handicap {
+@Entity
+public class Handicap extends PanacheEntityBase{
+    @Id
     private Long id_hand;
+    
     private String name_h;
+    
     private String desc_h;
 
+    @OneToMany(mappedBy = "handicap")
+    private HandicapPerson people;
     public Handicap() {}
 
     public Long getId_hand() {

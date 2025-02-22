@@ -12,7 +12,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import io.quarkus.security.identity.SecurityIdentity;
-import io.smallrye.jwt.auth.principal.JWTParser;
+
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,7 +20,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class JwtService {
 	@Inject Logger log;
-	@Inject JWTParser jwtParser; 
+	@Inject JsonWebToken jsonWebToken;
 
 	public  String generateAccessToken(SecurityIdentity securityIden) {
 		String cin = securityIden.getPrincipal().getName();
@@ -72,7 +72,7 @@ public class JwtService {
 		}
     }
 
-	public String getUpn(String token){
+	public String getNonAuthUpn(String token){
 		try{
 			DecodedJWT decodedToken = JWT.decode(token);
 			return decodedToken.getClaim("upn").asString();
@@ -80,5 +80,12 @@ public class JwtService {
 			e.printStackTrace();
 			return "-1";
 		}
+	}
+
+	public String getAuthUpn(){
+		return jsonWebToken.getName();
+	}
+	public Set<String> getAuthRoles(){
+		return jsonWebToken.getGroups();
 	}
 }

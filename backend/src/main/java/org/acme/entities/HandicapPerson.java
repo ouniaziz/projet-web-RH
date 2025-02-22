@@ -1,29 +1,36 @@
 package org.acme.entities;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 
-import java.time.LocalDate;
-
-public class HandicapPerson {
-    private String cin;
-    private Long id_hand;
+@Entity
+public class HandicapPerson extends PanacheEntityBase{
+    
+    @EmbeddedId
+    private HandicapPersonId id;
+    
     private String severity;
     private String assistive_devices;
 
+    @MapsId("cin")
+    @ManyToOne
+    private Person person;
+
+    @MapsId("handicap_id")
+    @ManyToOne
+    private Handicap handicap;
+
+
     public HandicapPerson() {}
 
-    public String getCin() {
-        return cin;
+    public HandicapPersonId getCin() {
+        return id;
     }
 
-    public void setCin(String cin) {
-        this.cin = cin;
-    }
-
-    public Long getId_hand() {
-        return id_hand;
-    }
-
-    public void setId_hand(Long id_hand) {
-        this.id_hand = id_hand;
+    public void setCin(HandicapPersonId id) {
+        this.id = id;
     }
 
     public String getSeverity() {

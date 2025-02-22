@@ -113,7 +113,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
 
     
     public void resetPassword(PasswordResetRequestDTO passwordResetRequestDTO){
-        String email = jwtService.getUpn(passwordResetRequestDTO.token());
+        String email = jwtService.getNonAuthUpn(passwordResetRequestDTO.token());
         
         PersonStatusDTO personStatus = personRepo.findStatusByEmail(email)
                                         .orElseThrow(()-> new PasswordResetFailedException("No record of user with email "+ email, 404));

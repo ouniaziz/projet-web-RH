@@ -17,7 +17,7 @@ import org.acme.repositories.UserRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.SecurityContext;
 import sendinblue.ApiException;
 
 
@@ -30,7 +30,7 @@ public class PersonService {
     @Inject UserRepository userRepository;
     @Inject JwtService jwtService;
     
-    @Transactional
+    
     public void addPerson(PersonDTO personDTO)throws ApiException{
         if(personRepository.findByIdOptional(personDTO.cin).isPresent())
             throw new PersonException("Person with CIN = "+personDTO.cin+ " already exists", 409);
@@ -48,6 +48,28 @@ public class PersonService {
         userRepository.persist(new User(personDTO, PasswordUtils.hashPassword(activationToken)));
 
         brevoService.sendEmail(personDTO.email, "Activate your account", new BrevoAccountActivationTemplate(personDTO.prenom + " "+personDTO.nom, "localhost:8081/"+activationToken));
+    }
+
+    public void modifyPerson(PersonDTO personDTO, SecurityContext ctx){
+        if(!ctx.getUserPrincipal().getName().equals(personDTO.cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+            throw new PersonException("You can't modify other people's credentials", 401);
+        
+            // TODO: modify person's data
+    }
+
+    public Person getPerson(String cin, SecurityContext ctx){
+        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+            throw new PersonException("You can't access other people's credentials", 401);
+        
+        return personRepository.findByIdOptional(cin).orElseThrow(()->new PersonException("User cin="+cin+" not found", 404));
+    }
+
+    public List<Person> getEmployers(){
+        return personRepository.list("role.id_r", RolePerson.EMPLOYE_ID);
+    }
+
+    public List<Person> getEnseignant(){
+        return personRepository.list("role.id_r", RolePerson.ENSEIGNANT_ID);
     }
 
     public List<Person> getPersons(){

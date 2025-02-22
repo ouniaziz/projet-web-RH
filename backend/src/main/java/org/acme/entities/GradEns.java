@@ -1,10 +1,20 @@
 package org.acme.entities;
 
-import java.time.LocalDate;
+import java.util.List;
 
-public class GradEns {
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+@Entity
+public class GradEns extends PanacheEntityBase{
+    @Id
     private Long id_g;
     private String nom_g;
+
+    @OneToMany(mappedBy = "grad")
+    private List<Person> people;
 
     public GradEns() {}
 

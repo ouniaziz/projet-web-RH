@@ -1,5 +1,6 @@
 package org.acme.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.acme.DTO.PersonStatusDTO;
@@ -15,4 +16,5 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
     public Optional<PersonStatusDTO> findStatusByEmail(String email){
         return find("email", email).project(PersonStatusDTO.class).firstResultOptional();
     }
+
 }
