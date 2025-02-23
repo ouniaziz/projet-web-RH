@@ -24,6 +24,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import sendinblue.ApiException;
 
 @Path("/api/persons")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -45,10 +46,11 @@ public class PersonResource {
     public Response addPerson(PersonDTO personDTO){
         try{
             personService.addPerson(personDTO);
-            ApiResponseDTO apiResponse = new ApiResponseDTO(201, "Added person whose cin = "+personDTO.cin+ " to database", null, null);
+            ApiResponseDTO apiResponse = new ApiResponseDTO(201, "Added person whose cin = "+personDTO.cin.get()+ " to database", null, null);
             return Response.status(Response.Status.CREATED).entity(apiResponse).build();
-        }catch(Exception e){
-            return Response.status(500).entity(e).build();
+        }catch(ApiException e){
+            e.printStackTrace();
+            return Response.status(500).entity(new ApiResponseDTO(500, null, "Server error occured", null)).build();
         }
     }
 
@@ -62,7 +64,7 @@ public class PersonResource {
     @GET
     //@RolesAllowed({"Personnel RH", "Administrator"})
     @Path("/enseignant")
-    @RolesAllowed({"Personnel RH"})
+    @RolesAllowed({"Personnel RH", "Administrator"})
     public Response getEnseignants(){
         return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEnseignant())).build();
     }

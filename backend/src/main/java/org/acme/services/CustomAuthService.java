@@ -9,8 +9,8 @@ import org.acme.brevo.services.BrevoService;
 import org.acme.entities.Person;
 import org.acme.entities.User;
 import org.acme.exceptions.ActivationFailedExceptions.ActivationFailedException;
+import org.acme.exceptions.EntityException.EntityException;
 import org.acme.exceptions.PasswordResetFailedException.PasswordResetFailedException;
-import org.acme.exceptions.PersonExceptions.PersonException;
 import org.acme.repositories.PersonRepository;
 import org.acme.repositories.UserRepository;
 import org.jboss.logging.Logger;
@@ -141,18 +141,21 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
 
     
     public void activate(ActivationRequestDTO activationRequestDTO){
-        User user = userRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()->new PersonException("user cin="+activationRequestDTO.cin()+" not found", 404));
+        User user = userRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()->new EntityException("user cin="+activationRequestDTO.cin()+" not found", 404));
+        
         if(user.getStatus_passw()!=User.PASSWORD_NOT_ACTIVE)
             throw new ActivationFailedException("user "+activationRequestDTO.cin()+" already activated", 409);
+        
         else if(user.getPass_token() ==null || user.getPass_token().isEmpty())
             throw new ActivationFailedException("activation token not found", 404);
+        
         else if(!PasswordUtils.checkPassword(activationRequestDTO.token(), user.getPass_token()))
             throw new ActivationFailedException("invalid activation token", 401);
         
         if(jwtService.isTokenExpired(activationRequestDTO.token()))
             throw new ActivationFailedException("Provided token is expired, please contact the administrator", 401);
 
-        Person person = personRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()-> new PersonException("Person cin="+activationRequestDTO.cin()+ " not found", 404));
+        Person person = personRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()-> new EntityException("Person cin="+activationRequestDTO.cin()+ " not found", 404));
         
         // perform activation
         person.setStatus_p(1);

@@ -6,11 +6,14 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "Grad_Ens")
 public class GradEns extends PanacheEntityBase{
     @Id
     private Long id_g;
+
     private String nom_g;
 
     @OneToMany(mappedBy = "grad")

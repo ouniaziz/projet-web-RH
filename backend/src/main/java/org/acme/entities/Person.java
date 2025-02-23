@@ -3,8 +3,6 @@ package org.acme.entities;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.acme.DTO.PersonDTO;
-
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +39,7 @@ public class Person extends PanacheEntityBase{
     private List<HandicapPerson> handicaps;
 
     @ManyToOne
+    @JoinColumn(name = "grad", referencedColumnName = "id_g")
     private GradEns grad;
 
     public Person() {}
@@ -48,7 +47,6 @@ public class Person extends PanacheEntityBase{
     public String getCin() {
         return cin;
     }
-
     public void setCin(String cin) {
         this.cin = cin;
     }
@@ -56,7 +54,6 @@ public class Person extends PanacheEntityBase{
     public String getNom() {
         return nom;
     }
-
     public void setNom(String nom) {
         this.nom = nom;
     }
@@ -64,7 +61,6 @@ public class Person extends PanacheEntityBase{
     public String getPrenom() {
         return prenom;
     }
-
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
@@ -72,7 +68,6 @@ public class Person extends PanacheEntityBase{
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -80,7 +75,6 @@ public class Person extends PanacheEntityBase{
     public String getSexe() {
         return sexe;
     }
-
     public void setSexe(String sexe) {
         this.sexe = sexe;
     }
@@ -88,7 +82,6 @@ public class Person extends PanacheEntityBase{
     public RolePerson getRole() {
         return role;
     }
-
     public void setRole(RolePerson role_p) {
         this.role = role_p;
     }
@@ -96,7 +89,6 @@ public class Person extends PanacheEntityBase{
     public Integer getStatus_p() {
         return status_p;
     }
-
     public void setStatus_p(Integer status_p) {
         this.status_p = status_p;
     }
@@ -104,24 +96,12 @@ public class Person extends PanacheEntityBase{
     public LocalDate getDate_n() {
         return date_n;
     }
-
     public void setDate_n(LocalDate date_n) {
         this.date_n = date_n;
     }
     
     public List<HandicapPerson> getHandicaps(){return handicaps;}
     
-
-    public Person(PersonDTO personDTO, RolePerson role) {
-        this.cin = personDTO.cin;
-        
-        this.nom = personDTO.nom;
-        this.prenom = personDTO.prenom;
-        this.sexe = personDTO.sexe;
-        this.date_n = personDTO.dateN;
-        this.email = personDTO.email;
-        this.role = role;
-        this.status_p = 0;
-    }
-    
+    public GradEns getGrad(){return grad;}
+    public void setGrad(GradEns grad){this.grad = grad;}
 }

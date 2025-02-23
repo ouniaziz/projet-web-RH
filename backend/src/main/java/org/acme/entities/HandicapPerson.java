@@ -1,5 +1,6 @@
 package org.acme.entities;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -11,27 +12,31 @@ public class HandicapPerson extends PanacheEntityBase{
     @EmbeddedId
     private HandicapPersonId id;
     
+    @Column
     private String severity;
-    private String assistive_devices;
+    
+    @Column
+    private String assistiveDevices;
 
     @MapsId("cin")
     @ManyToOne
     private Person person;
 
-    @MapsId("handicap_id")
+    @MapsId("handicapId")
     @ManyToOne
     private Handicap handicap;
 
 
     public HandicapPerson() {}
 
-    public HandicapPersonId getCin() {
+    public HandicapPersonId getId() {
         return id;
     }
 
-    public void setCin(HandicapPersonId id) {
+    public void setId(HandicapPersonId id) {
         this.id = id;
     }
+    
 
     public String getSeverity() {
         return severity;
@@ -42,11 +47,11 @@ public class HandicapPerson extends PanacheEntityBase{
     }
 
     public String getAssistive_devices() {
-        return assistive_devices;
+        return assistiveDevices;
     }
 
     public void setAssistive_devices(String assistive_devices) {
-        this.assistive_devices = assistive_devices;
+        this.assistiveDevices = assistive_devices;
     }
 
 }

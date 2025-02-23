@@ -1,5 +1,7 @@
 package org.acme.entities;
 
+import java.util.List;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -15,7 +17,7 @@ public class Handicap extends PanacheEntityBase{
     private String desc_h;
 
     @OneToMany(mappedBy = "handicap")
-    private HandicapPerson people;
+    private List<HandicapPerson> people;
     public Handicap() {}
 
     public Long getId_hand() {
