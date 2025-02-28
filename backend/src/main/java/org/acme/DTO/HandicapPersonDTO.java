@@ -10,5 +10,4 @@ public class HandicapPersonDTO {
         this.severity = severity;
         this.assistiveDevice = assistiveDevice;
     }
-    
 }

@@ -13,6 +13,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class HandicapPersonRepository implements PanacheRepositoryBase<HandicapPerson, HandicapPersonId>{
     
     public Optional<HandicapPerson> findByIdOptional(String cin, int handicap_id){
-        return findByIdOptional(new HandicapPersonId(handicap_id, cin));
+        return findByIdOptional(new HandicapPersonId((long)handicap_id, cin));
     }
 }

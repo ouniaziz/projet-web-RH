@@ -3,10 +3,13 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "Handicap_Person")
 public class HandicapPerson extends PanacheEntityBase{
     
     @EmbeddedId
@@ -15,15 +18,17 @@ public class HandicapPerson extends PanacheEntityBase{
     @Column
     private String severity;
     
-    @Column
+    @Column(name = "ASSISTIVE_DEVICES")
     private String assistiveDevices;
 
     @MapsId("cin")
     @ManyToOne
+    @JoinColumn(name = "cin", referencedColumnName = "CIN")
     private Person person;
 
     @MapsId("handicapId")
     @ManyToOne
+    @JoinColumn(name = "HANDICAP_ID", referencedColumnName = "ID_HAND")
     private Handicap handicap;
 
 
@@ -49,9 +54,19 @@ public class HandicapPerson extends PanacheEntityBase{
     public String getAssistive_devices() {
         return assistiveDevices;
     }
+    
 
     public void setAssistive_devices(String assistive_devices) {
         this.assistiveDevices = assistive_devices;
     }
 
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public void setHandicap(Handicap handicap) {
+        this.handicap = handicap;
+    }
+
+    
 }

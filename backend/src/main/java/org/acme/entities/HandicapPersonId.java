@@ -3,19 +3,23 @@ package org.acme.entities;
 import java.io.Serializable;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 
 @Embeddable
 public class HandicapPersonId implements Serializable {
-    private int handicapId;
+    @Column(name = "HANDICAP_ID")
+    private Long handicapId;
+    
+    @Column(name = "CIN")
     private String cin;
 
-    public int getHandicapId() {
+    public Long getHandicapId() {
         return handicapId;
     }
 
-    public void setHandicapId(int handicapId) {
+    public void setHandicapId(Long handicapId) {
         this.handicapId = handicapId;
     }
 
@@ -27,7 +31,7 @@ public class HandicapPersonId implements Serializable {
         this.cin = cin;
     }
 
-    public HandicapPersonId(int handicapId, String cin) {
+    public HandicapPersonId(Long handicapId, String cin) {
         this.handicapId = handicapId;
         this.cin = cin;
     }

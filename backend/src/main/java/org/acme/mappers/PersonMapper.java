@@ -13,8 +13,11 @@ import org.acme.exceptions.EntityException.EntityException;
 import org.acme.interfaces.PersonMapperInt;
 import org.acme.repositories.GradRepository;
 import org.acme.repositories.HandicapPersonRepository;
+import org.acme.repositories.HandicapRepository;
 import org.acme.repositories.RolesRepository;
 
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -23,6 +26,8 @@ public class PersonMapper implements PersonMapperInt{
 
     @Inject RolesRepository rolesRepository;
     @Inject GradRepository gradRepository;
+    @Inject HandicapRepository handicapRepository;
+    
 
     @Override
     public PersonDTO toDto(Person person) {
@@ -36,12 +41,8 @@ public class PersonMapper implements PersonMapperInt{
         dto.roleId = Optional.of(person.getRole().getId_r());
         dto.grad = Optional.ofNullable(person.getGrad()).map(GradEns::getId_g);
         dto.handicaps = Optional.ofNullable(person.getHandicaps())
-                        .map(handicaps -> handicaps.stream()
-                                            .map(h-> new HandicapPersonDTO(
-                                                            h.getId().getHandicapId(),
-                                                            h.getSeverity(),
-                                                            h.getAssistive_devices())
-                                                ).toList());
+                        .map(handicaps -> 
+                        handicaps.stream().map(h-> new HandicapPersonDTO(h.getId().getHandicapId().intValue(),h.getSeverity(),h.getAssistive_devices())).toList());
         return dto;
     }
 
@@ -60,14 +61,44 @@ public class PersonMapper implements PersonMapperInt{
         dto.dateN.ifPresent(person::setDate_n);
         dto.email.ifPresent(person::setEmail);
         
+        person.persist(); 
+        updateComplexAttributesFromDto(person, dto);
+    }
+
+    public void updateComplexAttributesFromDto(Person person, PersonDTO dto){
         dto.roleId.ifPresent(roleId->{
-            RolePerson role = rolesRepository.findByIdOptional(roleId)
-                                .orElseThrow(()-> new EntityException("Role id="+roleId+" not found", 404));
+            RolePerson role = rolesRepository.findByIdOptional(roleId).orElseThrow(()-> new EntityException("role id="+roleId+" not found", 404));
+            person.setRole(role);
+        });
+            
+        dto.grad.ifPresent(gradId->{
+            GradEns grad = gradRepository.findByIdOptional(gradId).orElseThrow(()-> new EntityException("grad id="+gradId+" not found", 404));
+            person.setGrad(grad);
+        });
+
+        dto.handicaps.ifPresent(handicapList->{
+          handicapList.forEach(handicapDto->{
+            var handicap = handicapRepository.findByIdOptional((long)handicapDto.id).orElseThrow(()-> new EntityException("Handicap id="+handicapDto.id+" not found", 404));
+            var hp = new HandicapPerson();
+            hp.setId(new HandicapPersonId((long)handicapDto.id, dto.cin.get()));
+            hp.setSeverity(handicapDto.severity);
+            hp.setAssistive_devices(handicapDto.assistiveDevice);
+            hp.setHandicap(handicap);
+            hp.setPerson(person);
+            hp.persist();
+          });  
+        });
+    }
+}
+
+/* dto.roleId.ifPresent(roleId->{
+            RolePerson role = rolesRepository.findById(roleId)
+                                .orElseThrow(()-> );
             person.setRole(role);
         });
 
         dto.grad.ifPresent((gradId)->{
-            GradEns grad = gradRepository.findByIdOptional(gradId)
+            GradEns grad = gradRepository.findById(gradId)
                             .orElseThrow(()->new EntityException("grad id="+ gradId+" not found", 404));
             person.setGrad(grad);
         });
@@ -81,7 +112,5 @@ public class PersonMapper implements PersonMapperInt{
                 
                 handicapPerson.persist();
             });
-        });
-        
-    }
-}
+        }); 
+*/

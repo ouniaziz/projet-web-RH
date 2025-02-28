@@ -43,10 +43,11 @@ public class PersonResource {
 
     @POST
     @Transactional
+    //@RolesAllowed({"Personnel RH", "Administrator"})
     public Response addPerson(PersonDTO personDTO){
         try{
-            personService.addPerson(personDTO);
-            ApiResponseDTO apiResponse = new ApiResponseDTO(201, "Added person whose cin = "+personDTO.cin.get()+ " to database", null, null);
+            String token = personService.addPerson(personDTO);
+            ApiResponseDTO apiResponse = new ApiResponseDTO(201, "Added person whose cin = "+personDTO.cin.get()+ " to database", null, token);
             return Response.status(Response.Status.CREATED).entity(apiResponse).build();
         }catch(ApiException e){
             e.printStackTrace();
@@ -62,9 +63,9 @@ public class PersonResource {
     }
 
     @GET
-    //@RolesAllowed({"Personnel RH", "Administrator"})
+    
     @Path("/enseignant")
-    @RolesAllowed({"Personnel RH", "Administrator"})
+    //@RolesAllowed({"Personnel RH", "Administrator"})
     public Response getEnseignants(){
         return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEnseignant())).build();
     }
@@ -78,12 +79,12 @@ public class PersonResource {
         return Response.ok().entity(new ApiResponseDTO(200, null, null, p)).build();
     }
 
-    /* @PUT
+    @PUT
+    @Path("/update")
     @Transactional
-    public Response modifyPerson(PersonDTO personDto){
-        personService.modifyPerson(personDto)
-    
-    
-    
-    } */
+    //@RolesAllowed("**")
+    public Response modifyPerson(PersonDTO personDto, @Context SecurityContext ctx){
+        personService.modifyPerson(personDto, ctx);
+        return Response.status(200).entity(new ApiResponseDTO(200, "Modified person "+personDto.cin.get()+" successfully", null, null)).build();
+    }
 }

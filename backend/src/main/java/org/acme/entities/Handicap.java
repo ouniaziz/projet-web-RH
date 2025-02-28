@@ -3,6 +3,7 @@ package org.acme.entities;
 import java.util.List;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -10,6 +11,7 @@ import jakarta.persistence.OneToMany;
 @Entity
 public class Handicap extends PanacheEntityBase{
     @Id
+    @Column(name = "ID_HAND")
     private Long id_hand;
     
     private String name_h;

@@ -29,13 +29,6 @@ import jakarta.ws.rs.core.Response;
 import sendinblue.ApiException;
 
 @Path("/api/users")
-
-
-/**TODO: Added account verification token, now to add endpoint to activate account, the endpoint needs to take as body cin and as path the activate token
- * TODO: Look at deepseek to continue on your yesterday's work: auth + JWT access and refresh token 
- * TODO: Implement forgot password
-*/
-
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {

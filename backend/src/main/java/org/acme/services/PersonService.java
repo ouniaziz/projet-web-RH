@@ -6,6 +6,9 @@ import java.util.List;
 import org.acme.DTO.PersonDTO;
 import org.acme.brevo.entities.BrevoAccountActivationTemplate;
 import org.acme.brevo.services.BrevoService;
+import org.acme.entities.GradEns;
+import org.acme.entities.HandicapPerson;
+import org.acme.entities.HandicapPersonId;
 import org.acme.entities.Person;
 import org.acme.entities.RolePerson;
 import org.acme.entities.User;
@@ -31,28 +34,38 @@ public class PersonService {
     @Inject JwtService jwtService;
     @Inject PersonMapper personMapper;
     
-      
-    public void addPerson(PersonDTO personDTO)throws ApiException{
+    // for now, I'll add activation token to the ApiResponseDTO
+    public String addPerson(PersonDTO personDTO)throws ApiException{
         if(personRepository.findByIdOptional(personDTO.cin.get()).isPresent())
-            throw new EntityException("Person with CIN = "+personDTO.cin+ " already exists", 409);
+            throw new EntityException("Person with CIN = "+personDTO.cin.get()+ " already exists", 409);
         
         // Save person record
         Person person = personMapper.toEntity(personDTO);
-        personRepository.persist(person);
+        //personRepository.persist(person);
 
         // generate password activation token
-        String activationToken = jwtService.generateActivationToken(personDTO.cin.get(), RolePerson.ROLES[personDTO.roleId.get().intValue()]);
+        String activationToken = jwtService.generateActivationToken(person.getCin(), RolePerson.ROLES[personDTO.roleId.get().intValue()]);
         // Save user record corresponding to the person
         userRepository.persist(new User(personDTO.cin.get(), personDTO.email.get(), PasswordUtils.hashPassword(activationToken)));
 
-        brevoService.sendEmail(personDTO.email.get(), "Activate your account", new BrevoAccountActivationTemplate(personDTO.prenom.get() + " "+personDTO.nom.get(), "localhost:8081/"+activationToken));
+        brevoService.sendEmail(person.getEmail(), "Activate your account", new BrevoAccountActivationTemplate(person.getPrenom() + " "+person.getNom(), "localhost:8081/"+activationToken));
+        
+        return activationToken;
     }
 
     public void modifyPerson(PersonDTO personDTO, SecurityContext ctx){
-        if(!ctx.getUserPrincipal().getName().equals(personDTO.cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+        
+        if(!ctx.getUserPrincipal().getName().equals(personDTO.cin.get()) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't modify other people's credentials", 401);
         
-            // TODO: modify person's data. User Optional<T>.ifPresent(...)
+        // For now, can't modify cin and email as they foreign key & unique constraint
+        Person person = personRepository.findByIdOptional(personDTO.cin.get()).orElseThrow(()-> new EntityException("Person id="+personDTO.cin.get()+" not found", 404));
+        personDTO.nom.ifPresent(person::setNom);
+        personDTO.prenom.ifPresent(person::setPrenom);
+        personDTO.sexe.ifPresent(person::setSexe);
+        personDTO.dateN.ifPresent(person::setDate_n);
+
+        personMapper.updateComplexAttributesFromDto(person, personDTO);
     }
 
     public Person getPerson(String cin, SecurityContext ctx){

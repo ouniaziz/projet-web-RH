@@ -3,6 +3,8 @@ package org.acme.interfaces;
 import org.acme.DTO.PersonDTO;
 import org.acme.entities.Person;
 
+import io.smallrye.mutiny.Uni;
+
 /**
  * An interface to ensure entity-to-dto conversion and vice-versa
  */
