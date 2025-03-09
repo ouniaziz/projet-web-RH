@@ -35,6 +35,7 @@ public class HandicapPersonId implements Serializable {
         this.handicapId = handicapId;
         this.cin = cin;
     }
+    public HandicapPersonId(){}
 
     // Override equals and hashCode (required for composite keys)
     @Override

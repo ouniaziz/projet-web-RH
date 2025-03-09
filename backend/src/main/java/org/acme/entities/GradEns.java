@@ -36,5 +36,4 @@ public class GradEns extends PanacheEntityBase{
     public void setNom_g(String nom_g) {
         this.nom_g = nom_g;
     }
-
 }

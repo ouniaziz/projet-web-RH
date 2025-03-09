@@ -11,6 +11,8 @@ public class PersonDTO {
     public Optional<String> prenom= Optional.empty();
     public Optional<String> sexe= Optional.empty();
     public Optional<LocalDate> dateN= Optional.empty();
+    public Optional<Integer> anciennete = Optional.empty();
+    public Optional<String> image = Optional.empty();
     public Optional<String> email= Optional.empty();
     public Optional<Long> roleId= Optional.empty();  // RolePerson ID
     public Optional<Long> grad= Optional.empty();

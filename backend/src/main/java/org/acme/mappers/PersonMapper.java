@@ -1,6 +1,10 @@
 package org.acme.mappers;
 
+import java.lang.StackWalker.Option;
+import java.util.Base64;
 import java.util.Optional;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 
 import org.acme.DTO.HandicapPersonDTO;
 import org.acme.DTO.PersonDTO;
@@ -12,12 +16,9 @@ import org.acme.entities.RolePerson;
 import org.acme.exceptions.EntityException.EntityException;
 import org.acme.interfaces.PersonMapperInt;
 import org.acme.repositories.GradRepository;
-import org.acme.repositories.HandicapPersonRepository;
 import org.acme.repositories.HandicapRepository;
 import org.acme.repositories.RolesRepository;
 
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -28,6 +29,7 @@ public class PersonMapper implements PersonMapperInt{
     @Inject GradRepository gradRepository;
     @Inject HandicapRepository handicapRepository;
     
+    private Decoder decoder = Base64.getDecoder();
 
     @Override
     public PersonDTO toDto(Person person) {
@@ -38,6 +40,9 @@ public class PersonMapper implements PersonMapperInt{
         dto.sexe = Optional.of(person.getSexe());
         dto.dateN = Optional.ofNullable(person.getDate_n());
         dto.email = Optional.of(person.getEmail());
+        dto.anciennete = Optional.of(person.getAnciennete());
+        //dto.image = Optional.of(encoder.encodeToString(person.getIgnoredImage()));
+
         dto.roleId = Optional.of(person.getRole().getId_r());
         dto.grad = Optional.ofNullable(person.getGrad()).map(GradEns::getId_g);
         dto.handicaps = Optional.ofNullable(person.getHandicaps())
@@ -60,7 +65,11 @@ public class PersonMapper implements PersonMapperInt{
         dto.sexe.ifPresent(person::setSexe);
         dto.dateN.ifPresent(person::setDate_n);
         dto.email.ifPresent(person::setEmail);
-        
+        dto.anciennete.ifPresent(person::setAnciennete);
+        dto.image.ifPresent((imageBase64)->{
+            person.setImage(decoder.decode(imageBase64));
+        });
+
         person.persist(); 
         updateComplexAttributesFromDto(person, dto);
     }

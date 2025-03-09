@@ -75,6 +75,10 @@ public class PersonService {
         return personRepository.findByIdOptional(cin).orElseThrow(()->new EntityException("User cin="+cin+" not found", 404));
     }
 
+    public List<Person> filterRecords(String sexe, int grad, int anciennete, int handicap, String actif){
+        return personRepository.filterRecord(sexe, grad, anciennete, handicap, actif);
+    }
+
     public List<Person> getEmployers(){
         return personRepository.list("role.id_r", RolePerson.EMPLOYE_ID);
     }

@@ -1,17 +1,23 @@
 package org.acme.entities;
 
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+
 
 @Entity
 public class Person extends PanacheEntityBase{
@@ -19,7 +25,7 @@ public class Person extends PanacheEntityBase{
     @Column(length = 8)
     private String cin;
 
-    @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "person")
     private User user;
 
     private String nom;
@@ -27,7 +33,13 @@ public class Person extends PanacheEntityBase{
     private String sexe;
     private LocalDate date_n;
     private Integer status_p;
+    private Integer anciennete;
     
+    @Lob @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @Column(name = "IMAGE")
+    private byte[] ignoredImage;
+
     @Column(unique = true)
     private String email;
 
@@ -43,6 +55,14 @@ public class Person extends PanacheEntityBase{
     private GradEns grad;
 
     public Person() {}
+    
+    public Integer getAnciennete() {
+        return anciennete;
+    }
+
+    public void setAnciennete(Integer anciennete) {
+        this.anciennete = anciennete;
+    }
 
     public String getCin() {
         return cin;
@@ -99,6 +119,15 @@ public class Person extends PanacheEntityBase{
     public void setDate_n(LocalDate date_n) {
         this.date_n = date_n;
     }
+
+    public String getImage(){
+        if(ignoredImage == null)
+            return null;
+        
+        return Base64.getEncoder().encodeToString(ignoredImage);
+    }
+
+    public void setImage(byte[] img){ignoredImage = img;}
     
     public List<HandicapPerson> getHandicaps(){return handicaps;}
     
