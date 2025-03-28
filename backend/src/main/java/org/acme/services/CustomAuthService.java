@@ -65,7 +65,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
                 Person pers = personRepo.findByIdOptional(user.getCin())
                             .orElseThrow(()-> new AuthenticationFailedException("User not found"));
 
-                log.warn("Reached end of authenticate!!!");
+                
                 return Uni.createFrom().item(
                     QuarkusSecurityIdentity.builder()
                     .setPrincipal(new QuarkusPrincipal(pers.getCin()))
@@ -90,6 +90,9 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
                                         .orElseThrow(()-> new PasswordResetFailedException("No record of user with email "+ email, 404));
         if(personStatus.status_p()==0)
             throw new PasswordResetFailedException("Your account is yet to be activated. Please activate it using the link we sent in the email", 403);
+        
+        if(personStatus.status_p() == -1)
+            throw new PasswordResetFailedException("Your account is archived, please contact the admin", 403);
         
         User user = userRepo.findByEmail(email).get();
         // prevent from reaching max email requests
@@ -117,9 +120,10 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         
         PersonStatusDTO personStatus = personRepo.findStatusByEmail(email)
                                         .orElseThrow(()-> new PasswordResetFailedException("No record of user with email "+ email, 404));
-        if(personStatus.status_p()==0)
+        if(personStatus.status_p()==Person.STATUS_PERSON_ACTIVE)
             throw new PasswordResetFailedException("Your account is yet to be activated. Please activate it using the link we sent in the email", 403);
-        
+        if(personStatus.status_p() == Person.STATUS_PERSON_ARCHIVED)
+            throw new PasswordResetFailedException("Your account is archived, please contact the admin", 403);
         User user = userRepo.findByEmail(email).get();
 
         if(user.getStatus_passw()!=User.PASSWORD_FORGOT)
@@ -158,7 +162,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         Person person = personRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()-> new EntityException("Person cin="+activationRequestDTO.cin()+ " not found", 404));
         
         // perform activation
-        person.setStatus_p(1);
+        person.setStatus_p(Person.STATUS_PERSON_ACTIVE);
         //personRepo.persist(person);
         
         user.setPassw(PasswordUtils.hashPassword(activationRequestDTO.password()));
