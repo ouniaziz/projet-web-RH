@@ -1,6 +1,8 @@
 package org.acme.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import org.acme.DTO.PersonDTO;
@@ -68,6 +70,11 @@ public class PersonService {
         personMapper.updateComplexAttributesFromDto(person, personDTO);
     }
 
+    public void archivePerson(String cin){
+        Person p = personRepository.findByIdOptional(cin).orElseThrow(()-> new EntityException("Person id="+cin+" not found", 404));
+        p.setStatus_p(Person.STATUS_PERSON_ARCHIVED);
+    }
+
     public Person getPerson(String cin, SecurityContext ctx){
         if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't access other people's credentials", 401);
@@ -76,7 +83,42 @@ public class PersonService {
     }
 
     public List<Person> filterRecords(String sexe, int grad, int anciennete, int handicap, String actif){
-        return personRepository.filterRecord(sexe, grad, anciennete, handicap, actif);
+        Map<String, Object> params = new HashMap<>();
+        boolean isHandicapJoin = false;
+        // Build the query dynamically
+        StringBuilder query = new StringBuilder("FROM Person p where 1 = 1"); // Base condition to simplify chaining
+
+        if (grad != -1) {
+            query.append(" and p.grad.id_g = :grad");
+            params.put("grad", grad);
+        }
+        if (sexe != null) {
+            query.append(" and p.sexe = :sexe");
+            params.put("sexe", sexe);
+        }
+        if (anciennete != -1) {
+            query.append(" and p.anciennete = :anciennete");
+            params.put("anciennete", anciennete);
+        }
+        if (actif!= null && (actif.equals("false") || actif.equals("true"))) {
+            query.append(" and p.actif = :actif");
+            params.put("actif", actif);
+        }
+        if (handicap != -1) {
+            isHandicapJoin = true;
+            query.append(" JOIN p.handicaps h");
+            query.append(" WHERE h.handicap.id_hand = :handicap");
+            params.put("handicap", handicap);
+        }
+
+        String finalQuery = isHandicapJoin? "SELECT DISTINCT p "+query.toString():query.toString();
+        /*
+        * SELECT DISTINCT p
+        * FROM Person p, p.handicaps h
+        * WHERE p.grad = grad AND p.sexe = sexe AND p.anciennete = anciennete AND p.actif = actif
+        * AND h.handicap.id_hand = handicap
+        * */
+        return personRepository.find(finalQuery, params).list();
     }
 
     public List<Person> getEmployers(){
