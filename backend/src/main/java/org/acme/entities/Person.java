@@ -21,6 +21,10 @@ import jakarta.persistence.OneToOne;
 
 @Entity
 public class Person extends PanacheEntityBase{
+    public static int STATUS_PERSON_ARCHIVED = -1;
+    public static int STATUS_PERSON_INACTIVE = 0;
+    public static int STATUS_PERSON_ACTIVE = 1;
+
     @Id
     @Column(length = 8)
     private String cin;
@@ -47,7 +51,7 @@ public class Person extends PanacheEntityBase{
     @JoinColumn(name="role_p", referencedColumnName = "id_r")
     private RolePerson role;
     
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
     private List<HandicapPerson> handicaps;
 
     @ManyToOne
