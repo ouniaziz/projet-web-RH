@@ -29,29 +29,16 @@ import sendinblue.ApiException;
 /*  TODO: add CRUD to Persons
 
     TODO: Ask chatbot how to integrate realtime notification manager that's fired upon every modification made to the Person's data
-
- *  TODO:GET getPersonsByFilter
- *
- *  possible filters for specific people: grade, sexe, handicap, nature du travail, ancienneté, actif/ non actif
  * 
  *  TODO: DELETE delete person
- * 
+
+    TODO: Don't forget to turn addPerson from String into void
  * replace java-jwt dependency with smallrye-jwt when necessary since it integrates well with quarkus.
 */
 public class PersonResource {
     
     @Inject PersonService personService;
 
-    @GET
-    //@RolesAllowed({"Personnel RH", "Administrator"})
-    public Response getPersonsByFilters(@DefaultValue("-1")   @RestQuery int grad,
-                                        @RestQuery String sexe,
-                                        @DefaultValue("-1")   @RestQuery int anciennete,
-                                        @RestQuery String actif,
-                                        @DefaultValue("-1")   @RestQuery int handicap){
-        
-        return Response.ok(new ApiResponseDTO(200, "Filtered successfully", null, personService.filterRecords(sexe,grad,anciennete,handicap, actif))).build();
-    }
 
     @POST
     @Transactional
@@ -62,11 +49,12 @@ public class PersonResource {
             ApiResponseDTO apiResponse = new ApiResponseDTO(201, "Added person whose cin = "+personDTO.cin.get()+ " to database", null, token);
             return Response.status(Response.Status.CREATED).entity(apiResponse).build();
         }catch(ApiException e){
-            e.printStackTrace();
-            return Response.status(500).entity(new ApiResponseDTO(500, null, "Server error occured", null)).build();
+
+            return Response.status(500).entity(new ApiResponseDTO(500, null, "Server error occured", e.getMessage())).build();
         }
     }
 
+/*
     @GET
     @Path("/employe")
     //@RolesAllowed({"Personnel RH", "Administrator"})
@@ -80,6 +68,29 @@ public class PersonResource {
     public Response getEnseignants(){
         return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEnseignant())).build();
     }
+
+    @GET
+    //@RolesAllowed({"Personnel RH", "Administrator"})
+    public Response getPersonsByFilters(@DefaultValue("-1")   @RestQuery int grad,
+                                        @RestQuery String sexe,
+                                        @DefaultValue("-1")   @RestQuery int anciennete,
+                                        @RestQuery String actif,
+                                        @DefaultValue("-1")   @RestQuery int handicap){
+
+        return Response.ok(new ApiResponseDTO(200, "Filtered successfully", null, personService.filterRecords(sexe,grad,anciennete,handicap, actif))).build();
+    }
+
+    @PUT
+    @Path("/archive/{cin}")
+    @Transactional
+    //RolseAllowed({"Personnel RH", "Admin"})
+    // We'll assume that person's status ==-1 ==> record is archived
+    public Response archivePerson(@PathParam(value = "cin") String cin){
+        personService.archivePerson(cin);
+        return Response.accepted().entity(new ApiResponseDTO(202, "Person with cin ="+cin+" has been archived", null,null)).build();
+    }
+*/
+
 
     // Get person by Id
     @GET
@@ -99,8 +110,10 @@ public class PersonResource {
         return Response.status(200).entity(new ApiResponseDTO(200, "Modified person "+personDto.cin.get()+" successfully", null, null)).build();
     }
     @GET
-    @Path("all")
-    public Response getP(){
+    @Path("/all")
+    public Response getAll(){
         return Response.ok(personService.getPersons()).build();
     }
+
+
 }
