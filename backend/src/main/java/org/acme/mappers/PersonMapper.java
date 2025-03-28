@@ -69,7 +69,7 @@ public class PersonMapper implements PersonMapperInt{
         dto.image.ifPresent((imageBase64)->{
             person.setImage(decoder.decode(imageBase64));
         });
-
+        // person.setStatus_p(Person.STATUS_PERSON_INACTIVE); In DB, this column is -1 (INACTIVE) by default
         person.persist(); 
         updateComplexAttributesFromDto(person, dto);
     }
