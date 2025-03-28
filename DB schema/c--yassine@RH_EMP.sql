@@ -15,7 +15,7 @@ CREATE TABLE Person (
     email VARCHAR2(100) UNIQUE,
     sexe VARCHAR2(1) CHECK (sexe IN ('H', 'F')),
     role_p NUMBER,
-    status_p NUMBER(1) DEFAULT 0 CHECK (status_p IN (0, 1)),
+    status_p NUMBER(1) DEFAULT 0 CHECK (status_p IN (-1,0, 1)),
     grad NUMBER,
     date_n DATE
 );
