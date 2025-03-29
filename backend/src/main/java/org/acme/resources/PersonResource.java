@@ -111,8 +111,9 @@ public class PersonResource {
     }
     @GET
     @Path("/all")
+    //RolseAllowed({"Personnel RH", "Admin"})
     public Response getAll(){
-        return Response.ok(personService.getPersons()).build();
+        return Response.ok(new ApiResponseDTO(200,"Fetched records successfully",null,personService.getPersons())).build();
     }
 
 

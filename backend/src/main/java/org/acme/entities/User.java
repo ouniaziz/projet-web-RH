@@ -9,7 +9,7 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-
+// TODO: id_unique: CNRPS field
 @Entity
 @Table(name = "USERS")
 public class User extends PanacheEntityBase{
