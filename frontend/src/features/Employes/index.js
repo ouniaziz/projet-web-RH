@@ -10,26 +10,26 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Paper from "@mui/material/Paper";
-import { DataGrid } from "@mui/x-data-grid/DataGrid";
+import { DataGrid } from "@mui/x-data-grid";
 import { Input } from "@mui/material";
 import { ThemeProvider, useTheme } from "@mui/material/styles";
-import { useMaterialUIController } from "context";
-import theme from "assets/theme";
-import themeDark from "assets/theme-dark";
+import { useMaterialUIController } from "../../context";
+import theme from "../../assets/theme";
+import themeDark from "../../assets/theme-dark";
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import MDAvatar from "components/MDAvatar";
+import MDBox from "../../components/MDBox";
+import MDTypography from "../../components/MDTypography";
+import MDAvatar from "../../components/MDAvatar";
 // Images
-import team2 from "assets/images/team-2.jpg";
-import user from "assets/user.jpg";
+import team2 from "../../assets/images/team-2.jpg";
+import user from "../../assets/user.jpg";
 // Material Dashboard 2 React example components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
+import DashboardNavbar from "../../examples/Navbars/DashboardNavbar";
+import Footer from "../../examples/Footer";
 import PropTypes from "prop-types";
 
-function Table_enseignants() {
+function Table_employes() {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const theme = useTheme();
@@ -41,15 +41,18 @@ function Table_enseignants() {
       return;
     }
     const idToDelete = params.row.id;
-    setEnseignants((prevEnseignant) => prevEnseignant.filter((enseignant) => enseignant.id !== idToDelete));
+    setEmployes((prevEmployes) => prevEmployes.filter((employe) => employe.id !== idToDelete));
   };
-  const handleImageChange = (e) => {
+  
+  const handleImageChange2 = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setNewEnseignant({ ...newEnseignant, image: URL.createObjectURL(file) });
+      setNewEmploye({ ...newEmploye, image: URL.createObjectURL(file) });
     }
   };
-  const enseignants_columns = [
+
+  // ajout des employes-----------------------------------------------------------------------------------------------
+  const employes_columns = [
     {
       field: "id",
       headerName: "ID",
@@ -57,15 +60,11 @@ function Table_enseignants() {
     },
     {
       field: "nom",
-      headerName: "Nom et prénom",
+      headerName: "nom et prénom",
       sortable: false,
       width: 200,
       renderCell: (params) => (
-        <Author
-          image={params.row.image || defaultImage}
-          name={params.row.nom}
-          email={params.row.email}
-        />
+        <Author image={params.row.image} name={params.row.nom} email={params.row.email} />
       ),
     },
     {
@@ -111,8 +110,8 @@ function Table_enseignants() {
       width: 70,
     },
     {
-      field: "département",
-      headerName: "département",
+      field: "poste",
+      headerName: "poste",
       sortable: false,
       width: 130,
     },
@@ -151,7 +150,8 @@ function Table_enseignants() {
       ),
     },
   ];
-  const enseignants_rows = [
+
+  const employes_rows = [
     {
       id: 1,
       image: team2,
@@ -163,15 +163,17 @@ function Table_enseignants() {
       telephone: "29292501",
       Grade: "DOCTEUR",
       naissance: "15/02/1990",
-      sexe: "male",
-      département: "informatique",
+      sexe: "H",
+      poste: "assistant general",
       ancienneté: "15 ans",
       handicap: "non",
     },
   ];
-  const [enseignants, setEnseignants] = useState(enseignants_rows);
-  const [newEnseignant, setNewEnseignant] = useState({
-    id: enseignants.length + 1,
+
+  const [employes, setEmployes] = useState(employes_rows);
+
+  const [newEmploye, setNewEmploye] = useState({
+    id: employes.length + 1,
     image: null,
     nom: "",
     email: "",
@@ -186,31 +188,32 @@ function Table_enseignants() {
     ancienneté: "",
     handicap: "",
   });
-  const handleChange = (e) => {
-    setNewEnseignant({ ...newEnseignant, [e.target.name]: e.target.value });
+  const handleChange1 = (e) => {
+    setNewEmploye({ ...newEmploye, [e.target.name]: e.target.value });
   };
-  const handleAddEnseignant = (e) => {
+
+  const handleAddEmploye = (e) => {
     e.preventDefault();
     if (
-      !newEnseignant.nom ||
-      !newEnseignant.CIN ||
-      !newEnseignant.email ||
-      !newEnseignant.adresse ||
-      !newEnseignant.Grade ||
-      !newEnseignant.handicap ||
-      !newEnseignant.naissance ||
-      !newEnseignant.age ||
-      !newEnseignant.sexe ||
-      !newEnseignant.telephone ||
-      !newEnseignant.département ||
-      !newEnseignant.ancienneté
+      !newEmploye.nom ||
+      !newEmploye.CIN ||
+      !newEmploye.email ||
+      !newEmploye.adresse ||
+      !newEmploye.Grade ||
+      !newEmploye.handicap ||
+      !newEmploye.naissance ||
+      !newEmploye.age ||
+      !newEmploye.sexe ||
+      !newEmploye.telephone ||
+      !newEmploye.poste ||
+      !newEmploye.ancienneté
     ) {
       alert("Veuillez remplir tous les champs obligatoires ");
       return;
     }
-    setEnseignants([...enseignants, { ...newEnseignant, id: enseignants.length + 1 }]);
-    setNewEnseignant({
-      id: enseignants.length + 1,
+    setEmployes([...employes, { ...newEmploye, id: employes.length + 1 }]);
+    setNewEmploye({
+      id: employes.length + 1,
       image: null,
       nom: "",
       email: "",
@@ -221,17 +224,17 @@ function Table_enseignants() {
       Grade: "",
       naissance: "",
       sexe: "",
-      département: "",
+      poste: "",
       ancienneté: "",
       handicap: "",
     });
-    handleClose1();
+    handleClose();
   };
   // ---------------------------------------------------------------------------------------------------------
-  const [open1, setOpen1] = useState(false);
-  const handleOpen1 = () => setOpen1(true);
-  const handleClose1 = () => setOpen1(false);
-  const paginationModel = { page: 0, pageSize: 5 };
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const paginationModel = { page: 0, pageSize: 50 };
   const Author = ({ image, name, email }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       <MDAvatar src={image} name={name} size="sm" />
@@ -269,6 +272,7 @@ function Table_enseignants() {
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
+              {/* This is header*/}
               <MDBox
                 mx={2}
                 mt={-3}
@@ -281,14 +285,16 @@ function Table_enseignants() {
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
                 <MDTypography variant="h6" color="white">
-                  Les enseignants
+                  Les employés
                 </MDTypography>
-                <Fab color="success" size="small" aria-label="add" onClick={handleOpen1}>
-                  <AddIcon color="white" />
+                <Fab color="success" size="small" aria-label="add" onClick={handleOpen}>
+                  <AddIcon color="white"/>
                 </Fab>
+
+                {/* This is a Modal*/}
                 <Modal
-                  open={open1}
-                  onClose={handleClose1}
+                  open={open}
+                  onClose={handleClose}
                   aria-labelledby="modal-modal-title"
                   aria-describedby="modal-modal-description"
                   style={{
@@ -314,7 +320,7 @@ function Table_enseignants() {
                     style={{ backgroundColor: "white" }}
                   >
                     <MDTypography id="modal-title" variant="h6" mb={3}>
-                      Ajouter un enseignant
+                      Ajouter un employé
                     </MDTypography>
                     <MDBox
                       component="form"
@@ -346,8 +352,8 @@ function Table_enseignants() {
                           fullWidth
                           label="Nom et prenom"
                           name="nom"
-                          value={newEnseignant.nom}
-                          onChange={handleChange}
+                          value={newEmploye.nom}
+                          onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
                           required
@@ -356,9 +362,10 @@ function Table_enseignants() {
                           <input
                             accept="image/*"
                             type="file"
+                            name="image"
                             id="upload-photo"
                             style={{ display: "none" }}
-                            onChange={handleImageChange}
+                            onChange={handleImageChange2}
                             required
                           />
                           <label htmlFor="upload-photo">
@@ -372,9 +379,9 @@ function Table_enseignants() {
                               Upload Photo
                             </Button>
                           </label>
-                          {newEnseignant.image && (
+                          {newEmploye.image && (
                             <img
-                              src={newEnseignant.image}
+                              src={newEmploye.image}
                               alt="Preview"
                               style={{
                                 marginTop: "10px",
@@ -389,10 +396,10 @@ function Table_enseignants() {
                         <TextField
                           fullWidth
                           label="CIN"
-                          type="number"
                           name="CIN"
-                          value={newEnseignant.CIN}
-                          onChange={handleChange}
+                          value={newEmploye.CIN}
+                          onChange={handleChange1}
+                          type="number"
                           variant="outlined"
                           margin="normal"
                           required
@@ -402,18 +409,18 @@ function Table_enseignants() {
                           label="Email"
                           type="email"
                           name="email"
-                          value={newEnseignant.email}
-                          onChange={handleChange}
+                          value={newEmploye.email}
+                          onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
                           required
                         />
                         <TextField
                           fullWidth
-                          label="adresse"
                           name="adresse"
-                          value={newEnseignant.adresse}
-                          onChange={handleChange}
+                          label="adresse"
+                          value={newEmploye.adresse}
+                          onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
                           required
@@ -422,8 +429,8 @@ function Table_enseignants() {
                           fullWidth
                           label="Grade"
                           name="Grade"
-                          value={newEnseignant.Grade}
-                          onChange={handleChange}
+                          value={newEmploye.Grade}
+                          onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
                           required
@@ -432,8 +439,8 @@ function Table_enseignants() {
                           fullWidth
                           label="handicap"
                           name="handicap"
-                          value={newEnseignant.handicap}
-                          onChange={handleChange}
+                          value={newEmploye.handicap}
+                          onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
                           required
@@ -452,10 +459,10 @@ function Table_enseignants() {
                         <TextField
                           fullWidth
                           label="date de naissance"
-                          name="naissance"
-                          value={newEnseignant.naissance}
-                          onChange={handleChange}
                           type="date"
+                          name="naissance"
+                          value={newEmploye.naissance}
+                          onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
                           required
@@ -467,8 +474,8 @@ function Table_enseignants() {
                           fullWidth
                           label="age"
                           name="age"
-                          value={newEnseignant.age}
-                          onChange={handleChange}
+                          value={newEmploye.age}
+                          onChange={handleChange1}
                           type="number"
                           variant="outlined"
                           margin="normal"
@@ -478,8 +485,8 @@ function Table_enseignants() {
                           aria-labelledby="demo-radio-buttons-group-label"
                           defaultValue="male"
                           name="sexe"
-                          value={newEnseignant.sexe}
-                          onChange={handleChange}
+                          value={newEmploye.sexe}
+                          onChange={handleChange1}
                           style={{
                             display: "flex",
                             flexDirection: "row",
@@ -493,20 +500,20 @@ function Table_enseignants() {
                         <TextField
                           fullWidth
                           label="telephone"
-                          name="telephone"
-                          value={newEnseignant.telephone}
-                          onChange={handleChange}
                           type="tel"
+                          name="telephone"
+                          value={newEmploye.telephone}
+                          onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
                           required
                         />
                         <TextField
                           fullWidth
-                          label="département"
-                          name="département"
-                          value={newEnseignant.département}
-                          onChange={handleChange}
+                          label="poste"
+                          name="poste"
+                          value={newEmploye.poste}
+                          onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
                           required
@@ -515,8 +522,8 @@ function Table_enseignants() {
                           fullWidth
                           label="ancienneté"
                           name="ancienneté"
-                          value={newEnseignant.ancienneté}
-                          onChange={handleChange}
+                          value={newEmploye.ancienneté}
+                          onChange={handleChange1}
                           type="number"
                           variant="outlined"
                           margin="normal"
@@ -526,7 +533,7 @@ function Table_enseignants() {
                           type="submit"
                           color="primary"
                           variant="contained"
-                          onClick={handleAddEnseignant}
+                          onClick={handleAddEmploye}
                           sx={{ mt: 7 }}
                           style={{ width: 300, color: "white" }}
                         >
@@ -541,8 +548,8 @@ function Table_enseignants() {
                 <ThemeProvider theme={darkMode ? themeDark : theme}>
                   <Paper sx={{ height: 400, width: "100%" }}>
                     <DataGrid
-                      rows={enseignants}
-                      columns={enseignants_columns}
+                      rows={employes}
+                      columns={employes_columns}
                       initialState={{ pagination: { paginationModel } }}
                       pageSizeOptions={[5, 10]}
                       sx={{ border: 0 }}
@@ -559,4 +566,4 @@ function Table_enseignants() {
   );
 }
 
-export default Table_enseignants;
+export default Table_employes;

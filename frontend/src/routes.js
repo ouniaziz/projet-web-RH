@@ -1,6 +1,6 @@
 import Dashboard from "features/Dashboard";
-import Table_employés from "layouts/table_employes";
-import Table_enseignants from "layouts/table_enseignants";
+import TableEnseignants from "./features/Enseignants";
+import TableEmployes from "./features/Employes";
 import Billing from "layouts/billing";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
@@ -20,10 +20,10 @@ const routes = [
   {
     type: "collapse",
     name: "Employés",
-    key: "main/eployes",
+    key: "main/employes",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "employes",
-    component: <Table_employés />,
+    component: <TableEmployes />,
   },
   {
     type: "collapse",
@@ -31,7 +31,7 @@ const routes = [
     key: "main/enseignants",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "enseignants",
-    component: <Table_enseignants />,
+    component: <TableEnseignants />,
   },
   {
     type: "collapse",

@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import Fab from "@mui/material/Fab";
+
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
 import { useState } from "react";
@@ -10,26 +10,341 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Paper from "@mui/material/Paper";
-import { DataGrid } from "@mui/x-data-grid/DataGrid";
-import { Input } from "@mui/material";
-import { ThemeProvider, useTheme } from "@mui/material/styles";
-import { useMaterialUIController } from "context";
-import theme from "assets/theme";
-import themeDark from "assets/theme-dark";
-// Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import MDAvatar from "components/MDAvatar";
-// Images
-import team2 from "assets/images/team-2.jpg";
-import user from "assets/user.jpg";
-// Material Dashboard 2 React example components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import PropTypes from "prop-types";
+import { DataGrid } from "@mui/x-data-grid";
 
-function Table_employés() {
+import { ThemeProvider, useTheme } from "@mui/material/styles";
+import { useMaterialUIController } from "../../context";
+
+import themeDark from "../../assets/theme-dark";
+// Material Dashboard 2 React components
+import MDBox from "../../components/MDBox";
+import MDTypography from "../../components/MDTypography";
+import MDAvatar from "../../components/MDAvatar";
+// Images
+import team2 from "../../assets/images/team-2.jpg";
+import user from "../../assets/user.jpg";
+// Material Dashboard 2 React example components
+import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
+import DashboardNavbar from "../../examples/Navbars/DashboardNavbar";
+import Footer from "../../examples/Footer";
+import PropTypes from "prop-types";
+import IconButton from "@mui/material/IconButton";
+
+
+function AddModal({open, handleClose, handleAddEnseignant}){
+  const [newEnseignant, setNewEnseignant] = useState({
+    image: null,
+    nom: "",
+    email: "",
+    cin: "",
+    adresse: "",
+    age: "",
+    telephone: "",
+    Grade: "",
+    naissance: "",
+    sexe: "",
+    département: "",
+    ancienneté: "",
+    handicap: "",
+  });
+
+  const handleImageChange2 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewEnseignant({ ...newEnseignant, image: URL.createObjectURL(file) });
+    }
+  };
+
+  const handleChange1 = (e) => {
+    setNewEnseignant({ ...newEnseignant, [e.target.name]: e.target.value });
+  };
+
+  const addEnseignant = (e)=>{
+    e.preventDefault();
+    if (!newEnseignant.nom ||!newEnseignant.cin || !newEnseignant.email || !newEnseignant.adresse || !newEnseignant.Grade || !newEnseignant.handicap || !newEnseignant.naissance || !newEnseignant.age || !newEnseignant.sexe || !newEnseignant.telephone || !newEnseignant.poste || !newEnseignant.ancienneté) {
+      alert("Veuillez remplir tous les champs obligatoires ");
+      return;
+    }
+
+    handleAddEnseignant(newEnseignant);
+
+    setNewEnseignant({
+      image: null,
+      nom: "",
+      email: "",
+      cin: "",
+      adresse: "",
+      age: "",
+      telephone: "",
+      Grade: "",
+      naissance: "",
+      sexe: "",
+      poste: "",
+      ancienneté: "",
+      handicap: "",
+    });
+    handleClose();
+  }
+  return(
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        backgroundColor: "rgba(142, 235, 248, 0.4)",
+      }}
+    >
+      <MDBox
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        position="relative"
+        width={800}
+        boxShadow={24}
+        p={4}
+        borderRadius="2px"
+        style={{ backgroundColor: "white" }}
+      >
+        <MDTypography id="modal-title" variant="h6" mb={3}>
+          Ajouter un enseignant
+        </MDTypography>
+        <MDBox
+          component="form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleClose();
+          }}
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="center"
+          transform="translate(-50%, -50%)"
+          boxShadow={10}
+          p={28}
+          borderRadius="2px"
+          style={{ backgroundColor: "white" }}
+        >
+          <MDBox
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            position="absolute"
+            left="80px"
+            top="64px"
+            width={300}
+          >
+            <TextField
+              fullWidth
+              label="Nom et prenom"
+              name="nom"
+              value={newEnseignant.nom}
+              onChange={handleChange1}
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <MDBox style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
+              <input
+                accept="image/*"
+                type="file"
+                name="image"
+                id="upload-photo"
+                style={{ display: "none" }}
+                onChange={handleImageChange2}
+                required
+              />
+              <label htmlFor="upload-photo">
+                <Button
+                  variant="contained"
+                  component="span"
+                  color="secondary"
+                  sx={{ mt: 1 }}
+                  style={{ width: 210, height: "50px", color: "white" }}
+                >
+                  Upload Photo
+                </Button>
+              </label>
+              {newEnseignant.image && (
+                <img
+                  src={newEnseignant.image}
+                  alt="Preview"
+                  style={{
+                    marginTop: "10px",
+                    width: "80px",
+                    height: "50px",
+                    objectFit: "cover",
+                    borderRadius: "10px",
+                  }}
+                />
+              )}
+            </MDBox>
+            <TextField
+              fullWidth
+              label="cin"
+              name="cin"
+              value={newEnseignant.cin}
+              onChange={handleChange1}
+              type="number"
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              name="email"
+              value={newEnseignant.email}
+              onChange={handleChange1}
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              name="adresse"
+              label="adresse"
+              value={newEnseignant.adresse}
+              onChange={handleChange1}
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              label="Grade"
+              name="Grade"
+              value={newEnseignant.Grade}
+              onChange={handleChange1}
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              label="handicap"
+              name="handicap"
+              value={newEnseignant.handicap}
+              onChange={handleChange1}
+              variant="outlined"
+              margin="normal"
+              required
+            />
+          </MDBox>
+          <MDBox
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            position="absolute"
+            right="80px"
+            top="64px"
+            width={300}
+          >
+            <TextField
+              fullWidth
+              label="date de naissance"
+              type="date"
+              name="naissance"
+              value={newEnseignant.naissance}
+              onChange={handleChange1}
+              variant="outlined"
+              margin="normal"
+              required
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              fullWidth
+              label="age"
+              name="age"
+              value={newEnseignant.age}
+              onChange={handleChange1}
+              type="number"
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              defaultValue="male"
+              name="sexe"
+              value={newEnseignant.sexe}
+              onChange={handleChange1}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                height: "30px",
+                margin: "9px",
+              }}
+            >
+              <FormControlLabel value="H" control={<Radio />} label="Male" />
+              <FormControlLabel value="F" control={<Radio />} label="Female" />
+            </RadioGroup>
+            <TextField
+              fullWidth
+              label="telephone"
+              type="tel"
+              name="telephone"
+              value={newEnseignant.telephone}
+              onChange={handleChange1}
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              label="poste"
+              name="poste"
+              value={newEnseignant.poste}
+              onChange={handleChange1}
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              label="ancienneté"
+              name="ancienneté"
+              value={newEnseignant.ancienneté}
+              onChange={handleChange1}
+              type="number"
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <Button
+              type="submit"
+              color="primary"
+              variant="contained"
+              onClick={handleAddEnseignant}
+              sx={{ mt: 7 }}
+              style={{ width: 300, color: "white" }}
+            >
+              Ajouter
+            </Button>
+          </MDBox>
+        </MDBox>
+      </MDBox>
+    </Modal>
+  )
+}
+
+AddModal.propTypes={
+  open: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  handleAddEnseignant: PropTypes.func.isRequired,
+
+}
+
+function Tableenseignants() {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const theme = useTheme();
@@ -40,22 +355,19 @@ function Table_employés() {
       console.error("Impossible de supprimer : les données de la ligne sont invalides.");
       return;
     }
-    const idToDelete = params.row.id;
-    setEmployes((prevEmployes) => prevEmployes.filter((employe) => employe.id !== idToDelete));
+    const cinToDelete = params.row.cin;
+    setEnseignants((preEnseignants) => preEnseignants.filter((ens) => ens.cin !== cinToDelete));
   };
   
-  const handleImageChange2 = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setNewEmploye({ ...newEmploye, image: URL.createObjectURL(file) });
-    }
-  };
-  // ajout des employes-----------------------------------------------------------------------------------------------
-  const employes_columns = [
+
+
+  // ajout des enseignants-----------------------------------------------------------------------------------------------
+  const enseignants_columns = [
     {
-      field: "id",
-      headerName: "ID",
-      width: 70,
+      field: "cin",
+      headerName: "cin",
+      sortable: false,
+      width: 0,
     },
     {
       field: "nom",
@@ -65,12 +377,6 @@ function Table_employés() {
       renderCell: (params) => (
         <Author image={params.row.image} name={params.row.nom} email={params.row.email} />
       ),
-    },
-    {
-      field: "CIN",
-      headerName: "CIN",
-      sortable: false,
-      width: 0,
     },
     {
       field: "adresse",
@@ -127,35 +433,45 @@ function Table_employés() {
       width: 100,
     },
     {
-      field: "edit",
+      field: "actions",
       headerName: "",
       sortable: false,
-      width: 100,
+      width: 200,
       renderCell: (params) => (
+        <>
         <Button variant="text" onClick={() => handleEdit(params.row)}>
           Edit
         </Button>
-      ),
-    },
-    {
-      field: "delete",
-      headerName: "",
-      sortable: false,
-      width: 100,
-      renderCell: (params) => (
         <Button variant="text" style={{ color: "red" }} onClick={() => delete_row(params)}>
           delete
         </Button>
+        </>
       ),
     },
+
   ];
-  const employes_rows = [
+
+  const enseignants_rows = [
     {
-      id: 1,
+      cin: "12345678",
       image: team2,
       nom: "John Michael",
       email: "john@creative-tim.com",
-      CIN: "12345678",
+      adresse: "sousse",
+      age: "32",
+      telephone: "29292501",
+      Grade: "DOCTEUR",
+      naissance: "15/02/1990",
+      sexe: "H",
+      poste: "assistant general",
+      ancienneté: "15 ans",
+      handicap: "non",
+    },
+    {
+      cin: "02345678",
+      image: team2,
+      nom: "John Michael",
+      email: "john@creative-tim.com",
       adresse: "sousse",
       age: "32",
       telephone: "29292501",
@@ -167,69 +483,23 @@ function Table_employés() {
       handicap: "non",
     },
   ];
-  const [employes, setEmployes] = useState(employes_rows);
-  const [newEmploye, setNewEmploye] = useState({
-    id: employes.length + 1,
-    image: null,
-    nom: "",
-    email: "",
-    CIN: "",
-    adresse: "",
-    age: "",
-    telephone: "",
-    Grade: "",
-    naissance: "",
-    sexe: "",
-    département: "",
-    ancienneté: "",
-    handicap: "",
-  });
-  const handleChange1 = (e) => {
-    setNewEmploye({ ...newEmploye, [e.target.name]: e.target.value });
+
+  const [enseignants, setEnseignants] = useState(enseignants_rows);
+
+  const handleAddEnseignant = (newEnseignant) => {
+    setEnseignants([newEnseignant, ...enseignants ])
   };
-  const handleAddEmploye = (e) => {
-    e.preventDefault();
-    if (
-      !newEmploye.nom ||
-      !newEmploye.CIN ||
-      !newEmploye.email ||
-      !newEmploye.adresse ||
-      !newEmploye.Grade ||
-      !newEmploye.handicap ||
-      !newEmploye.naissance ||
-      !newEmploye.age ||
-      !newEmploye.sexe ||
-      !newEmploye.telephone ||
-      !newEmploye.poste ||
-      !newEmploye.ancienneté
-    ) {
-      alert("Veuillez remplir tous les champs obligatoires ");
-      return;
-    }
-    setEmployes([...employes, { ...newEmploye, id: employes.length + 1 }]);
-    setNewEmploye({
-      id: employes.length + 1,
-      image: null,
-      nom: "",
-      email: "",
-      CIN: "",
-      adresse: "",
-      age: "",
-      telephone: "",
-      Grade: "",
-      naissance: "",
-      sexe: "",
-      poste: "",
-      ancienneté: "",
-      handicap: "",
-    });
-    handleClose();
-  };
-  // ---------------------------------------------------------------------------------------------------------
+
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    setOpen(true);
+  }
   const handleClose = () => setOpen(false);
-  const paginationModel = { page: 0, pageSize: 5 };
+
+  // ---------------------------------------------------------------------------------------------------------
+
+  const paginationModel = { page: 0, pageSize: 50 };
+
   const Author = ({ image, name, email }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       <MDAvatar src={image} name={name} size="sm" />
@@ -242,24 +512,18 @@ function Table_employés() {
     </MDBox>
   );
   Author.propTypes = {
-    image: PropTypes.object.isRequired,
+    image: PropTypes.oneOfType([
+      PropTypes.string, // Accepts string URLs
+      PropTypes.object
+    ]),
     name: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
   };
+
   const handleEdit = (row) => {
     console.log("Édition de :", row);
   };
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -267,24 +531,27 @@ function Table_employés() {
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
+              {/* This is header*/}
               <MDBox
                 mx={2}
                 mt={-3}
-                py={3}
+                py={1}
                 px={2}
                 variant="gradient"
                 bgColor="info"
                 borderRadius="lg"
                 coloredShadow="info"
-                style={{ display: "flex", justifyContent: "space-between" }}
+                style={{ display: "flex", justifyContent: "space-between", alignItems:"center" }}
               >
-                <MDTypography variant="h6" color="white">
-                  Les employés
+                <MDTypography variant="h5" color="white">
+                  Les Enseignants
                 </MDTypography>
-                <Fab color="success" size="small" aria-label="add" onClick={handleOpen}>
-                  <AddIcon color="white"/>
-                </Fab>
-                <Modal
+                <IconButton size="large" aria-label="add" onClick={handleOpen}>
+                  <AddIcon color="white" fontSize="inherit"/>
+                </IconButton>
+
+                {/* This is a Modal*/}
+                {/*<Modal
                   open={open}
                   onClose={handleClose}
                   aria-labelledby="modal-modal-title"
@@ -301,18 +568,15 @@ function Table_employés() {
                     flexDirection="column"
                     alignItems="center"
                     justifyContent="center"
-                    position="absolute"
-                    top="8%"
-                    left="27%"
-                    transform="translate(-50%, -50%)"
+                    position="relative"
                     width={800}
                     boxShadow={24}
                     p={4}
-                    borderRadius={2}
+                    borderRadius="2px"
                     style={{ backgroundColor: "white" }}
                   >
                     <MDTypography id="modal-title" variant="h6" mb={3}>
-                      Ajouter un employé
+                      Ajouter un enseignant
                     </MDTypography>
                     <MDBox
                       component="form"
@@ -327,7 +591,7 @@ function Table_employés() {
                       transform="translate(-50%, -50%)"
                       boxShadow={10}
                       p={28}
-                      borderRadius={2}
+                      borderRadius="2px"
                       style={{ backgroundColor: "white" }}
                     >
                       <MDBox
@@ -344,7 +608,7 @@ function Table_employés() {
                           fullWidth
                           label="Nom et prenom"
                           name="nom"
-                          value={newEmploye.nom}
+                          value={newEnseignant.nom}
                           onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
@@ -371,9 +635,9 @@ function Table_employés() {
                               Upload Photo
                             </Button>
                           </label>
-                          {newEmploye.image && (
+                          {newEnseignant.image && (
                             <img
-                              src={newEmploye.image}
+                              src={newEnseignant.image}
                               alt="Preview"
                               style={{
                                 marginTop: "10px",
@@ -387,9 +651,9 @@ function Table_employés() {
                         </MDBox>
                         <TextField
                           fullWidth
-                          label="CIN"
-                          name="CIN"
-                          value={newEmploye.CIN}
+                          label="cin"
+                          name="cin"
+                          value={newEnseignant.cin}
                           onChange={handleChange1}
                           type="number"
                           variant="outlined"
@@ -401,7 +665,7 @@ function Table_employés() {
                           label="Email"
                           type="email"
                           name="email"
-                          value={newEmploye.email}
+                          value={newEnseignant.email}
                           onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
@@ -411,7 +675,7 @@ function Table_employés() {
                           fullWidth
                           name="adresse"
                           label="adresse"
-                          value={newEmploye.adresse}
+                          value={newEnseignant.adresse}
                           onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
@@ -421,7 +685,7 @@ function Table_employés() {
                           fullWidth
                           label="Grade"
                           name="Grade"
-                          value={newEmploye.Grade}
+                          value={newEnseignant.Grade}
                           onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
@@ -431,7 +695,7 @@ function Table_employés() {
                           fullWidth
                           label="handicap"
                           name="handicap"
-                          value={newEmploye.handicap}
+                          value={newEnseignant.handicap}
                           onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
@@ -453,7 +717,7 @@ function Table_employés() {
                           label="date de naissance"
                           type="date"
                           name="naissance"
-                          value={newEmploye.naissance}
+                          value={newEnseignant.naissance}
                           onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
@@ -466,7 +730,7 @@ function Table_employés() {
                           fullWidth
                           label="age"
                           name="age"
-                          value={newEmploye.age}
+                          value={newEnseignant.age}
                           onChange={handleChange1}
                           type="number"
                           variant="outlined"
@@ -477,7 +741,7 @@ function Table_employés() {
                           aria-labelledby="demo-radio-buttons-group-label"
                           defaultValue="male"
                           name="sexe"
-                          value={newEmploye.sexe}
+                          value={newEnseignant.sexe}
                           onChange={handleChange1}
                           style={{
                             display: "flex",
@@ -494,7 +758,7 @@ function Table_employés() {
                           label="telephone"
                           type="tel"
                           name="telephone"
-                          value={newEmploye.telephone}
+                          value={newEnseignant.telephone}
                           onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
@@ -504,7 +768,7 @@ function Table_employés() {
                           fullWidth
                           label="poste"
                           name="poste"
-                          value={newEmploye.poste}
+                          value={newEnseignant.poste}
                           onChange={handleChange1}
                           variant="outlined"
                           margin="normal"
@@ -514,7 +778,7 @@ function Table_employés() {
                           fullWidth
                           label="ancienneté"
                           name="ancienneté"
-                          value={newEmploye.ancienneté}
+                          value={newEnseignant.ancienneté}
                           onChange={handleChange1}
                           type="number"
                           variant="outlined"
@@ -534,17 +798,19 @@ function Table_employés() {
                       </MDBox>
                     </MDBox>
                   </MDBox>
-                </Modal>
+                </Modal>*/}
+                <AddModal open={open} handleClose={handleClose} handleAddEnseignant={handleAddEnseignant} />
               </MDBox>
               <MDBox pt={3}>
                 <ThemeProvider theme={darkMode ? themeDark : theme}>
                   <Paper sx={{ height: 400, width: "100%" }}>
                     <DataGrid
-                      rows={employes}
-                      columns={employes_columns}
+                      rows={enseignants}
+                      columns={enseignants_columns}
                       initialState={{ pagination: { paginationModel } }}
-                      pageSizeOptions={[5, 10]}
+                      pageSizeOptions={[50]}
                       sx={{ border: 0 }}
+                      getRowId={(row) => row.cin}
                     />
                   </Paper>
                 </ThemeProvider>
@@ -558,4 +824,4 @@ function Table_employés() {
   );
 }
 
-export default Table_employés;
+export default Tableenseignants;
