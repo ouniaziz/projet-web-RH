@@ -56,20 +56,6 @@ public class PersonResource {
 
 /*
     @GET
-    @Path("/employe")
-    //@RolesAllowed({"Personnel RH", "Administrator"})
-    public Response getEmployes(){
-        return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEmployers())).build();
-    }
-
-    @GET
-    @Path("/enseignant")
-    //@RolesAllowed({"Personnel RH", "Administrator"})
-    public Response getEnseignants(){
-        return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEnseignant())).build();
-    }
-
-    @GET
     //@RolesAllowed({"Personnel RH", "Administrator"})
     public Response getPersonsByFilters(@DefaultValue("-1")   @RestQuery int grad,
                                         @RestQuery String sexe,
@@ -90,6 +76,20 @@ public class PersonResource {
         return Response.accepted().entity(new ApiResponseDTO(202, "Person with cin ="+cin+" has been archived", null,null)).build();
     }
 */
+
+    @GET
+    @Path("/employe")
+    //@RolesAllowed({"Personnel RH", "Administrator"})
+    public Response getEmployes(){
+        return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEmployers())).build();
+    }
+
+    @GET
+    @Path("/enseignant")
+    //@RolesAllowed({"Personnel RH", "Administrator"})
+    public Response getEnseignants(){
+        return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEnseignant())).build();
+    }
 
 
     // Get person by Id

@@ -122,7 +122,7 @@ public class PersonService {
     }
 
     public List<Person> getEmployers(){
-        return personRepository.list("role.id_r", RolePerson.EMPLOYE_ID);
+        return personRepository.list("role.id_r IN (?1,?2,?3)", RolePerson.EMPLOYE_ID, RolePerson.ADMIN_ID, RolePerson.RH_ID);
     }
 
     public List<Person> getEnseignant(){

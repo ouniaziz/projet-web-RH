@@ -41,7 +41,7 @@ public class Person extends PanacheEntityBase{
     
     @Lob @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
-    @Column(name = "IMAGE")
+    @Column(name = "image", columnDefinition = "BYTEA")
     private byte[] ignoredImage;
 
     @Column(unique = true)
