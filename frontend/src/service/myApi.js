@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { RefreshTokenErrorFct } from './authService';
 class MyAPI {
   constructor(baseURL) {
     this._instance = axios.create({
@@ -80,9 +79,9 @@ class MyAPI {
     }
   }
 
-  async getAll(){
+  async getEnseignants(){
     try{
-      const res = await this._instance.get("/api/persons/all")
+      const res = await this._instance.get("/persons/enseignant")
       return res.data
     }catch(e){
       // console.error("Error while fetching records", e)
@@ -97,4 +96,4 @@ class MyAPI {
     localStorage.removeItem('role');
   }
 }
-export const myApi  =new MyAPI("http://localhost:8080");
+export const myApi  =new MyAPI("http://localhost:8080/api");
