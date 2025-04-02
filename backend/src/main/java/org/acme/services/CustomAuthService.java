@@ -1,8 +1,8 @@
 package org.acme.services;
 
 
-import org.acme.DTO.ActivationRequestDTO;
-import org.acme.DTO.PasswordResetRequestDTO;
+import org.acme.DTO.Auth.ActivationRequestDTO;
+import org.acme.DTO.Auth.PasswordResetRequestDTO;
 import org.acme.DTO.PersonStatusDTO;
 import org.acme.brevo.entities.BrevoPasswordResetTemplate;
 import org.acme.brevo.services.BrevoService;
@@ -25,7 +25,6 @@ import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import sendinblue.ApiException;
 
 

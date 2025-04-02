@@ -1,14 +1,13 @@
 package org.acme.resources;
 
 
-import org.acme.DTO.ActivationRequestDTO;
+import org.acme.DTO.Auth.ActivationRequestDTO;
 import org.acme.DTO.ApiResponseDTO;
-import org.acme.DTO.LoginRequestDTO;
-import org.acme.DTO.LoginResponseDTO;
-import org.acme.DTO.PasswordResetRequestDTO;
+import org.acme.DTO.Auth.LoginRequestDTO;
+import org.acme.DTO.Auth.LoginResponseDTO;
+import org.acme.DTO.Auth.PasswordResetRequestDTO;
 import org.acme.services.CustomAuthService;
 import org.acme.services.JwtService;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.jboss.logging.Logger;
 import io.quarkus.security.credential.PasswordCredential;
 import io.quarkus.security.identity.request.UsernamePasswordAuthenticationRequest;

@@ -1,4 +1,4 @@
-package org.acme.DTO;
+package org.acme.DTO.Auth;
 
 public class LoginRequestDTO {
     private String username;

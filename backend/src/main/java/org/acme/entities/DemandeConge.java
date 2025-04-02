@@ -1,16 +1,14 @@
 package org.acme.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import org.acme.DTO.Conge.PersonDTO;
 
 import java.time.LocalDate;
 
 @Entity
-public class Conge extends PanacheEntityBase {
+@Table(name = "demande_conge")
+public class DemandeConge extends PanacheEntityBase {
     @Id
     private int id;
     private LocalDate date_debut;
@@ -82,5 +80,5 @@ public class Conge extends PanacheEntityBase {
         this.type = type;
     }
 
-    public Conge() {}
+    public DemandeConge() {}
 }
