@@ -32,6 +32,8 @@ import Footer from "../../examples/Footer";
 import PropTypes from "prop-types";
 import IconButton from "@mui/material/IconButton";
 import { myApi } from "../../service/myApi";
+import { Chip } from "@mui/material";
+import { green } from "@mui/material/colors";
 
 
 function AddModal({open, handleClose, handleAddEnseignant}){
@@ -414,7 +416,7 @@ function EnseignantsView() {
       "renderCell": params => (params.row.sexe==="H"?"Homme": "Femme")
     },
     {
-      "field": "dateN",
+      "field": "date_n",
       "headerName": "Date de naissance",
       "sortable": false,
       "width": 200
@@ -423,7 +425,8 @@ function EnseignantsView() {
       "field": "anciennete",
       "headerName": "Ancienneté",
       "sortable": false,
-      "width": 120
+      "width": 120,
+      renderCell: params => (params.row.anciennete??0 + " ans")
     },
 
     {
@@ -438,7 +441,14 @@ function EnseignantsView() {
       "headerName": "Handicap",
       "sortable": false,
       "width": 100,
-      "renderCell": (params) => (params.row.handicaps?.length > 0 ? "Oui" : "Non")
+      "renderCell": (params) => (params.row.handicaps?.length > 0 ? "Oui" : "N/A")
+    },
+    {
+      "field": "status_p",
+      "headerName": "Status",
+      "sortable": false,
+      "width": 100,
+        "renderCell": (params)=>(<Chip  label={params.row.status_p?"Actif":"Inactif"} variant={"outlined"} color={params.row.status_p?"success":"error"}/>)
     },
     {
       field: "actions",
@@ -565,7 +575,7 @@ function EnseignantsView() {
                       loading={isLoading}
                       initialState={{ pagination: { paginationModel } }}
                       pageSizeOptions={[50]}
-                      sx={{ border: 0 }}
+                      sx={{ border: 0}}
                       getRowId={(row) => row.cin}
                       slotProps={{
                         loadingOverlay: {
