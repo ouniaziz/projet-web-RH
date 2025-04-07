@@ -42,7 +42,7 @@ public class RolePerson extends PanacheEntityBase{
         this.id_r = id_r;
     }
 
-    public String getNom_r() {
+    public String getNomRole() {
         return nom_r;
     }
 
