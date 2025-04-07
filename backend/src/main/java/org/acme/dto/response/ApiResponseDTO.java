@@ -1,4 +1,4 @@
-package org.acme.DTO;
+package org.acme.dto.response;
 
 public class ApiResponseDTO {
     public int status;
