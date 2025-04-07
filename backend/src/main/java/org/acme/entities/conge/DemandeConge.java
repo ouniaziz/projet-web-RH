@@ -1,20 +1,32 @@
-package org.acme.entities;
+package org.acme.entities.conge;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
-import org.acme.DTO.Conge.PersonDTO;
+import org.acme.dto.conge.PersonDTO;
+import org.acme.entities.Exercice;
+import org.acme.entities.Person;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "demande_conge")
-public class DemandeConge extends PanacheEntityBase {
-    @Id
-    private int id;
-    private LocalDate date_debut;
-    private LocalDate date_fin;
-    private LocalDate date_retour;
+public class DemandeConge extends PanacheEntity {
+    public static int DEMANDE_REFUSE=0;
+    public static int DEMANDE_PENDING=-1;
+    public static int DEMANDE_ACCEPTED=1;
+
+    @Column(name = "date_debut")
+    private LocalDate dateDebut;
+
+    @Column(name = "date_fin")
+    private LocalDate dateFin;
+
+    @Column(name = "date_retour")
+    private LocalDate dateRetour;
     private int duree;
+
+    @Column(name="status_conge")
+    private int statusConge;
 
     @ManyToOne
     @JoinColumn(name = "person", referencedColumnName = "cin")
@@ -25,35 +37,40 @@ public class DemandeConge extends PanacheEntityBase {
     private Exercice exercice;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "type_id")
     private TypeConge type;
+
+    @Transient
+    public Person getPerson_(){
+        return person;
+    }
 
     public PersonDTO getPerson() {
         return new PersonDTO(person);
     }
 
     public LocalDate getDateDebut() {
-        return date_debut;
+        return dateDebut;
     }
 
     public void setDateDebut(LocalDate date_debut) {
-        this.date_debut = date_debut;
+        this.dateDebut = date_debut;
     }
 
     public LocalDate getDateFin() {
-        return date_fin;
+        return dateFin;
     }
 
     public void setDateFin(LocalDate date_fin) {
-        this.date_fin = date_fin;
+        this.dateFin = date_fin;
     }
 
     public LocalDate getDateRetour() {
-        return date_retour;
+        return dateRetour;
     }
 
     public void setDateRetour(LocalDate date_retour) {
-        this.date_retour = date_retour;
+        this.dateRetour = date_retour;
     }
 
     public int getDuree() {
@@ -78,6 +95,18 @@ public class DemandeConge extends PanacheEntityBase {
 
     public void setType(TypeConge type) {
         this.type = type;
+    }
+
+    public int getStatusConge() {
+        return statusConge;
+    }
+
+    public void setStatusConge(int statusConge) {
+        this.statusConge = statusConge;
+    }
+
+    public void setPerson(Person p){
+        this.person = p;
     }
 
     public DemandeConge() {}
