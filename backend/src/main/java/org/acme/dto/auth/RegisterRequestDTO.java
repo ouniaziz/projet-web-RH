@@ -1,4 +1,4 @@
-package org.acme.DTO.Auth;
+package org.acme.dto.auth;
 
 public class RegisterRequestDTO {
         private String username;
