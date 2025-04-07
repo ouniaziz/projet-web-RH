@@ -1,5 +1,5 @@
 package org.acme.exceptions.PasswordResetFailedException;
-import org.acme.DTO.ApiResponseDTO;
+import org.acme.dto.response.ApiResponseDTO;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
