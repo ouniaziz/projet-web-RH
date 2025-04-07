@@ -1,4 +1,4 @@
-package org.acme.DTO;
+package org.acme.dto;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

@@ -7,16 +7,12 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+import org.acme.entities.conge.Conge;
+import org.acme.entities.conge.DemandeConge;
+import org.acme.entities.conge.SoldeConge;
+import org.acme.entities.grad.GradPerson;
+import org.acme.entities.handicap.HandicapPerson;
 
 
 @Entity
@@ -51,12 +47,21 @@ public class Person extends PanacheEntityBase{
     @JoinColumn(name="role_p", referencedColumnName = "id_r")
     private RolePerson role;
     
-    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+    @OrderBy("start DESC")
+    private List<GradPerson> gradList;
+
+    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<HandicapPerson> handicaps;
 
-    @ManyToOne
-    @JoinColumn(name = "grad", referencedColumnName = "id_g")
-    private GradEns grad;
+    @OneToMany(mappedBy = "person")
+    private List<Conge> conges;
+
+    @OneToMany(mappedBy = "person")
+    private List<DemandeConge> demandes;
+
+    @OneToMany(mappedBy = "person", orphanRemoval = true)
+    private List<SoldeConge> soldeList;
 
     public Person() {}
     
@@ -110,7 +115,7 @@ public class Person extends PanacheEntityBase{
         this.role = role_p;
     }
 
-    public Integer getStatus_p() {
+    public Integer getStatus() {
         return status_p;
     }
     public void setStatus_p(Integer status_p) {
@@ -127,14 +132,27 @@ public class Person extends PanacheEntityBase{
     public String getImage(){
         if(ignoredImage == null)
             return null;
-        
         return Base64.getEncoder().encodeToString(ignoredImage);
     }
 
     public void setImage(byte[] img){ignoredImage = img;}
-    
+
+    public List<SoldeConge> getSoldeList() {
+        return soldeList;
+    }
+
+    public void setSoldeList(List<SoldeConge> soldeList) {
+        this.soldeList = soldeList;
+    }
+
+
     public List<HandicapPerson> getHandicaps(){return handicaps;}
     
-    public GradEns getGrad(){return grad;}
-    public void setGrad(GradEns grad){this.grad = grad;}
+    public List<GradPerson> getGradList(){return gradList;}
+
+    public void setGradList(List<GradPerson> gradList) {
+        this.gradList = gradList;
+    }
+
+    public void setGrad(List<GradPerson> gradList){this.gradList = gradList;}
 }

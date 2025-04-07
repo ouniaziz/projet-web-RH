@@ -1,6 +1,6 @@
 package org.acme.exceptions.EntityException;
 
-import org.acme.DTO.ApiResponseDTO;
+import org.acme.dto.response.ApiResponseDTO;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;

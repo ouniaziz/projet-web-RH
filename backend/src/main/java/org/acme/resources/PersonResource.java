@@ -1,16 +1,14 @@
 package org.acme.resources;
 
-import org.acme.DTO.ApiResponseDTO;
-import org.acme.DTO.PersonDTO;
+import org.acme.dto.response.ApiResponseDTO;
+import org.acme.dto.PersonDTO;
 import org.acme.entities.Person;
 import org.acme.services.PersonService;
-import org.jboss.resteasy.reactive.RestQuery;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -26,13 +24,10 @@ import sendinblue.ApiException;
 @Path("/api/persons")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-/*  TODO: add CRUD to Persons
-
-    TODO: Ask chatbot how to integrate realtime notification manager that's fired upon every modification made to the Person's data
- * 
- *  TODO: DELETE delete person
-
-    TODO: Don't forget to turn addPerson from String into void
+/* TODO: Ask chatbot how to integrate realtime notification manager that's fired upon every modification made to the Person's data
+   TODO: DELETE delete person
+   TODO: Don't forget to turn addPerson from String into void
+   TODO: use SimplePersonResponseDTO for fetching large-scale data for DataGrid
  * replace java-jwt dependency with smallrye-jwt when necessary since it integrates well with quarkus.
 */
 public class PersonResource {
@@ -109,6 +104,8 @@ public class PersonResource {
         personService.modifyPerson(personDto, ctx);
         return Response.status(200).entity(new ApiResponseDTO(200, "Modified person "+personDto.cin.get()+" successfully", null, null)).build();
     }
+
+    // For test only
     @GET
     @Path("/all")
     //RolseAllowed({"Personnel RH", "Admin"})

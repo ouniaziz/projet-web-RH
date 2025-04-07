@@ -1,11 +1,11 @@
 package org.acme.resources;
 
 
-import org.acme.DTO.Auth.ActivationRequestDTO;
-import org.acme.DTO.ApiResponseDTO;
-import org.acme.DTO.Auth.LoginRequestDTO;
-import org.acme.DTO.Auth.LoginResponseDTO;
-import org.acme.DTO.Auth.PasswordResetRequestDTO;
+import org.acme.dto.auth.ActivationRequestDTO;
+import org.acme.dto.response.ApiResponseDTO;
+import org.acme.dto.auth.LoginRequestDTO;
+import org.acme.dto.auth.LoginResponseDTO;
+import org.acme.dto.auth.PasswordResetRequestDTO;
 import org.acme.services.CustomAuthService;
 import org.acme.services.JwtService;
 import org.jboss.logging.Logger;

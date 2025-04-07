@@ -1,4 +1,4 @@
-package org.acme.DTO;
+package org.acme.dto;
 
 
 import java.time.LocalDate;
@@ -15,9 +15,9 @@ public class PersonDTO {
     public Optional<String> image = Optional.empty();
     public Optional<String> email= Optional.empty();
     public Optional<Long> roleId= Optional.empty();  // RolePerson ID
-    public Optional<Long> grad= Optional.empty();
-    
+    public Optional<Long> gradId= Optional.empty();
     public Optional<List<HandicapPersonDTO>> handicaps = Optional.empty(); // we'll map them using person's cin and the handicapsId
+
     public PersonDTO() {
     }
     

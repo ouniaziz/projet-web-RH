@@ -1,9 +1,9 @@
 package org.acme.services;
 
 
-import org.acme.DTO.Auth.ActivationRequestDTO;
-import org.acme.DTO.Auth.PasswordResetRequestDTO;
-import org.acme.DTO.PersonStatusDTO;
+import org.acme.dto.auth.ActivationRequestDTO;
+import org.acme.dto.auth.PasswordResetRequestDTO;
+import org.acme.dto.PersonStatusDTO;
 import org.acme.brevo.entities.BrevoPasswordResetTemplate;
 import org.acme.brevo.services.BrevoService;
 import org.acme.entities.Person;
@@ -68,7 +68,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
                 return Uni.createFrom().item(
                     QuarkusSecurityIdentity.builder()
                     .setPrincipal(new QuarkusPrincipal(pers.getCin()))
-                    .addRole(pers.getRole().getNom_r())
+                    .addRole(pers.getRole().getNomRole())
                     .addCredential(request.getPassword())
                     .setAnonymous(false)
                     .build()

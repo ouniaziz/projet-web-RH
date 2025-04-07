@@ -1,4 +1,4 @@
-package org.acme.DTO.Conge;
+package org.acme.dto.conge;
 
 import org.acme.entities.Person;
 
