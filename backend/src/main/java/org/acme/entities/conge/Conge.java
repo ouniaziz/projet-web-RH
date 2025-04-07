@@ -1,17 +1,17 @@
-package org.acme.entities;
+package org.acme.entities.conge;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import org.acme.DTO.Conge.PersonDTO;
+import jakarta.persistence.*;
+import org.acme.dto.conge.PersonDTO;
+import org.acme.entities.Exercice;
+import org.acme.entities.Person;
 
 import java.time.LocalDate;
 
 @Entity
 public class Conge extends PanacheEntityBase {
     @Id
+    @GeneratedValue
     private int id;
     private LocalDate date_debut;
     private LocalDate date_fin;
@@ -27,7 +27,7 @@ public class Conge extends PanacheEntityBase {
     private Exercice exercice;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "type_id")
     private TypeConge type;
 
     public PersonDTO getPerson() {
@@ -83,4 +83,14 @@ public class Conge extends PanacheEntityBase {
     }
 
     public Conge() {}
+    public Conge(DemandeConge demande){
+        this.date_debut = demande.getDateDebut();
+        this.date_fin = demande.getDateFin();
+        this.date_retour = demande.getDateRetour();
+        this.duree = demande.getDuree();
+        this.person = demande.getPerson_();
+        this.exercice = demande.getExercice();
+        this.type = demande.getType();
+
+    }
 }
