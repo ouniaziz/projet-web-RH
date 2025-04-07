@@ -47,10 +47,7 @@
             <artifactId>quarkus-smallrye-openapi</artifactId>
         </dependency>
 
-        <!-- <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-oracle</artifactId>
-        </dependency> -->
+        <!--ORM part-->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-postgresql</artifactId>
@@ -59,13 +56,29 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
-        
+
+        <!--Reactive part-->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-websockets-next</artifactId>
+        </dependency>
+
+        <!--Utilities-->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-swagger-ui</artifactId>
         </dependency>
-    
-        
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
@@ -80,8 +93,13 @@
             <artifactId>quarkus-rest-jackson</artifactId>
         </dependency> 
 
-        <!--Mailer-->
+        <!--Scheduler-->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-quartz</artifactId>
+        </dependency>
 
+        <!--Mailer-->
         <dependency>
             <groupId>com.sendinblue</groupId>
             <artifactId>sib-api-v3-sdk</artifactId>
