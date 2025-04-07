@@ -2,8 +2,8 @@ package org.acme.repositories;
 
 import java.util.Optional;
 
-import org.acme.entities.HandicapPerson;
-import org.acme.entities.HandicapPersonId;
+import org.acme.entities.handicap.HandicapPerson;
+import org.acme.entities.handicap.HandicapPersonId;
 
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;

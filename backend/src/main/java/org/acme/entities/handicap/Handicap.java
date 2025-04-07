@@ -1,4 +1,4 @@
-package org.acme.entities;
+package org.acme.entities.handicap;
 
 import java.util.List;
 
