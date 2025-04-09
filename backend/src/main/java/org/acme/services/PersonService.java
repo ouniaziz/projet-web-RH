@@ -2,6 +2,7 @@ package org.acme.services;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.acme.dto.PersonDTO;
 import org.acme.brevo.entities.BrevoAccountActivationTemplate;
 import org.acme.brevo.services.BrevoService;
 import org.acme.dto.response.SimplePersonResponseDTO;
+import org.acme.entities.Exercice;
 import org.acme.entities.grad.Grad;
 import org.acme.entities.Person;
 import org.acme.entities.RolePerson;
@@ -51,18 +53,30 @@ public class PersonService {
 
     // for now, I'll add activation token to the ApiResponseDTO
     public String addPerson(PersonDTO personDTO)throws ApiException{
-        if(personRepository.findByIdOptional(personDTO.cin.get()).isPresent())
-            throw new EntityException("Person with CIN = "+personDTO.cin.get()+ " already exists", 409);
+        personRepository.existsThrow(personDTO.cin.get());
         
         // Save person record
         Person person = personMapper.toNewEntity(personDTO, rolesRepository, handicapRepository);
+        person.getGradList().get(0).setPerson(person);
         person.setStatus_p(Person.STATUS_PERSON_INACTIVE);
-        personRepository.persist(person);
 
         // This adds SoldeConge
+        int currentYear = Year.now().getValue();
+        Exercice exercice = Exercice.<Exercice>findByIdOptional(currentYear)
+                .orElseGet(() -> {
+                    Exercice newExercice = new Exercice();
+                    newExercice.setAnnee(currentYear);
+                    newExercice.persist();
+                    return newExercice;
+                });
         var soldeInitial =  TypeConge.<TypeConge>findByIdOptional(TypeConge.ID_CONGE_ANNUELLE).orElseThrow(()-> new EntityException("Type conge annuelle not found", 404)).getSold_initial();
-        SoldeConge solde = new SoldeConge(new SoldeCongeId(Year.now().getValue(), person.getCin()), soldeInitial);
+        SoldeConge solde = new SoldeConge(new SoldeCongeId(), soldeInitial);
+        solde.setExercice(exercice);
+        solde.setPerson(person);
         person.getSoldeList().add(solde);
+
+        // TODO: GradPerson not working?
+        personRepository.persist(person);
 
         // generate password activation token
         String activationToken = jwtService.generateActivationToken(person.getCin(), RolePerson.ROLES[personDTO.roleId.get().intValue()]);
@@ -95,10 +109,12 @@ public class PersonService {
         personDTO.gradId.ifPresent(gradId->{
             List<GradPerson> gradList = person.getGradList();
             gradList.get(0).setEndDate(LocalDate.now());
-            Grad.findByIdOptional(gradId).orElseThrow(()-> new EntityException("grad id="+gradId+" not found", 404));
-            gradList.add(
-                    new GradPerson(new GradPersonId(gradId,personDTO.cin.get()))
-            );
+            Grad grad = Grad.<Grad>findByIdOptional(gradId).orElseThrow(()-> new EntityException("grad id="+gradId+" not found", 404));
+
+            GradPerson gradPerson= new GradPerson();
+            gradPerson.setGrad(grad);
+            gradPerson.setPerson(person);
+            gradList.add(gradPerson);
         });
 
         personDTO.handicaps.ifPresent(handicapList->{

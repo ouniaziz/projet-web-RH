@@ -1,15 +1,28 @@
 package org.acme.entities.grad;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.acme.entities.Person;
 
 import java.time.LocalDate;
 
-@Entity(name = "grad_person")
+@Entity
+@Table(name = "grad_person")
+@IdClass(GradPersonId.class)
 public class GradPerson extends PanacheEntityBase {
-    @EmbeddedId
-    private GradPersonId id;
+
+    @Id
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore // replace with @JsonManagedReference and BackReference if you need both directions
+    @JoinColumn
+    private Person person;
+
+
+    @Id
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Grad grad;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -17,31 +30,20 @@ public class GradPerson extends PanacheEntityBase {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @MapsId("cin")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id", referencedColumnName = "cin")
-    private Person person;
 
-    @MapsId("gradId")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "grad", referencedColumnName = "grad_id")
-    private Grad grad;
-
-    public GradPerson(GradPersonId id) {
-        this.id = id;
-    }
 
     public GradPerson() {
 
     }
 
-    public GradPersonId getId() {
-        return id;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setId(GradPersonId id) {
-        this.id = id;
+    public void setPerson(Person person) {
+        this.person = person;
     }
+
 
     public LocalDate getStart() {
         return startDate;

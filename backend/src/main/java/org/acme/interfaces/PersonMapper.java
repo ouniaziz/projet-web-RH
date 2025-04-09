@@ -1,5 +1,6 @@
 package org.acme.interfaces;
 
+import io.quarkus.logging.Log;
 import org.acme.dto.HandicapPersonDTO;
 import org.acme.dto.PersonDTO;
 import org.acme.dto.response.SimplePersonResponseDTO;
@@ -15,6 +16,7 @@ import org.acme.exceptions.EntityException.EntityException;
 import org.acme.repositories.GradPersonRepository;
 import org.acme.repositories.HandicapRepository;
 import org.acme.repositories.RolesRepository;
+import org.jboss.logging.Logger;
 import org.mapstruct.*;
 
 import java.time.LocalDate;
@@ -25,7 +27,10 @@ import java.util.*;
  */
 @Mapper(componentModel = "cdi", imports = {Optional.class, List.class})
 public interface PersonMapper{
+    Logger log = Logger.getLogger(PersonMapper.class);
+
     //TODO: Modify grad and handicaps to match SimplePersonResponseDTO's attribute
+    /*
     @Mapping(target = "cin", source = "person.cin")
     @Mapping(target = "nom", source="person.nom")
     @Mapping(target = "prenom", source = "person.prenom")
@@ -38,7 +43,7 @@ public interface PersonMapper{
     @Mapping(target = "grad", expression= "java(!person.getGradList().isEmpty() ? person.getGradList().get(0).getGrad().getNom() : null)")
     @Mapping(target = "hasHandicap", expression = "java(person.getHandicaps().size()>0)")
     @Mapping(target = "image", ignore = true)
-    SimplePersonResponseDTO toResponseDto(Person person);
+    SimplePersonResponseDTO toResponseDto(Person person);*/
 
     default Optional<List<HandicapPersonDTO>> mapToHandicapsDTO(List<HandicapPerson> handicaps) {
         if (handicaps == null) return Optional.empty();
@@ -60,8 +65,8 @@ public interface PersonMapper{
     @Mapping(target = "email", source = "dto.email", qualifiedByName = "optionalTo")
     @Mapping(target = "anciennete", source = "dto.anciennete", qualifiedByName = "optionalTo")
     @Mapping(target = "role", expression = "java(mapRole(dto.roleId.orElse(null),roleRepo))")
-    @Mapping(target = "handicaps", expression = "java(mapHandicaps(dto.handicaps.orElse(null), dto.cin.get(), handicapRepo))")
     @Mapping(target = "gradList", expression = "java(mapGradPerson(dto.gradId.orElse(null), dto.cin.get()))")
+    @Mapping(target = "handicaps", ignore = true)
     @Mapping(target = "image", ignore = true)
     @Mapping(target = "status_p", ignore = true)
     @Mapping(target = "soldeList", ignore = true)
@@ -72,6 +77,19 @@ public interface PersonMapper{
         return opt.orElse(null);
     }
 
+    default byte[] mapImage(String image){
+        if (image == null || image.isEmpty()) {
+            return null;
+        }
+        // Remove data URI prefix if present
+        String base64Data = image.split(",").length > 1
+                ? image.split(",")[1]
+                : image;
+
+        log.warn("Reached here");
+        return Base64.getDecoder().decode(base64Data);
+    }
+
     default RolePerson mapRole(Long roleId, @Context RolesRepository rolesRepository) {
         if (roleId == null) return null;
         return rolesRepository.findByIdOptional(roleId)
@@ -80,9 +98,12 @@ public interface PersonMapper{
 
     default List<GradPerson> mapGradPerson(Long gradId, String person_id) {
         var gradList = new ArrayList<GradPerson>();
+        Grad.<Grad>find("FROM Grad WHERE gradId=?1",gradId).firstResultOptional().orElseThrow(()->new EntityException("Grad id"+gradId+" not found",404));
         if (gradId != null){
-            GradPerson gradPerson = new GradPerson(new GradPersonId(gradId,person_id));
+            GradPerson gradPerson = new GradPerson();
             gradPerson.setStart(LocalDate.now());
+            gradPerson.setGrad(Grad.getEntityManager().getReference(Grad.class, gradId));
+
             gradList.add(gradPerson);
         }
         return gradList;

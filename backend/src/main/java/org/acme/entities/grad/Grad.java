@@ -1,7 +1,9 @@
 package org.acme.entities.grad;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.acme.entities.Person;
@@ -15,7 +17,8 @@ public class Grad extends PanacheEntityBase{
     private String nom_g;
 
     @OneToMany(mappedBy = "grad")
-    private List<GradPerson> gradPeople;
+    @JsonIgnore
+    private List<GradPerson> gradPeople = new ArrayList<>();
 
     public Grad() {}
 
