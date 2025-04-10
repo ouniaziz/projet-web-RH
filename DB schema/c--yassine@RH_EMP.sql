@@ -16,7 +16,7 @@ CREATE TABLE Person (
     sexe VARCHAR2(1) CHECK (sexe IN ('H', 'F')),
     role_p NUMBER,
     status_p NUMBER(1) DEFAULT 0 CHECK (status_p IN (-1,0, 1)),
-    grad NUMBER,
+    gradId NUMBER,
     date_n DATE
 );
 
@@ -129,7 +129,7 @@ CREATE TABLE Presence (
 -- Foreign Key Constraints
 
 ALTER TABLE Person ADD CONSTRAINT fk_person_role FOREIGN KEY (role_p) REFERENCES Role_Person(id_r);
-ALTER TABLE Person ADD CONSTRAINT fk_person_grad FOREIGN KEY (grad) REFERENCES grad_ens(id_g);
+ALTER TABLE Person ADD CONSTRAINT fk_person_grad FOREIGN KEY (gradId) REFERENCES grad_ens(id_g);
 
 ALTER TABLE "user" ADD CONSTRAINT fk_user_cin FOREIGN KEY (cin) REFERENCES Person(cin);
 ALTER TABLE "user" ADD CONSTRAINT fk_user_email FOREIGN KEY (email) REFERENCES Person(email);
