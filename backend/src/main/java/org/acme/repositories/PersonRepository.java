@@ -1,6 +1,7 @@
 package org.acme.repositories;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.acme.dto.PersonStatusDTO;
@@ -10,6 +11,7 @@ import org.acme.entities.Person;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.acme.exceptions.EntityException.EntityException;
 
 @ApplicationScoped
 public class PersonRepository implements PanacheRepositoryBase<Person, String>{
@@ -17,23 +19,59 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
     public Optional<PersonStatusDTO> findStatusByEmail(String email){
         return find("email", email).project(PersonStatusDTO.class).firstResultOptional();
     }
+    // TODO: Maybe try merging the following two methods into one?
+    public List<SimplePersonResponseDTO> findByRoles(Long... roles){
+        return find("""
+                SELECT
+                    p.cin, p.nom, p.prenom, p.sexe, p.status_p, p.date_n, p.email, COALESCE(p.anciennete, 0),
+                    p.role.nom_r,
+                    COALESCE(
+                          (SELECT gp.grad.nom_g
+                          FROM p.gradList gp
+                          ORDER BY gp.startDate DESC
+                          LIMIT 1),
+                          ''
+                    ),
+                    EXISTS(
+                        SELECT 1
+                        FROM p.handicaps
+                    )
+                FROM Person p
+                WHERE p.role.id_r = ?1
+                """, List.of(roles))
+                .project(SimplePersonResponseDTO.class)
+                .list();
+    }
 
-    public List<SimplePersonResponseDTO> findByRoles(int... roles){
-        //TOD0: try NEW SimplePersonResponse, without package
-        return find("SELECT p.cin, p.nom, p.prenom, p.sexe, p.dateN, p.status_p, p.anciennete, p.email, encode(p.image, 'base64') as image, r.nom_r role,"+
-                            "(SELECT g.nom_h" +
-                            "FROM GradPerson gp, Grad g" +
-                            "WHERE gp.gradId = g.grad_id AND gp.id.cin=p.cin" +
-                            "ORDER BY start DESC" +
-                            "LIMIT 1) grad, "+
-                        "EXISTS(" +
-                            "SELECT 1" +
-                            "FROM p.handicaps hp" +
-                            "WHERE hp.id.cin = p.cin" +
-                            "LIMIT 1) as hasHandicaps"+
-                        "BOOL_OR(hp.id.HANDICAP_ID IS NOT NULL)" +
-                        "FROM Person" +
-                        "JOIN RolePerson r" +
-                        "WHERE r.id_r = ANY(?1)", List.of(roles)).project(SimplePersonResponseDTO.class).list();
+    public List<SimplePersonResponseDTO> findByRole(Long role){
+        return find("""
+                SELECT
+                    p.cin, p.nom, p.prenom, p.sexe, p.status_p, p.date_n, p.email, COALESCE(p.anciennete, 0),
+                    p.role.nom_r,
+                    COALESCE(
+                          (SELECT gp.grad.nom_g
+                          FROM p.gradList gp
+                          ORDER BY gp.startDate DESC
+                          LIMIT 1),
+                          ''
+                    ),
+                    EXISTS(
+                        SELECT 1
+                        FROM p.handicaps
+                    ),
+                    encode(p.image, 'base64')
+                FROM Person p
+                WHERE p.role.id_r = ?1
+                """, role).project(SimplePersonResponseDTO.class).list();
+    }
+
+    public void existsOrElseThrow(String cin){
+        find("SELECT p.cin FROM Person p WHERE p.cin =?1", cin).firstResultOptional().orElseThrow(()->new EntityException("Person cin="+cin+" not found",404));
+    }
+
+    public void existsThrow(String cin){
+        find("SELECT p.cin FROM Person p WHERE p.cin =?1", cin).firstResultOptional().ifPresent(p-> {
+            throw new EntityException("Person cin=" + cin + " not found", 404);
+        });
     }
 }
