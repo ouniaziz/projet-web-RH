@@ -13,20 +13,21 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "Role_Person")
 public class RolePerson extends PanacheEntityBase{
-    public static final int ADMIN_ID = 0;
+    public static final long ADMIN_ID = 0;
     public static final String ADMIN_NAME = "Administrateur";
     
-    public static final int RH_ID = 1;
+    public static final long RH_ID = 1;
     public static final String RH_NAME = "Personnel RH";
     
-    public static final int ENSEIGNANT_ID = 2;
+    public static final long ENSEIGNANT_ID = 2;
     public static final String ENSEIGNANT_NAME = "Enseignant";
     
-    public static final int EMPLOYE_ID = 3;
+    public static final long EMPLOYE_ID = 3;
     public static final String EMPLOYE_NAME = "Employé";
     
     public static final String[] ROLES = {ADMIN_NAME, RH_NAME, ENSEIGNANT_NAME, EMPLOYE_NAME};
     @Id
+    //TODO: CHANGE DATATYPE
     private Long id_r;
     private String nom_r;
 
