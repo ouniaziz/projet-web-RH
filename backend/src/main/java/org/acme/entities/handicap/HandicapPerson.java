@@ -1,18 +1,11 @@
 package org.acme.entities.handicap;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.acme.entities.Person;
 
 @Entity
 @Table(name = "Handicap_Person")
 public class HandicapPerson extends PanacheEntityBase{
-    
     @EmbeddedId
     private HandicapPersonId id;
     
@@ -24,7 +17,7 @@ public class HandicapPerson extends PanacheEntityBase{
 
     @MapsId("cin")
     @ManyToOne
-    @JoinColumn(name = "person", referencedColumnName = "cin")
+    @JoinColumn(name = "cin", referencedColumnName = "cin")
     private Person person;
 
     @MapsId("handicapId")
