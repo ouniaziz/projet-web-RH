@@ -15,6 +15,7 @@ import org.acme.interfaces.CongeMapper;
 import org.acme.repositories.DemandeCongeRepository;
 import org.acme.repositories.PersonRepository;
 import org.acme.repositories.SoldeCongeRepository;
+import org.jboss.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Period;
@@ -30,10 +31,12 @@ public class CongeService {
 
     // TODO: Complete notify admins via websockets
     @Transactional
-    public void createDemande(DemandeCongeDTO dto){
+    public Long createDemande(DemandeCongeDTO dto){
+        personRepository.existsOrElseThrow(dto.cin);
         var demandeConge = congeMapper.dtoToDemande(dto, personRepository);
+        demandeConge.setStatusConge(DemandeConge.DEMANDE_PENDING);
         demandeCongeRepository.persist(demandeConge);
-
+        return demandeConge.id;
         // Notify Admins
     }
 
@@ -61,17 +64,20 @@ public class CongeService {
 
     @Transactional
     public void acceptConge(Long demande_id){
-        var demande = demandeCongeRepository.findByIdOptional(demande_id).orElseThrow(()->new EntityException("Demande id="+demande_id+" not found", 404));
+        DemandeConge demande = demandeCongeRepository.findByIdOptional(demande_id).orElseThrow(()->new EntityException("Demande id="+demande_id+" not found", 404));
+        if(demande.getStatusConge()!= DemandeConge.DEMANDE_PENDING)
+            throw new EntityException("Demande id="+demande_id+" already decided",400);
+
         // First check if date attributes are valid
         var date_deb = demande.getDateDebut();
         var date_retour = demande.getDateRetour();
         var duree = demande.getDuree();
-        if(Period.between(date_deb,date_retour).getDays()<demande.getDuree())
+        if(Period.between(date_deb,date_retour).getDays()<duree)
             throw new EntityException("Durée du congé invalide",400);
 
         // Check if he has enough balance
-        List<SoldeConge> soldeListe = soldeCongeRepository.findByCin(demande.getPerson().cin); // which is optimized? demande.getPerson().cin or demande.getPerson_().getCin();
-
+        String cin = demande.getPersonCin();
+        List<SoldeConge> soldeListe = soldeCongeRepository.findByCin(cin, demande.getExercice().getAnnee()); // which is optimized? demande.getPerson().cin or demande.getPerson_().getCin();
         if(soldeListe.isEmpty())
             throw new EntityException("You have used all of your balance",400);
 
@@ -88,11 +94,17 @@ public class CongeService {
                 duree=0;
             }
         }
+        if(duree>0)
+            throw new EntityException("You have used all of your balance",400);
 
         // Accepting the demand
         demande.setStatusConge(DemandeConge.DEMANDE_ACCEPTED);
 
         var conge = new Conge(demande);
         conge.persist();
+    }
+
+    public List<DemandeConge> getDemandes() {
+        return demandeCongeRepository.listAll();
     }
 }
