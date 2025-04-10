@@ -31,12 +31,14 @@ import org.acme.repositories.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.SecurityContext;
+import org.jboss.logging.Logger;
 import sendinblue.ApiException;
 
 
 @ApplicationScoped
 public class PersonService {
-    
+    Logger log = Logger.getLogger(PersonService.class);
+
     @Inject PersonRepository personRepository;
     @Inject RolesRepository rolesRepository;
     @Inject HandicapRepository handicapRepository;
@@ -46,18 +48,19 @@ public class PersonService {
     @Inject JwtService jwtService;
     @Inject
     PersonMapper personMapper;
-    @Inject
-    GradPersonRepository gradPerson;
-    @Inject
-    GradPersonRepository gradPersonRepository;
+
 
     // for now, I'll add activation token to the ApiResponseDTO
     public String addPerson(PersonDTO personDTO)throws ApiException{
         personRepository.existsThrow(personDTO.cin.get());
         
-        // Save person record
+        // Mapping dto to Person
         Person person = personMapper.toNewEntity(personDTO, rolesRepository, handicapRepository);
-        person.getGradList().get(0).setPerson(person);
+
+        // mapping collections
+        person.setHandicaps(personMapper.mapHandicaps(personDTO.handicaps.orElse(null), personDTO.cin.get(),handicapRepository, person));
+        person.setGradList(personMapper.mapGradPerson(personDTO.gradId.orElse(null), personDTO.cin.get(), person));
+
         person.setStatus_p(Person.STATUS_PERSON_INACTIVE);
 
         // This adds SoldeConge
@@ -180,7 +183,7 @@ public class PersonService {
     }
 
     public List<SimplePersonResponseDTO> getEnseignant(){
-        return personRepository.findByRoles(RolePerson.ENSEIGNANT_ID);
+        return personRepository.findByRole(RolePerson.ENSEIGNANT_ID);
     }
 
     public List<Person> getPersons(){
