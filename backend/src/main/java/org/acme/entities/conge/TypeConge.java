@@ -2,6 +2,7 @@ package org.acme.entities.conge;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import org.acme.dto.conge.TypeCongeDTO;
@@ -18,10 +19,10 @@ public class TypeConge extends PanacheEntityBase {
     private String nom;
     private int solde_initial;
 
-    @OneToMany(mappedBy = "type")
+    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
     private List<DemandeConge> demandes;
 
-    @OneToMany(mappedBy = "type")
+    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
     private List<Conge> conges;
 
 
