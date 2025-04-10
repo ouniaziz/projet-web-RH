@@ -18,7 +18,7 @@ public class Conge extends PanacheEntityBase {
     private LocalDate date_retour;
     private int duree;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person", referencedColumnName = "cin")
     private Person person;
 
@@ -30,9 +30,6 @@ public class Conge extends PanacheEntityBase {
     @JoinColumn(name = "type_id")
     private TypeConge type;
 
-    public PersonDTO getPerson() {
-        return new PersonDTO(person);
-    }
 
     public LocalDate getDateDebut() {
         return date_debut;
@@ -88,9 +85,9 @@ public class Conge extends PanacheEntityBase {
         this.date_fin = demande.getDateFin();
         this.date_retour = demande.getDateRetour();
         this.duree = demande.getDuree();
-        this.person = demande.getPerson_();
         this.exercice = demande.getExercice();
         this.type = demande.getType();
+        this.person =Person.getEntityManager().getReference(Person.class, demande.getPersonCin());
 
     }
 }
