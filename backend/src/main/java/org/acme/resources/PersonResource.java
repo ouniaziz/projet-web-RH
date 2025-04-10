@@ -28,6 +28,7 @@ import sendinblue.ApiException;
    TODO: DELETE delete person
    TODO: Don't forget to turn addPerson from String into void
    TODO: use SimplePersonResponseDTO for fetching large-scale data for DataGrid
+   TODO: Add CRUD for parameters like Grad, Handicaps, Roles, Exercice
  * replace java-jwt dependency with smallrye-jwt when necessary since it integrates well with quarkus.
 */
 public class PersonResource {
