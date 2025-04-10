@@ -1,5 +1,6 @@
 package org.acme.entities.conge;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 import org.acme.dto.conge.PersonDTO;
@@ -28,25 +29,27 @@ public class DemandeConge extends PanacheEntity {
     @Column(name="status_conge")
     private int statusConge;
 
-    @ManyToOne
-    @JoinColumn(name = "person", referencedColumnName = "cin")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "person", referencedColumnName = "cin", insertable = false, updatable = false)
     private Person person;
 
-    @ManyToOne
-    @JoinColumn(name = "annee")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "annee", insertable = false, updatable = false)
     private Exercice exercice;
 
     @ManyToOne
     @JoinColumn(name = "type_id")
     private TypeConge type;
 
-    @Transient
+    @JsonIgnore
     public Person getPerson_(){
         return person;
     }
 
     public PersonDTO getPerson() {
-        return new PersonDTO(person);
+        return person!=null?new PersonDTO(person.getCin(),person.getNom(), person.getPrenom()):null;
     }
 
     public LocalDate getDateDebut() {
@@ -110,4 +113,9 @@ public class DemandeConge extends PanacheEntity {
     }
 
     public DemandeConge() {}
+
+    public String getPersonCin() {
+        if (this.person == null) return null;
+        return this.person.getCin();
+    }
 }
