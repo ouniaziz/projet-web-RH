@@ -2,6 +2,7 @@ package org.acme.entities.handicap;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,7 @@ public class Handicap extends PanacheEntityBase{
     private String desc_h;
 
     @OneToMany(mappedBy = "handicap")
+    @JsonIgnore
     private List<HandicapPerson> people;
     public Handicap() {}
 
