@@ -1,6 +1,7 @@
 package org.acme.entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -13,6 +14,9 @@ import org.acme.entities.conge.DemandeConge;
 import org.acme.entities.conge.SoldeConge;
 import org.acme.entities.grad.GradPerson;
 import org.acme.entities.handicap.HandicapPerson;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 
 @Entity
@@ -24,44 +28,43 @@ public class Person extends PanacheEntityBase{
     @Id
     @Column(length = 8)
     private String cin;
-
-    @OneToOne(mappedBy = "person")
-    private User user;
-
     private String nom;
     private String prenom;
     private String sexe;
     private LocalDate date_n;
     private Integer status_p;
     private Integer anciennete;
-    
-    @Lob @Basic(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @Column(name = "image", columnDefinition = "BYTEA")
-    private byte[] ignoredImage;
 
     @Column(unique = true)
     private String email;
 
-    @ManyToOne
+    @OneToOne(mappedBy = "person")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="role_p", referencedColumnName = "id_r")
     private RolePerson role;
     
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
-    @OrderBy("start DESC")
-    private List<GradPerson> gradList;
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("startDate DESC") // This fetches them from newer to older grads
+    private List<GradPerson> gradList= new ArrayList<>();
 
     @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<HandicapPerson> handicaps;
+    private List<HandicapPerson> handicaps= new ArrayList<>();
 
-    @OneToMany(mappedBy = "person")
-    private List<Conge> conges;
+    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+    private List<Conge> conges= new ArrayList<>();
 
-    @OneToMany(mappedBy = "person")
-    private List<DemandeConge> demandes;
+    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+    private List<DemandeConge> demandes= new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", orphanRemoval = true)
-    private List<SoldeConge> soldeList;
+    @OneToMany(mappedBy = "person", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SoldeConge> soldeList = new ArrayList<>();
+
+    @Lob
+    @Column(columnDefinition = "BYTEA")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private byte[] image;
 
     public Person() {}
     
@@ -130,12 +133,12 @@ public class Person extends PanacheEntityBase{
     }
 
     public String getImage(){
-        if(ignoredImage == null)
+        if(image == null)
             return null;
-        return Base64.getEncoder().encodeToString(ignoredImage);
+        return Base64.getEncoder().encodeToString(image);
     }
 
-    public void setImage(byte[] img){ignoredImage = img;}
+    public void setImage(byte[] img){image = img;}
 
     public List<SoldeConge> getSoldeList() {
         return soldeList;
@@ -154,5 +157,11 @@ public class Person extends PanacheEntityBase{
         this.gradList = gradList;
     }
 
-    public void setGrad(List<GradPerson> gradList){this.gradList = gradList;}
+    public String getCurrentGrad(){
+        return gradList.isEmpty()?null:gradList.get(0).getGrad().getNom();
+    }
+
+    public void setHandicaps(List<HandicapPerson> handList){
+        this.handicaps = handList;
+    }
 }
