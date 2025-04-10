@@ -7,9 +7,9 @@ public class PersonDTO {
     public String nom;
     public String prenom;
 
-    public PersonDTO(Person p) {
-        this.cin = p.getCin();
-        this.nom = p.getNom();
-        this.prenom = p.getPrenom();
+    public PersonDTO(String cin, String nom, String prenom) {
+        this.cin = cin;
+        this.nom = nom;
+        this.prenom = prenom;
     }
 }
