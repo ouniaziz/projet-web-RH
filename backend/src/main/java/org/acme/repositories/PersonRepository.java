@@ -35,9 +35,10 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
                     EXISTS(
                         SELECT 1
                         FROM p.handicaps
-                    )
+                    ),
+                    p.image
                 FROM Person p
-                WHERE p.role.id_r = ?1
+                WHERE p.role.id_r IN ?1
                 """, List.of(roles))
                 .project(SimplePersonResponseDTO.class)
                 .list();
@@ -59,7 +60,7 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
                         SELECT 1
                         FROM p.handicaps
                     ),
-                    encode(p.image, 'base64')
+                    p.image
                 FROM Person p
                 WHERE p.role.id_r = ?1
                 """, role).project(SimplePersonResponseDTO.class).list();
