@@ -2,10 +2,7 @@ package org.acme.services;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 import org.acme.dto.PersonDTO;
@@ -103,6 +100,9 @@ public class PersonService {
         personDTO.prenom.ifPresent(person::setPrenom);
         personDTO.sexe.ifPresent(person::setSexe);
         personDTO.dateN.ifPresent(person::setDate_n);
+        personDTO.image.ifPresent(image->{
+            person.setImage(Base64.getDecoder().decode(image));
+        });
 
         personDTO.roleId.ifPresent(roleId->{
             RolePerson role = rolesRepository.findByIdOptional(roleId).orElseThrow(()-> new EntityException("role id="+roleId+" not found", 404));
