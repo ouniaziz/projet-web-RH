@@ -27,7 +27,6 @@ public class RolePerson extends PanacheEntityBase{
     
     public static final String[] ROLES = {ADMIN_NAME, RH_NAME, ENSEIGNANT_NAME, EMPLOYE_NAME};
     @Id
-    //TODO: CHANGE DATATYPE
     private Long id_r;
     private String nom_r;
 
