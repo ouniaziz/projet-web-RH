@@ -9,7 +9,7 @@ const getRoutes = (allRoutes) =>
   allRoutes.map((route) => <Route key={route.key} path={route.route} element={route.component} />);
 
 export default function App() {
-  return (
+    return (
     <Routes>
       <Route path="/" element={<Page_connexion />} />
       <Route element={<ProtectedRoute />}>
@@ -19,5 +19,5 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
-  );
+    );
 }
