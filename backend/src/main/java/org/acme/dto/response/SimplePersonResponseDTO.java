@@ -1,7 +1,6 @@
 package org.acme.dto.response;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import org.acme.entities.grad.GradPerson;
+
 
 import java.time.LocalDate;
 import java.util.Base64;
@@ -19,8 +18,10 @@ public class SimplePersonResponseDTO {
     public final String grad;
     public final Boolean hasHandicaps;
     public final String image;
-
-    public SimplePersonResponseDTO(String cin, String nom, String prenom, String sexe, Integer status, LocalDate dateN, String email, Integer anciennete, String role, String grad, Boolean hasHandicaps, byte[] image) {
+    public final String telephone;
+    public final String adresse;
+    //TODO: Add departement
+    public SimplePersonResponseDTO(String cin, String nom, String prenom, String sexe, Integer status, LocalDate dateN, String email, Integer anciennete, String role, String grad, Boolean hasHandicaps, byte[] image, String telephone, String adresse) {
         this.cin = cin;
         this.nom = nom;
         this.prenom = prenom;
@@ -33,5 +34,7 @@ public class SimplePersonResponseDTO {
         this.grad = grad;
         this.hasHandicaps = hasHandicaps;
         this.image = image!=null?Base64.getEncoder().encodeToString(image):"No image";
+        this.telephone = telephone;
+        this.adresse = adresse;
     }
 }
