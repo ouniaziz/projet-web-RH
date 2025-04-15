@@ -3,8 +3,9 @@ import TableEnseignants from "./features/Enseignants";
 import TableEmployes from "./features/Employes";
 import Billing from "layouts/billing";
 import Notifications from "layouts/notifications";
-import Profile from "layouts/profile";
-
+import Profile_enseignant from "./layouts/profile_enseignant";
+import Mes_taches from "./layouts/mes_taches";
+import ProfilePage from "./layouts/user_profile";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
@@ -50,12 +51,22 @@ const routes = [
     component: <Notifications />,
   },
   {
+    key: "main/profile_enseignant",
+    route: "profile_enseignant",
+    component: <Profile_enseignant />,
+  },
+  {
+    key: "main/Mes_taches",
+    route: "Mes_taches",
+    component: <Mes_taches />,
+  },
+  {
     type: "collapse",
     name: "Profile",
-    key: "main/profile",
+    key: "main/mon_profile",
     icon: <Icon fontSize="small">person</Icon>,
-    route: "profile",
-    component: <Profile />,
+    route: "mon_profile",
+    component: <ProfilePage />,
   },
 ];
 
