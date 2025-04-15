@@ -19,7 +19,6 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
     public Optional<PersonStatusDTO> findStatusByEmail(String email){
         return find("email", email).project(PersonStatusDTO.class).firstResultOptional();
     }
-    // TODO: Maybe try merging the following two methods into one?
     public List<SimplePersonResponseDTO> findByRoles(Long... roles){
         return find("""
                 SELECT
@@ -36,7 +35,9 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
                         SELECT 1
                         FROM p.handicaps
                     ),
-                    p.image
+                    p.image,
+                    p.telephone,
+                    p.adresse
                 FROM Person p
                 WHERE p.role.id_r IN ?1
                 """, List.of(roles))
@@ -60,7 +61,9 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
                         SELECT 1
                         FROM p.handicaps
                     ),
-                    p.image
+                    p.image,
+                    p.telephone,
+                    p.adresse
                 FROM Person p
                 WHERE p.role.id_r = ?1
                 """, role).project(SimplePersonResponseDTO.class).list();
