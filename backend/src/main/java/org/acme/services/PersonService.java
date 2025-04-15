@@ -8,6 +8,7 @@ import java.util.*;
 import org.acme.dto.PersonDTO;
 import org.acme.brevo.entities.BrevoAccountActivationTemplate;
 import org.acme.brevo.services.BrevoService;
+import org.acme.dto.response.NotificationDTO;
 import org.acme.dto.response.SimplePersonResponseDTO;
 import org.acme.entities.Exercice;
 import org.acme.entities.grad.Grad;
@@ -46,6 +47,8 @@ public class PersonService {
     @Inject
     PersonMapper personMapper;
 
+    @Inject NotificationService notificationService;
+
 
     // for now, I'll add activation token to the ApiResponseDTO
     public String addPerson(PersonDTO personDTO)throws ApiException{
@@ -75,7 +78,6 @@ public class PersonService {
         solde.setPerson(person);
         person.getSoldeList().add(solde);
 
-        // TODO: GradPerson not working?
         personRepository.persist(person);
 
         // generate password activation token
@@ -100,6 +102,8 @@ public class PersonService {
         personDTO.prenom.ifPresent(person::setPrenom);
         personDTO.sexe.ifPresent(person::setSexe);
         personDTO.dateN.ifPresent(person::setDate_n);
+        personDTO.telephone.ifPresent(person::setTelephone);
+        personDTO.adresse.ifPresent(person::setAdresse);
         personDTO.image.ifPresent(image->{
             person.setImage(Base64.getDecoder().decode(image));
         });
@@ -130,7 +134,10 @@ public class PersonService {
                 hp.setHandicap(handicap);
                 hp.setPerson(person);
             });
-        });    }
+        });
+
+        notificationService.sendMsg(personDTO.cin.get(), new NotificationDTO("User modification", "User cin ="+personDTO.cin.get()+" was modified", "info"));
+    }
 
     public void archivePerson(String cin){
         Person p = personRepository.findByIdOptional(cin).orElseThrow(()-> new EntityException("Person id="+cin+" not found", 404));
@@ -177,7 +184,6 @@ public class PersonService {
         return personRepository.find(finalQuery, params).list();
     }
 
-    // TODO: test this as I doubt it'll work, oh and See the performance implications
     public List<SimplePersonResponseDTO> getEmployers(){
         return personRepository.findByRoles(RolePerson.EMPLOYE_ID, RolePerson.ADMIN_ID, RolePerson.RH_ID);
     }
