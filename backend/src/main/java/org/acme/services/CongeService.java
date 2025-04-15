@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.dto.conge.DemandeCongeDTO;
 import org.acme.dto.conge.TypeCongeDTO;
+import org.acme.dto.response.CongeDTO;
 import org.acme.entities.conge.Conge;
 import org.acme.entities.conge.DemandeConge;
 import org.acme.entities.conge.SoldeConge;
@@ -106,5 +107,13 @@ public class CongeService {
 
     public List<DemandeConge> getDemandes() {
         return demandeCongeRepository.listAll();
+    }
+
+    public List<CongeDTO> getConges() {
+        return Conge.find("""
+                SELECT c.id, c.date_debut, c.date_fin, c.date_retour, c.duree,
+                    c.exercice.annee, c.type.nom
+                FROM Conge c
+                """).project(CongeDTO.class).list();
     }
 }

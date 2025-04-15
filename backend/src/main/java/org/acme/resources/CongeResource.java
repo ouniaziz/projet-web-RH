@@ -34,6 +34,11 @@ public class CongeResource {
         return Response.ok(new ApiResponseDTO(200, "Fetched demandes de congés", null, congeService.getDemandes())).build();
     }
 
+    @GET
+    @Path("conge")
+    public Response getConges(){
+        return Response.ok(new ApiResponseDTO(200,"Fetched conges successfully", null, congeService.getConges())).build();
+    }
     @POST
     @Path("/demande")
     public Response addDemande(DemandeCongeDTO demande){
