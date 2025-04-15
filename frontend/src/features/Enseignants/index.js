@@ -395,19 +395,25 @@ function EnseignantsView() {
   // Les enseignants-----------------------------------------------------------------------------------------------
   const enseignantsColumns = [
     {
-      "field": "cin",
-      "headerName": "Cin",
-      "sortable": false,
-      "width": 0
-    },
-    {
       "field": "nom",
       "headerName": "Profile",
       "sortable": false,
       "width": 250,
       "renderCell": (params) => (<Author image={params.row.image} name={params.row.nom} prenom={params.row.prenom} email={params.row.email} />)
     },
-
+    {
+      "field": "cin",
+      "headerName": "Cin",
+      "sortable": false,
+      "width": 0
+    },
+    {
+      field: "telephone",
+      headerName: "Phone number",
+      sortable: false,
+      width: 200,
+      renderCell: (params)=>(params.row.telephone??"N/A")
+    },
     {
       "field": "sexe",
       "headerName": "Sexe",
@@ -416,7 +422,7 @@ function EnseignantsView() {
       "renderCell": params => (params.row.sexe==="H"?"Homme": "Femme")
     },
     {
-      "field": "date_n",
+      "field": "dateN",
       "headerName": "Date de naissance",
       "sortable": false,
       "width": 200
@@ -434,21 +440,28 @@ function EnseignantsView() {
       "headerName": "Grade",
       "sortable": false,
       "width": 100,
-      "renderCell": (params)=>(params.row.grad?.nom_g)
+      "renderCell": (params)=>(params.row.grad??"N/A")
     },
     {
-      "field": "handicaps",
+      "field": "hasHandicaps",
       "headerName": "Handicap",
       "sortable": false,
       "width": 100,
-      "renderCell": (params) => (params.row.handicaps?.length > 0 ? "Oui" : "N/A")
+      "renderCell": (params) => (params.row.hasHandicaps? "Oui" : "N/A")
     },
     {
-      "field": "status_p",
+      field: "adresse",
+      headerName: "Address",
+      sortable: false,
+      width: 250,
+      renderCell: (params)=> (params.row.adresse??"N/A")
+    },
+    {
+      "field": "status",
       "headerName": "Status",
       "sortable": false,
       "width": 100,
-        "renderCell": (params)=>(<Chip  label={params.row.status_p?"Actif":"Inactif"} variant={"outlined"} color={params.row.status_p?"success":"error"}/>)
+        "renderCell": (params)=>(<Chip  label={params.row.status?"Actif":"Inactif"} variant={"outlined"} color={params.row.status?"success":"error"}/>)
     },
     {
       field: "actions",
@@ -457,9 +470,6 @@ function EnseignantsView() {
       width: 200,
       renderCell: (params) => (
         <>
-        <IconButton size={"medium"} style={{color:"var(--isimm-color)"}} onClick={() => handleEdit(params.row)}>
-          <EditIcon fontSize={"inherit"}/>
-        </IconButton>
         <IconButton size={"medium"} style={{ color: "red" }} onClick={() => delete_row(params)}>
           <DeleteIcon fontSize={"inherit"} />
         </IconButton>
@@ -468,39 +478,6 @@ function EnseignantsView() {
     },
 
   ];
-
-  /*const enseignants_rows = [
-    {
-      cin: "12345678",
-      image: team2,
-      nom: "John Michael",
-      email: "john@creative-tim.com",
-      adresse: "sousse",
-      age: "32",
-      telephone: "29292501",
-      Grade: "DOCTEUR",
-      naissance: "15/02/1990",
-      sexe: "H",
-      poste: "assistant general",
-      ancienneté: "15 ans",
-      handicap: "non",
-    },
-    {
-      cin: "02345678",
-      image: team2,
-      nom: "John Michael",
-      email: "john@creative-tim.com",
-      adresse: "sousse",
-      age: "32",
-      telephone: "29292501",
-      Grade: "DOCTEUR",
-      naissance: "15/02/1990",
-      sexe: "H",
-      poste: "assistant general",
-      ancienneté: "15 ans",
-      handicap: "non",
-    },
-  ];*/
 
   const [enseignants, setEnseignants] = useState([]);
 
