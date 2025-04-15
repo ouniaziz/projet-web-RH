@@ -1,41 +1,67 @@
 package org.acme.services;
 
+import io.quarkus.hibernate.orm.panache.Panache;
 import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import io.smallrye.mutiny.operators.multi.processors.UnicastProcessor;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.acme.dto.response.NotificationDTO;
+import jakarta.transaction.Transactional;
+import org.acme.entities.Notification;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
-//TODO: Test this bad boy out
+//TODO: Add persistence storage
 public class NotificationService {
 
-    private final Map<String, UnicastProcessor<NotificationDTO>> userEmitters =
+    private final Map<String, UnicastProcessor<Notification>> userEmitters =
             new ConcurrentHashMap<>();
 
     private final Map<Long, Set<String>> groupMemberships =
             new ConcurrentHashMap<>();
 
-    // Register a user and return their personal stream
-    public Multi<NotificationDTO> registerUser(String userId) {
-        UnicastProcessor<NotificationDTO> processor = UnicastProcessor.create();
+    public List<Notification> getUndeliveredNotifications(String userId){
+        return Notification.list("userId =?1 AND isDelivered = false", userId);
+    }
+
+    @Transactional
+    public void markDelivered(String userId){
+        Notification.update("isDelivered = true WHERE userId=?1", userId);
+    }
+
+    public Multi<Notification> registerUser(String userId) {
+        UnicastProcessor<Notification> processor = UnicastProcessor.create();
         userEmitters.put(userId, processor);
 
         return processor
                 .onTermination().invoke(() -> {
                     userEmitters.remove(userId);
                     removeFromRole(userId);
+                })
+                .onSubscription().invoke(()->{ // We use onSubscription to run methods right before it subscribes <=> right before receiving new notifications
+                    Uni.createFrom().item(()->{
+                        List<Notification> pendingList = getUndeliveredNotifications(userId);
+                        if(!pendingList.isEmpty()){
+                            pendingList.forEach(processor::onNext);
+                            markDelivered(userId);
+                        }
+                        return null;
+                    }).runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
+                            .subscribe().with(succes->{}, Throwable::getStackTrace);
                 });
     }
 
-    // Send to specific user
-    public void sendMsg(String userId, NotificationDTO msg) {
-        UnicastProcessor<NotificationDTO> emitter = userEmitters.get(userId);
+    public void sendMsg(Notification notification) {
+        UnicastProcessor<Notification> emitter = userEmitters.get(notification.getUserId());
         if (emitter != null) {
-            emitter.onNext(msg);
+            emitter.onNext(notification);
+        }
+        else{
+            notification.persist(); // Save notif
         }
     }
 
@@ -45,10 +71,10 @@ public class NotificationService {
                 .add(userId);
     }
 
-    public void sendToRole(Long roleId, NotificationDTO message) {
+    public void sendToRole(Long roleId, Notification notification) {
         Set<String> members = groupMemberships.get(roleId);
         if (members != null) {
-            members.forEach(userId -> sendMsg(userId, message));
+            members.forEach(userId -> sendMsg(notification));
         }
     }
 

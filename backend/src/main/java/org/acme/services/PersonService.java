@@ -8,18 +8,13 @@ import java.util.*;
 import org.acme.dto.PersonDTO;
 import org.acme.brevo.entities.BrevoAccountActivationTemplate;
 import org.acme.brevo.services.BrevoService;
-import org.acme.dto.response.NotificationDTO;
 import org.acme.dto.response.SimplePersonResponseDTO;
-import org.acme.entities.Exercice;
+import org.acme.entities.*;
 import org.acme.entities.grad.Grad;
-import org.acme.entities.Person;
-import org.acme.entities.RolePerson;
-import org.acme.entities.User;
 import org.acme.entities.conge.SoldeConge;
 import org.acme.entities.conge.SoldeCongeId;
 import org.acme.entities.conge.TypeConge;
 import org.acme.entities.grad.GradPerson;
-import org.acme.entities.grad.GradPersonId;
 import org.acme.entities.handicap.HandicapPerson;
 import org.acme.entities.handicap.HandicapPersonId;
 import org.acme.exceptions.EntityException.EntityException;
@@ -136,7 +131,8 @@ public class PersonService {
             });
         });
 
-        notificationService.sendMsg(personDTO.cin.get(), new NotificationDTO("User modification", "User cin ="+personDTO.cin.get()+" was modified", "info"));
+        Notification notif = new Notification("User modification", "User cin ="+personDTO.cin.get()+" was modified", "info", personDTO.cin.get());
+        notificationService.sendMsg(notif);
     }
 
     public void archivePerson(String cin){
