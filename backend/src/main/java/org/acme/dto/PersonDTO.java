@@ -1,6 +1,7 @@
 package org.acme.dto;
 
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,8 @@ public class PersonDTO {
     public Optional<String> email= Optional.empty();
     public Optional<Long> roleId= Optional.empty();  // RolePerson ID
     public Optional<Long> gradId= Optional.empty();
+    public Optional<String> telephone = Optional.empty();
+    public Optional<String> adresse = Optional.empty();
     public Optional<List<HandicapPersonDTO>> handicaps = Optional.empty(); // we'll map them using person's cin and the handicapsId
 
     public PersonDTO() {

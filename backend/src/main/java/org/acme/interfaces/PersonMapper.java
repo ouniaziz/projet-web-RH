@@ -62,6 +62,8 @@ public interface PersonMapper{
     @Mapping(target = "date_n", source = "dto.dateN", qualifiedByName = "optionalTo")
     @Mapping(target = "email", source = "dto.email", qualifiedByName = "optionalTo")
     @Mapping(target = "anciennete", source = "dto.anciennete", qualifiedByName = "optionalTo")
+    @Mapping(target = "telephone", source = "dto.telephone", qualifiedByName = "optionalTo")
+    @Mapping(target = "adresse", source = "dto.adresse", qualifiedByName = "optionalTo")
     @Mapping(target = "role", expression = "java(mapRole(dto.roleId.orElse(null),roleRepo))")
     @Mapping(target = "gradList", ignore = true)
     @Mapping(target = "handicaps",ignore = true)

@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.acme.entities.conge.Conge;
@@ -14,7 +11,6 @@ import org.acme.entities.conge.DemandeConge;
 import org.acme.entities.conge.SoldeConge;
 import org.acme.entities.grad.GradPerson;
 import org.acme.entities.handicap.HandicapPerson;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -34,6 +30,8 @@ public class Person extends PanacheEntityBase{
     private LocalDate date_n;
     private Integer status_p;
     private Integer anciennete;
+    private String adresse;
+    private String telephone;
 
     @Column(unique = true)
     private String email;
@@ -163,5 +161,13 @@ public class Person extends PanacheEntityBase{
 
     public void setHandicaps(List<HandicapPerson> handList){
         this.handicaps = handList;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
     }
 }
