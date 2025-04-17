@@ -22,15 +22,14 @@ function Profile_enseignant() {
     nom: "Marie Horwitz",
     email: "info@example.com",
     telephone: "123 456 789",
-    CIN: "12345678",
+    cin: "12345678",
     adresse: "Adresse par défaut",
-    age: "30",
-    naissance: "01/01/1990",
-    Grade: "Professeur",
+    dateN: "01/01/1990",
+    grad: "Professeur",
     sexe: "Femme",
-    handicap: "Non",
-    département: "Poste par défaut",
-    ancienneté: "5 ans"
+    hasHandicaps: "Non",
+    departement: "Poste par défaut",
+    anciennete: "5 ans"
   });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -46,13 +45,18 @@ function Profile_enseignant() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setEnseignant(prev => ({
-        ...prev,
-        image: imageUrl
-      }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result.split(',')[1]; // On garde uniquement la partie base64
+        setEnseignant((prev) => ({
+          ...prev,
+          image: base64String,
+        }));
+      };
+      reader.readAsDataURL(file); // Lecture du fichier en base64
     }
   };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     handleClose();
@@ -66,6 +70,10 @@ function Profile_enseignant() {
     }
     return dateString;
   };
+  const displayImgFromB64 = (image) => {
+    const mimeType = "application/octet-stream"; // ou "image/jpeg", "image/png", etc.
+    return image ? `data:${mimeType};base64,${image}` : user;
+  };
   return (
     <DashboardLayout>
       <DashboardNavbar />  
@@ -73,9 +81,9 @@ function Profile_enseignant() {
                         <div style={{ display: "flex", flexDirection: "row",backgroundColor: "#fff",borderRadius: "0.5rem",overflow: "hidden"}}>    
 
                                   <div style={{width: "25%",backgroundColor: "#f4f5f7",padding: "2rem",display: "flex",flexDirection: "column",alignItems: "center",justifyContent: "center",textAlign: "center"}} className="gradient-custom ">
-                                            <img src={enseignant.image} alt="Avatar" style={{ width: "120px",height:"125px", borderRadius: "50%", marginBottom: "1rem"}}/>
-                                            <h5 style={{ margin: "0.5rem 0", fontWeight: "bold" }}>{enseignant.nom}</h5>
-                                            <p style={{ margin: 0, color: "#6c757d" }}>{enseignant.Grade}</p>
+                                            <img src={displayImgFromB64(enseignant.image)} alt="Avatar" style={{ width: "120px",height:"125px", borderRadius: "50%", marginBottom: "1rem"}}/>
+                                            <h5 style={{ margin: "0.5rem 0", fontWeight: "bold" }}>{enseignant.nom+(enseignant.prenom ? " " + enseignant.prenom : "")}</h5>
+                                            <p style={{ margin: 0, color: "#6c757d" }}>{enseignant.grad}</p>
                                             <i className="far fa-edit"style={{marginTop:"20px",cursor:"pointer" }}onClick={handleOpen}></i>
                                   </div>
                                   
@@ -89,7 +97,7 @@ function Profile_enseignant() {
                                                         <p style={{fontSize: "0.9rem", margin: 0 }}>{enseignant.email}</p>
                                                       </div>
                                                       <div style={{ width: "50%" }}>
-                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Phone</h6>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Telephone</h6>
                                                         <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.telephone}</p>
                                                       </div>
                                                       
@@ -97,7 +105,7 @@ function Profile_enseignant() {
                                             <div style={{ display: "flex", marginBottom: "1.5rem" }}>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>CIN </h6>
-                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.CIN}</p>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.cin}</p>
                                                       </div>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Adresse</h6>
@@ -107,25 +115,19 @@ function Profile_enseignant() {
                                             </div>
                                             <div style={{ display: "flex", marginBottom: "1.5rem" }}>
                                                       <div style={{ width: "50%" }}>
-                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Age </h6>
-                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.age}</p>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Date de naissance</h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{formatDate(enseignant.dateN)}</p>
                                                       </div>
                                                       <div style={{ width: "50%" }}>
-                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Date de naissance</h6>
-                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{formatDate(enseignant.naissance)}</p>
-                                                      </div>
-                                                      
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Handicap</h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.hasHandicaps}</p>
+                                                      </div>                                                      
                                             </div>
                                             <div style={{ display: "flex", marginBottom: "1.5rem" }}>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Sexe </h6>
                                                         <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.sexe}</p>
-                                                      </div>
-                                                      <div style={{ width: "50%" }}>
-                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Handicap</h6>
-                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.handicap}</p>
-                                                      </div>
-                                                      
+                                                      </div>         
                                             </div>
                               
                                             <h6 style={{ fontWeight: "bold", marginBottom: "1rem",fontSize:"25px" }}>Informations Professionnelles</h6>
@@ -134,11 +136,11 @@ function Profile_enseignant() {
                                             <div style={{ display: "flex" }}>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Département</h6>
-                                                        <p style={{  fontSize: "0.9rem",margin: 0 }}>{enseignant.département}</p>
+                                                        <p style={{  fontSize: "0.9rem",margin: 0 }}>{enseignant.departement}</p>
                                                       </div>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Ancienneté</h6>
-                                                        <p style={{ fontSize: "0.9rem", margin: 0 }}>{enseignant.ancienneté} ans</p>
+                                                        <p style={{ fontSize: "0.9rem", margin: 0 }}>{enseignant.anciennete} ans</p>
                                                       </div>
                                             </div>
                                   </div>
@@ -215,7 +217,7 @@ function Profile_enseignant() {
                               </Button>
                             </label>
                             <img
-                              src={enseignant.image}
+                              src={displayImgFromB64(enseignant.image)}
                               alt="photo actuelle"
                               style={{
                                 marginTop: "10px",
@@ -229,8 +231,8 @@ function Profile_enseignant() {
                           <TextField
                             fullWidth
                             label="CIN"
-                            name="CIN"
-                            value={enseignant.CIN}
+                            name="cin"
+                            value={enseignant.cin}
                             onChange={handleChange}
                             margin="normal"
                             required
@@ -256,23 +258,14 @@ function Profile_enseignant() {
                           <TextField
                             fullWidth
                             label="Grade"
-                            name="Grade"
-                            value={enseignant.Grade}
+                            name="grad"
+                            value={enseignant.grad}
                             onChange={handleChange}
                             variant="outlined"
                             margin="normal"
                             required
                           />
-                          <TextField
-                            fullWidth
-                            label="handicap"
-                            name="handicap"
-                            value={enseignant.handicap}
-                            onChange={handleChange}
-                            variant="outlined"
-                            margin="normal"
-                            required
-                          />
+                         
                         </MDBox>
 
                         <MDBox width="50%" pl={2}>
@@ -280,20 +273,11 @@ function Profile_enseignant() {
                             fullWidth
                             label="Date de naissance"
                             type="date"
-                            name="naissance"
-                            value={formatDate(enseignant.naissance)}
+                            name="dateN"
+                            value={formatDate(enseignant.dateN)}
                             onChange={handleChange}
                             margin="normal"
                             InputLabelProps={{ shrink: true }}
-                            required
-                          />
-                          <TextField
-                            fullWidth
-                            label="Âge"
-                            name="age"
-                            value={enseignant.age}
-                            onChange={handleChange}
-                            margin="normal"
                             required
                           />
                           <RadioGroup
@@ -325,8 +309,8 @@ function Profile_enseignant() {
                           <TextField
                             fullWidth
                             label="département"
-                            name="département"
-                            value={enseignant.département}
+                            name="departement"
+                            value={enseignant.departement}
                             onChange={handleChange}
                             margin="normal"
                             required
@@ -334,9 +318,19 @@ function Profile_enseignant() {
                           <TextField
                             fullWidth
                             label="Ancienneté (années)"
-                            name="ancienneté"
-                            value={enseignant.ancienneté}
+                            name="anciennete"
+                            value={enseignant.anciennete}
                             onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                           <TextField
+                            fullWidth
+                            label="handicap"
+                            name="hasHandicaps"
+                            value={enseignant.hasHandicaps}
+                            onChange={handleChange}
+                            variant="outlined"
                             margin="normal"
                             required
                           />

@@ -13,6 +13,8 @@ import themeDark from "assets/theme-dark";
 import routes from "routes";
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
 
+import brandWhite from "assets/images/logo-ct.png";
+import brandDark from "assets/images/logo-ct-dark.png";
 
 export default function MainLayout() {
   const [controller, dispatch] = useMaterialUIController();
@@ -49,42 +51,7 @@ export default function MainLayout() {
 
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
 
-  // Establir connection SSE (Server-side-event) pour la notification
-  useEffect(() => {
-    const es = new EventSource("http://localhost:8080/notify/user/C456789")
-    es.onopen = ()=>console.info("Connection established");
-    es.onerror = (e)=>console.error("An error produced", e);
-    es.onmessage = (msg) =>console.log(JSON.parse(msg.data));
-
-    return () => es.close();
-  }, []);
-
-  return (
-    <ThemeProvider theme={theme}> {/* Removed Dark mode: theme={darkMode ? themeDark : theme} */}
-      <CssBaseline />
-      {layout === "dashboard" && (
-        <>
-          <Sidenav
-            color={sidenavColor}
-            brandName="ISIMM"
-            routes={routes || []}
-            onMouseEnter={handleOnMouseEnter}
-            onMouseLeave={handleOnMouseLeave}
-          /> {/* Removed Dark mode: brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}*/}
-          {/*<Configurator />
-          {configsButton}*/}
-          {/* Removed configureator, for now*/}
-
-        </>
-      )}
-      {layout === "vr" && <Configurator />}
-      <Outlet /> {/* Rend les pages enfants ici */}
-    </ThemeProvider>
-  );
-}
-
-/*
-* const configsButton = (
+  const configsButton = (
     <MDBox
       display="flex"
       justifyContent="center"
@@ -107,4 +74,28 @@ export default function MainLayout() {
       </Icon>
     </MDBox>
   );
-* */
+
+  // Vérifier si l'utilisateur est authentifié
+
+  return (
+    <ThemeProvider theme={darkMode ? themeDark : theme}>
+      <CssBaseline />
+      {layout === "dashboard" && (
+        <>
+          <Sidenav
+            color={sidenavColor}
+            brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+            brandName="ISIMM"
+            routes={routes || []}
+            onMouseEnter={handleOnMouseEnter}
+            onMouseLeave={handleOnMouseLeave}
+          />
+          <Configurator />
+          {configsButton}
+        </>
+      )}
+      {layout === "vr" && <Configurator />}
+      <Outlet /> {/* Rend les pages enfants ici */}
+    </ThemeProvider>
+  );
+}

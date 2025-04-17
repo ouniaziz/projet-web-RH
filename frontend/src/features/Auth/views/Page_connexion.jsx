@@ -14,14 +14,14 @@ export default function PageConnexion() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   localStorage.setItem("isAuthenticated", "false");
-
   const handledLogin = (event) => {
     event.preventDefault();
-    if (email === "aziz@gmail.com" && password === "aziz") {
+    if (email === "" && password === "") {
       localStorage.setItem("isAuthenticated", "true");
       navigate("/main/dashboard");
     } else {
@@ -50,7 +50,7 @@ export default function PageConnexion() {
         <div
           className="wrapper"
           style={{
-            width: "550px",
+            width: "480px",
             padding: "30px",
             borderRadius: "10px",
             backdropFilter: "blur(4px) brightness(70%)",
@@ -61,7 +61,7 @@ export default function PageConnexion() {
             <img src={logo_isimm} alt="ISIMM Logo" />
           </div>
           <br></br>
-          <div style={{ fontSize: "25px",fontFamily: "monospace",fontWeight:"bold", color: "#115eee" }}>
+          <div style={{ fontSize: "30px",fontFamily: "initial",fontWeight:"bold", color: "#115eee" }}>
             ISIMM 
           </div>
           <br></br>
@@ -120,7 +120,6 @@ export default function PageConnexion() {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  position: "absolute",
                   backgroundColor: "rgba(42, 67, 254, 0.43)",
                 }}
               >
@@ -154,7 +153,7 @@ export default function PageConnexion() {
 const style = {
   position: 'absolute',
   top: '50%',
-  left: '52%',
+  left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 500,
   bgcolor: 'white',
