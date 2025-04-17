@@ -4,6 +4,7 @@ import io.quarkus.logging.Log;
 import org.acme.dto.HandicapPersonDTO;
 import org.acme.dto.PersonDTO;
 import org.acme.dto.response.SimplePersonResponseDTO;
+import org.acme.entities.Department;
 import org.acme.entities.Person;
 
 import org.acme.entities.RolePerson;
@@ -27,8 +28,9 @@ import java.util.*;
 public interface PersonMapper{
     Logger log = Logger.getLogger(PersonMapper.class);
 
-    //TODO: Modify grad and handicaps to match SimplePersonResponseDTO's attribute
+
     /*
+    Modify grad and handicaps to match SimplePersonResponseDTO's attribute
     @Mapping(target = "cin", source = "person.cin")
     @Mapping(target = "nom", source="person.nom")
     @Mapping(target = "prenom", source = "person.prenom")
@@ -65,6 +67,7 @@ public interface PersonMapper{
     @Mapping(target = "telephone", source = "dto.telephone", qualifiedByName = "optionalTo")
     @Mapping(target = "adresse", source = "dto.adresse", qualifiedByName = "optionalTo")
     @Mapping(target = "role", expression = "java(mapRole(dto.roleId.orElse(null),roleRepo))")
+    @Mapping(target = "depart", expression = "java(mapDepart(dto.departement.orElse(null)))")
     @Mapping(target = "gradList", ignore = true)
     @Mapping(target = "handicaps",ignore = true)
     @Mapping(target = "image", ignore = true)
@@ -90,6 +93,9 @@ public interface PersonMapper{
         return Base64.getDecoder().decode(base64Data);
     }
 
+    default Department mapDepart(Long depId){
+        return Department.getEntityManager().getReference(Department.class, depId);
+    }
     default RolePerson mapRole(Long roleId, @Context RolesRepository rolesRepository) {
         if (roleId == null) return null;
         return rolesRepository.findByIdOptional(roleId)

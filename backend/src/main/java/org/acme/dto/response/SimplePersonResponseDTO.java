@@ -20,8 +20,8 @@ public class SimplePersonResponseDTO {
     public final String image;
     public final String telephone;
     public final String adresse;
-    //TODO: Add departement
-    public SimplePersonResponseDTO(String cin, String nom, String prenom, String sexe, Integer status, LocalDate dateN, String email, Integer anciennete, String role, String grad, Boolean hasHandicaps, byte[] image, String telephone, String adresse) {
+    public final String departement;
+    public SimplePersonResponseDTO(String cin, String nom, String prenom, String sexe, Integer status, LocalDate dateN, String email, Integer anciennete, String role, String grad, Boolean hasHandicaps, byte[] image, String telephone, String adresse, String dep) {
         this.cin = cin;
         this.nom = nom;
         this.prenom = prenom;
@@ -36,5 +36,6 @@ public class SimplePersonResponseDTO {
         this.image = image!=null?Base64.getEncoder().encodeToString(image):"No image";
         this.telephone = telephone;
         this.adresse = adresse;
+        departement = dep;
     }
 }

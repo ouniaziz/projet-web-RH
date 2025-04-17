@@ -1,36 +1,38 @@
 package org.acme.entities;
 
+import io.quarkus.hibernate.orm.panache.Panache;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.time.LocalDate;
 
-public class Department {
-    private Long id_depart;
-    private String nom_dep;
-    private String chef_dep;
+@Entity
+public class Department extends PanacheEntity {
+    @Column(name = "nom_dep")
+    private String nomDep;
+
+    @Column(name = "chef_dep")
+    private String chefDep;
 
     public Department() {}
 
-    public Long getId_depart() {
-        return id_depart;
-    }
-
-    public void setId_depart(Long id_depart) {
-        this.id_depart = id_depart;
-    }
-
     public String getNom_dep() {
-        return nom_dep;
+        return nomDep;
     }
 
     public void setNom_dep(String nom_dep) {
-        this.nom_dep = nom_dep;
+        this.nomDep = nom_dep;
     }
 
     public String getChef_dep() {
-        return chef_dep;
+        return chefDep;
     }
 
     public void setChef_dep(String chef_dep) {
-        this.chef_dep = chef_dep;
+        this.chefDep = chef_dep;
     }
 
 }

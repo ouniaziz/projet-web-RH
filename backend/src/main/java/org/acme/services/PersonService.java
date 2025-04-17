@@ -29,6 +29,7 @@ import sendinblue.ApiException;
 
 
 @ApplicationScoped
+//TODO: DELETE Person
 public class PersonService {
     Logger log = Logger.getLogger(PersonService.class);
 

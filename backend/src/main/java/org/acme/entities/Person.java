@@ -59,6 +59,10 @@ public class Person extends PanacheEntityBase{
     @OneToMany(mappedBy = "person", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SoldeConge> soldeList = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "dep", referencedColumnName = "id")
+    private Department depart;
+
     @Lob
     @Column(columnDefinition = "BYTEA")
     @JdbcTypeCode(SqlTypes.BINARY)

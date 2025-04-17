@@ -1,28 +1,39 @@
 package org.acme.services;
 
-import io.quarkus.hibernate.orm.panache.Panache;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import io.smallrye.mutiny.operators.multi.processors.UnicastProcessor;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.acme.entities.Notification;
-
+import org.acme.entities.Person;
+import org.acme.entities.RolePerson;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+// TODO: notify people by role, Test it out
+
+// TODO: Check if enseignants and employés roles need to be added
+// For now, I'll just include RH and Administrator roles, which will make this join role and ignore requests where roleId != Admin AND RH
 @ApplicationScoped
-//TODO: Add persistence storage
 public class NotificationService {
 
     private final Map<String, UnicastProcessor<Notification>> userEmitters =
             new ConcurrentHashMap<>();
 
-    private final Map<Long, Set<String>> groupMemberships =
+    private final Map<Long, Set<String>> roleEmitters =
             new ConcurrentHashMap<>();
+
+    @PostConstruct
+    public void initRoleEmitters(){
+        createRole(RolePerson.ADMIN_ID);
+        createRole(RolePerson.RH_ID);
+    }
 
     public List<Notification> getUndeliveredNotifications(String userId){
         return Notification.list("userId =?1 AND isDelivered = false", userId);
@@ -40,7 +51,7 @@ public class NotificationService {
         return processor
                 .onTermination().invoke(() -> {
                     userEmitters.remove(userId);
-                    removeFromRole(userId);
+                     // removeFromRole(userId); TODO: removeFromRole when you delete Person record
                 })
                 .onSubscription().invoke(()->{ // We use onSubscription to run methods right before it subscribes <=> right before receiving new notifications
                     Uni.createFrom().item(()->{
@@ -65,21 +76,23 @@ public class NotificationService {
         }
     }
 
-    public void createRole(Long role, String userId) {
-        groupMemberships
-                .computeIfAbsent(role, k -> ConcurrentHashMap.newKeySet())
-                .add(userId);
+    public void createRole(Long role) {
+        roleEmitters
+                .computeIfAbsent(role, roleId -> Person.find("SELECT DISTINCT p.cin FROM Person p WHERE p.role.id_r=?1", roleId)
+                        .project(String.class).stream().collect(Collectors.toCollection(ConcurrentHashMap::newKeySet)));
     }
 
     public void sendToRole(Long roleId, Notification notification) {
-        Set<String> members = groupMemberships.get(roleId);
+        Set<String> members = roleEmitters.get(roleId);
         if (members != null) {
             members.forEach(userId -> sendMsg(notification));
         }
     }
 
-    private void removeFromRole(String userId) {
-        groupMemberships.forEach((groupId, members) -> members.remove(userId));
+    //@Scheduled(every = "1h") To be tested
+    void cleanupInactiveUsers() {
+        userEmitters.entrySet().removeIf(entry ->
+                !entry.getValue().hasSubscriber()
+        );
     }
-
 }

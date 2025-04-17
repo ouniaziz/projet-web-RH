@@ -37,7 +37,8 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
                     ),
                     p.image,
                     p.telephone,
-                    p.adresse
+                    p.adresse,
+                    p.depart.nomDep
                 FROM Person p
                 WHERE p.role.id_r IN ?1
                 """, List.of(roles))
@@ -63,7 +64,8 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
                     ),
                     p.image,
                     p.telephone,
-                    p.adresse
+                    p.adresse,
+                    p.depart.nomDep
                 FROM Person p
                 WHERE p.role.id_r = ?1
                 """, role).project(SimplePersonResponseDTO.class).list();

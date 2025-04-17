@@ -22,13 +22,4 @@ public class NotificationResource {
     public Multi<Notification> userStream(@PathParam("userId") String userId) {
         return notificationService.registerUser(userId);
     }
-
-    // Group joining endpoint
-    @POST
-    @Path("/role/{roleId}/{userId}")
-    public void joinGroup(
-            @PathParam("roleId") Long roleId,
-            @PathParam("userId") String userId) {
-        notificationService.createRole(roleId, userId);
-    }
 }
