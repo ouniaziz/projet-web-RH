@@ -19,7 +19,7 @@ public class PersonDTO {
     public Optional<Long> gradId= Optional.empty();
     public Optional<String> telephone = Optional.empty();
     public Optional<String> adresse = Optional.empty();
-    public Optional<Long> departement = Optional.empty();
+    public Optional<String> departement = Optional.empty();
     public Optional<List<HandicapPersonDTO>> handicaps = Optional.empty(); // we'll map them using person's cin and the handicapsId
 
     public PersonDTO() {
