@@ -18,6 +18,7 @@ public class Notification extends PanacheEntity {
 
     @JsonIgnore
     private boolean isDelivered;
+
     public String getTitle() {
         return title;
     }
