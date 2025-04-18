@@ -1,203 +1,363 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// @mui material components
-import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
-
-// @mui icons
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import InstagramIcon from "@mui/icons-material/Instagram";
-
-// Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-
-// Material Dashboard 2 React example components
+import React,{ useState } from 'react';
+import "./assests/profile.css";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
-import ProfilesList from "examples/Lists/ProfilesList";
-import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
+import { useLocation } from "react-router-dom";
+import {
+  Modal,
+  TextField,
+  Button,
+  Radio,
+  RadioGroup,
+  FormControlLabel
+} from "@mui/material";
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
+function Profile() {
+  const location = useLocation();
+  const [open, setOpen] = useState(false);
+  const [employee, setEmployee] = useState(location.state || {
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsb_V_Ha4XAl47doWf_2lF-actuld60ssYew&s",
+    nom: "Marie Horwitz",
+    email: "info@example.com",
+    telephone: "123 456 789",
+    CIN: "12345678",
+    adresse: "Adresse par défaut",
+    age: "30",
+    naissance: "01/01/1990",
+    sexe: "Femme",
+    handicap: "Non",
+    poste: "Poste par défaut",
+    ancienneté: "5 ans"
+  });
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-// Overview page components
-import Header from "layouts/profile/components/Header";
-import PlatformSettings from "layouts/profile/components/PlatformSettings";
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEmployee(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-// Data
-import profilesListData from "layouts/profile/data/profilesListData";
-
-// Images
-import homeDecor1 from "assets/images/home-decor-1.jpg";
-import homeDecor2 from "assets/images/home-decor-2.jpg";
-import homeDecor3 from "assets/images/home-decor-3.jpg";
-import homeDecor4 from "assets/images/home-decor-4.jpeg";
-import team1 from "assets/images/team-1.jpg";
-import team2 from "assets/images/team-2.jpg";
-import team3 from "assets/images/team-3.jpg";
-import team4 from "assets/images/team-4.jpg";
-
-function Overview() {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setEmployee(prev => ({
+        ...prev,
+        image: imageUrl
+      }));
+    }
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleClose();
+    // Ici vous pourriez ajouter une logique pour sauvegarder les modifications
+    // par exemple une requête API pour mettre à jour l'employé en base de données
+  };
+  const formatDate = (dateString) => {
+    if (dateString.includes('/')) {
+      const [day, month, year] = dateString.split('/');
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    return dateString;
+  };
   return (
     <DashboardLayout>
-      <DashboardNavbar />
-      <MDBox mb={2} />
-      <Header>
-        <MDBox mt={5} mb={3}>
-          <Grid container spacing={1}>
-            <Grid item xs={12} md={6} xl={4}>
-              <PlatformSettings />
-            </Grid>
-            <Grid item xs={12} md={6} xl={4} sx={{ display: "flex" }}>
-              <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
-              <ProfileInfoCard
-                title="profile information"
-                description="Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality)."
-                info={{
-                  fullName: "Alec M. Thompson",
-                  mobile: "(44) 123 1234 123",
-                  email: "alecthompson@mail.com",
-                  location: "USA",
-                }}
-                social={[
-                  {
-                    link: "https://www.facebook.com/CreativeTim/",
-                    icon: <FacebookIcon />,
-                    color: "facebook",
-                  },
-                  {
-                    link: "https://twitter.com/creativetim",
-                    icon: <TwitterIcon />,
-                    color: "twitter",
-                  },
-                  {
-                    link: "https://www.instagram.com/creativetimofficial/",
-                    icon: <InstagramIcon />,
-                    color: "instagram",
-                  },
-                ]}
-                action={{ route: "", tooltip: "Edit Profile" }}
-                shadow={false}
-              />
-              <Divider orientation="vertical" sx={{ mx: 0 }} />
-            </Grid>
-            <Grid item xs={12} xl={4}>
-              <ProfilesList title="conversations" profiles={profilesListData} shadow={false} />
-            </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox pt={2} px={2} lineHeight={1.25}>
-          <MDTypography variant="h6" fontWeight="medium">
-            Projects
-          </MDTypography>
-          <MDBox mb={1}>
-            <MDTypography variant="button" color="text">
-              Architects design houses
-            </MDTypography>
-          </MDBox>
-        </MDBox>
-        <MDBox p={2}>
-          <Grid container spacing={6}>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor1}
-                label="project #2"
-                title="modern"
-                description="As Uber works through a huge amount of internal management turmoil."
-                action={{
-                  type: "internal",
-                  route: "/pages/profile/profile-overview",
-                  color: "info",
-                  label: "view project",
-                }}
-                authors={[
-                  { image: team1, name: "Elena Morison" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team4, name: "Peterson" },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor2}
-                label="project #1"
-                title="scandinavian"
-                description="Music is something that everyone has their own specific opinion about."
-                action={{
-                  type: "internal",
-                  route: "/pages/profile/profile-overview",
-                  color: "info",
-                  label: "view project",
-                }}
-                authors={[
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team4, name: "Peterson" },
-                  { image: team1, name: "Elena Morison" },
-                  { image: team2, name: "Ryan Milly" },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor3}
-                label="project #3"
-                title="minimalist"
-                description="Different people have different taste, and various types of music."
-                action={{
-                  type: "internal",
-                  route: "/pages/profile/profile-overview",
-                  color: "info",
-                  label: "view project",
-                }}
-                authors={[
-                  { image: team4, name: "Peterson" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team1, name: "Elena Morison" },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor4}
-                label="project #4"
-                title="gothic"
-                description="Why would anyone pick blue over pink? Pink is obviously a better color."
-                action={{
-                  type: "internal",
-                  route: "/pages/profile/profile-overview",
-                  color: "info",
-                  label: "view project",
-                }}
-                authors={[
-                  { image: team4, name: "Peterson" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team1, name: "Elena Morison" },
-                ]}
-              />
-            </Grid>
-          </Grid>
-        </MDBox>
-      </Header>
-      <Footer />
+      <DashboardNavbar />  
+      <section style={{ backgroundColor: "#f4f5f7", padding: "20px" }}>
+                        <div style={{ display: "flex", flexDirection: "row",backgroundColor: "#fff",borderRadius: "0.5rem",overflow: "hidden"}}>    
+
+                                  <div style={{width: "25%",backgroundColor: "#f4f5f7",padding: "2rem",display: "flex",flexDirection: "column",alignItems: "center",justifyContent: "center",textAlign: "center"}} className="gradient-custom ">
+                                            <img src={employee.image} alt="Avatar" style={{ width: "120px",height:"125px", borderRadius: "50%", marginBottom: "1rem"}}/>
+                                            <h5 style={{ margin: "0.5rem 0", fontWeight: "bold" }}>{employee.nom}</h5>
+                                            <p style={{ margin: 0, color: "#6c757d" }}>{employee.poste}</p>
+                                            <i className="far fa-edit"style={{marginTop:"20px",cursor:"pointer" }}onClick={handleOpen}></i>
+                                  </div>
+                                  
+                                  <div style={{ width: "75%", padding: "2rem"}}>
+                                            <h6 style={{ fontWeight: "bold", marginBottom: "1rem",fontSize:"25px"}}>Informations Personnelles</h6>
+                                            <hr style={{ margin: "0 0 1rem 0" }}/>
+                            
+                                            <div style={{ display: "flex", marginBottom: "1.5rem" }}>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Email</h6>
+                                                        <p style={{fontSize: "0.9rem", margin: 0 }}>{employee.email}</p>
+                                                      </div>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Phone</h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{employee.telephone}</p>
+                                                      </div>
+                                                      
+                                            </div>
+                                            <div style={{ display: "flex", marginBottom: "1.5rem" }}>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>CIN </h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{employee.CIN}</p>
+                                                      </div>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Adresse</h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{employee.adresse}</p>
+                                                      </div>
+                                                      
+                                            </div>
+                                            <div style={{ display: "flex", marginBottom: "1.5rem" }}>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Age </h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{employee.age}</p>
+                                                      </div>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Date de naissance</h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{formatDate(employee.naissance)}</p>
+                                                      </div>
+                                                      
+                                            </div>
+                                            <div style={{ display: "flex", marginBottom: "1.5rem" }}>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Sexe </h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{employee.sexe}</p>
+                                                      </div>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Handicap</h6>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{employee.handicap}</p>
+                                                      </div>
+                                                      
+                                            </div>
+                              
+                                            <h6 style={{ fontWeight: "bold", marginBottom: "1rem",fontSize:"25px" }}>Informations Professionnelles</h6>
+                                            <hr style={{ margin: "0 0 1rem 0" }}/>
+                            
+                                            <div style={{ display: "flex" }}>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Grade</h6>
+                                                        <p style={{  fontSize: "0.9rem",margin: 0 }}>{employee.Grade}</p>
+                                                      </div>
+                                                      <div style={{ width: "50%" }}>
+                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Ancienneté</h6>
+                                                        <p style={{ fontSize: "0.9rem", margin: 0 }}>{employee.ancienneté} ans</p>
+                                                      </div>
+                                            </div>
+                                  </div>
+                        </div>
+
+
+
+
+                   <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      backgroundColor: "rgba(142, 235, 248, 0.4)",
+                    }}
+                  >
+                    <MDBox
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      justifyContent="center"
+                      position="absolute"
+                      top="8%"
+                      left="27%"
+                      transform="translate(-50%, -50%)"
+                      width={800}
+                      boxShadow={24}
+                      p={4}
+                      borderRadius={2}
+                      style={{ backgroundColor: "white" }}
+                    >
+                      <MDTypography id="modal-title" variant="h6" mb={3}>
+                        Modifier le profil
+                      </MDTypography>
+                      <MDBox
+                        component="form"
+                        onSubmit={handleSubmit}
+                        display="flex"
+                        flexDirection="row"
+                        width="100%"
+                      >
+                        <MDBox width="50%" pr={2}>
+                          <TextField
+                            fullWidth
+                            label="Nom et prénom"
+                            name="nom"
+                            value={employee.nom}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                          <MDBox style={{ display: "flex", flexDirection: "row", gap: "10px"}}>
+                            <input
+                              accept="image/*"
+                              type="file"
+                              id="upload-photo"
+                              name="image"
+                              style={{ display: "none" }}
+                              onChange={handleImageChange}
+                            />
+                            <label htmlFor="upload-photo">
+                              <Button
+                                variant="contained"
+                                component="span"
+                                color="secondary"
+                                sx={{ mt: 1 }}
+                                style={{height: "50px", color: "white",width: "260px"}}
+                              >
+                                Changer la photo
+                              </Button>
+                            </label>
+                            <img
+                              src={employee.image}
+                              alt="photo actuelle"
+                              style={{
+                                marginTop: "10px",
+                                width: "80px",
+                                height: "50px",
+                                objectFit: "cover",
+                                borderRadius: "10px",
+                              }}
+                            />
+                          </MDBox>
+                          <TextField
+                            fullWidth
+                            label="CIN"
+                            name="CIN"
+                            value={employee.CIN}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                          <TextField
+                            fullWidth
+                            label="Email"
+                            name="email"
+                            value={employee.email}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                          <TextField
+                            fullWidth
+                            label="Adresse"
+                            name="adresse"
+                            value={employee.adresse}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                          <TextField
+                            fullWidth
+                            label="Grade"
+                            name="Grade"
+                            value={employee.Grade}
+                            onChange={handleChange}
+                            variant="outlined"
+                            margin="normal"
+                            required
+                          />
+                          <TextField
+                            fullWidth
+                            label="handicap"
+                            name="handicap"
+                            value={employee.handicap}
+                            onChange={handleChange}
+                            variant="outlined"
+                            margin="normal"
+                            required
+                          />
+                        </MDBox>
+
+                        <MDBox width="50%" pl={2}>
+                          <TextField
+                            fullWidth
+                            label="Date de naissance"
+                            type="date"
+                            name="naissance"
+                            value={formatDate(employee.naissance)}
+                            onChange={handleChange}
+                            margin="normal"
+                            InputLabelProps={{ shrink: true }}
+                            required
+                          />
+                          <TextField
+                            fullWidth
+                            label="Âge"
+                            name="age"
+                            value={employee.age}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                          <RadioGroup
+                            aria-labelledby="demo-radio-buttons-group-label"
+                            name="sexe"
+                            value={employee.sexe}
+                            onChange={handleChange}
+                            row
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              height: "30px",
+                              margin: "15px",
+                              marginLeft: "20%",
+                            }}
+                          >
+                            <FormControlLabel value="Homme" control={<Radio />} label="Homme" />
+                            <FormControlLabel value="Femme" control={<Radio />} label="Femme" />
+                          </RadioGroup>
+                          <TextField
+                            fullWidth
+                            label="Téléphone"
+                            name="telephone"
+                            value={employee.telephone}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                          <TextField
+                            fullWidth
+                            label="Poste"
+                            name="poste"
+                            value={employee.poste}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                          <TextField
+                            fullWidth
+                            label="Ancienneté (années)"
+                            name="ancienneté"
+                            value={employee.ancienneté}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                          />
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            style={{color: "white" ,marginTop: "15px"}}
+
+                          >
+                            Enregistrer
+                          </Button>
+                        </MDBox>
+                      </MDBox>
+                    </MDBox>
+                  </Modal>
+
+
+
+      </section>
     </DashboardLayout>
   );
 }
 
-export default Overview;
+export default Profile;

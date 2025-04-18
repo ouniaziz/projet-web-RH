@@ -37,56 +37,6 @@ import Icon from "@mui/material/Icon";
 function Billing() {
   return (
     <DashboardLayout>
-      <DashboardNavbar absolute isMini />
-      <MDBox mt={8}>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} lg={8}>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6} xl={3}>
-                  <MDButton
-                    variant="gradient"
-                    color="info"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: "16px",
-                      background: "white",
-                    }}
-                  >
-                    <Icon style={{ background: "dark" }}>favorite</Icon>&nbsp;Button
-                  </MDButton>
-                </Grid>
-                <Grid item xs={12} md={6} xl={3}>
-                  <DefaultInfoCard
-                    icon="paypal"
-                    title="paypal"
-                    description="Freelance Payment"
-                    value="$455.00"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <PaymentMethod />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12} lg={4}>
-              <Invoices />
-            </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={7}>
-              <BillingInformation />
-            </Grid>
-            <Grid item xs={12} md={5}>
-              <Transactions />
-            </Grid>
-          </Grid>
-        </MDBox>
-      </MDBox>
-      <Footer />
     </DashboardLayout>
   );
 }
