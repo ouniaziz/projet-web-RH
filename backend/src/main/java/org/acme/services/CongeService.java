@@ -7,12 +7,15 @@ import jakarta.transaction.Transactional;
 import org.acme.dto.conge.DemandeCongeDTO;
 import org.acme.dto.conge.TypeCongeDTO;
 import org.acme.dto.response.CongeDTO;
+import org.acme.entities.Notification;
+import org.acme.entities.RolePerson;
 import org.acme.entities.conge.Conge;
 import org.acme.entities.conge.DemandeConge;
 import org.acme.entities.conge.SoldeConge;
 import org.acme.entities.conge.TypeConge;
 import org.acme.exceptions.EntityException.EntityException;
 import org.acme.interfaces.CongeMapper;
+import org.acme.interfaces.PersonMapper;
 import org.acme.repositories.DemandeCongeRepository;
 import org.acme.repositories.PersonRepository;
 import org.acme.repositories.SoldeCongeRepository;
@@ -23,12 +26,16 @@ import java.time.Period;
 import java.util.List;
 
 @ApplicationScoped
+//TODO: test notifying the user
 public class CongeService {
+    Logger log = Logger.getLogger(CongeService.class);
+
     @Inject CongeMapper congeMapper;
     @Inject PersonRepository personRepository;
-    @Inject
-    SoldeCongeRepository soldeCongeRepository;
+    @Inject SoldeCongeRepository soldeCongeRepository;
     @Inject DemandeCongeRepository demandeCongeRepository;
+    @Inject NotificationService notificationService;
+
 
     // TODO: Complete notify admins via websockets
     @Transactional
@@ -37,8 +44,11 @@ public class CongeService {
         var demandeConge = congeMapper.dtoToDemande(dto, personRepository);
         demandeConge.setStatusConge(DemandeConge.DEMANDE_PENDING);
         demandeCongeRepository.persist(demandeConge);
+        // Notify Admin
+        Notification notif = new Notification("Demande congé reçu",dto.cin+" requested a congé", "info", dto.cin);
+        notificationService.sendToRole(RolePerson.ADMIN_ID, notif);
+
         return demandeConge.id;
-        // Notify Admins
     }
 
     @Transactional
@@ -52,7 +62,6 @@ public class CongeService {
         return TypeConge.listAll(Sort.ascending("id"));
     }
 
-    // TODO: Notify user!!
     @Transactional
     public void refuseConge(Long id){
         var demande = demandeCongeRepository.findByIdOptional(id).orElseThrow(()->new EntityException("Demande id="+id+" not found", 404));
@@ -60,7 +69,10 @@ public class CongeService {
             throw new EntityException("Demande id="+id+" already decided",400);
         demande.setStatusConge(DemandeConge.DEMANDE_REFUSE);
 
+        log.warn(demande.getPersonCin());
         // Notify user
+        Notification notif = new Notification("Demande congé refusée","Your demande id="+id+" was refused", "warning", demande.getPersonCin());
+        notificationService.sendMsg(notif);
     }
 
     @Transactional
@@ -103,6 +115,10 @@ public class CongeService {
 
         var conge = new Conge(demande);
         conge.persist();
+
+        // notify user
+        Notification notif = new Notification("Demande congé accepté","Your demande id="+demande_id+" was accepted", "success", demande.getPersonCin());
+        notificationService.sendMsg(notif);
     }
 
     public List<DemandeConge> getDemandes() {
