@@ -1,37 +1,42 @@
 package org.acme.entities;
 
-import io.quarkus.hibernate.orm.panache.Panache;
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Entity
-public class Department extends PanacheEntity {
+public class Department extends PanacheEntityBase {
+    @Id
+    @Column(name = "id_dep")
+    private String idDep;
+
     @Column(name = "nom_dep")
     private String nomDep;
 
-    @Column(name = "chef_dep")
-    private String chefDep;
+    @OneToOne
+    @JoinColumn(name = "chef_dep", referencedColumnName = "cin")
+    private Person chefDep;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "depart")
+    private List<Person> personList;
 
     public Department() {}
 
-    public String getNom_dep() {
+
+    public String getNomDep() {
         return nomDep;
     }
 
-    public void setNom_dep(String nom_dep) {
+    public void setNomDep(String nom_dep) {
         this.nomDep = nom_dep;
     }
 
-    public String getChef_dep() {
+    public Person getChefDep() {
         return chefDep;
     }
 
-    public void setChef_dep(String chef_dep) {
+    public void setChefDep(Person chef_dep) {
         this.chefDep = chef_dep;
     }
 
