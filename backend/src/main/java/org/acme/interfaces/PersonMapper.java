@@ -93,8 +93,9 @@ public interface PersonMapper{
         return Base64.getDecoder().decode(base64Data);
     }
 
-    default Department mapDepart(Long depId){
-        return Department.getEntityManager().getReference(Department.class, depId);
+    default Department mapDepart(String depId){
+        if(depId==null) return null;
+        return Department.<Department>findByIdOptional(depId).orElseThrow(()->new EntityException("Dep not found", 404));
     }
     default RolePerson mapRole(Long roleId, @Context RolesRepository rolesRepository) {
         if (roleId == null) return null;
@@ -103,6 +104,8 @@ public interface PersonMapper{
     }
 
     default List<GradPerson> mapGradPerson(Long gradId, String person_id, Person p) {
+        if(gradId==null) return null;
+
         var gradList = new ArrayList<GradPerson>();
         Grad.<Grad>find("FROM Grad WHERE gradId=?1",gradId).firstResultOptional().orElseThrow(()->new EntityException("Grad id"+gradId+" not found",404));
         if (gradId != null){
