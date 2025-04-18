@@ -24,3 +24,10 @@ VALUES
 INSERT INTO public.type_conge(
     id, solde_initial, nom)
 VALUES (0,26,'Congé annuelle');
+
+INSERT INTO public.department (id_dep, nom_dep)
+VALUES
+    ('INFO', 'Informatique'),
+    ('MATH', 'Mathématiques'),
+    ('PHYS', 'Physique'),
+    ('ELEC', 'Electronique'),
