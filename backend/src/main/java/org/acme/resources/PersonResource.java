@@ -1,5 +1,6 @@
 package org.acme.resources;
 
+import jakarta.ws.rs.*;
 import org.acme.dto.response.ApiResponseDTO;
 import org.acme.dto.PersonDTO;
 import org.acme.entities.Person;
@@ -8,13 +9,6 @@ import org.acme.services.PersonService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -25,7 +19,6 @@ import sendinblue.ApiException;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 /* TODO: Ask chatbot how to integrate realtime notification manager that's fired upon every modification made to the Person's data
-   TODO: DELETE delete person
    TODO: Don't forget to turn addPerson from String into void
    TODO: use SimplePersonResponseDTO for fetching large-scale data for DataGrid
    TODO: Add CRUD for parameters like Grad, Handicaps, Roles, Exercice
@@ -61,17 +54,15 @@ public class PersonResource {
 
         return Response.ok(new ApiResponseDTO(200, "Filtered successfully", null, personService.filterRecords(sexe,grad,anciennete,handicap, actif))).build();
     }
-
-    @PUT
-    @Path("/archive/{cin}")
-    @Transactional
-    //RolseAllowed({"Personnel RH", "Admin"})
-    // We'll assume that person's status ==-1 ==> record is archived
-    public Response archivePerson(@PathParam(value = "cin") String cin){
-        personService.archivePerson(cin);
-        return Response.accepted().entity(new ApiResponseDTO(202, "Person with cin ="+cin+" has been archived", null,null)).build();
-    }
 */
+    @DELETE
+    @Path("/{cin}")
+    @RolesAllowed("**")
+    public Response deletePerson(@PathParam("cin") String cin, @Context SecurityContext ctx){
+        if(personService.deletePerson(cin, ctx))
+            return Response.ok().build();
+        return Response.status(400).build();
+    }
 
     @GET
     @Path("/employe")
@@ -100,7 +91,7 @@ public class PersonResource {
     @PUT
     @Path("/update")
     @Transactional
-    //@RolesAllowed("**")
+    @RolesAllowed("**")
     public Response modifyPerson(PersonDTO personDto, @Context SecurityContext ctx){
         personService.modifyPerson(personDto, ctx);
         return Response.status(200).entity(new ApiResponseDTO(200, "Modified person "+personDto.cin.get()+" successfully", null, null)).build();
