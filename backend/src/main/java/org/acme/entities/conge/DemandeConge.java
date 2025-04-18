@@ -31,12 +31,12 @@ public class DemandeConge extends PanacheEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "person", referencedColumnName = "cin", insertable = false, updatable = false)
+    @JoinColumn(name = "person", referencedColumnName = "cin",updatable = false)
     private Person person;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "annee", insertable = false, updatable = false)
+    @JoinColumn(name = "annee", updatable = false)
     private Exercice exercice;
 
     @ManyToOne
