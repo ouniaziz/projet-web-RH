@@ -36,32 +36,35 @@ public class Person extends PanacheEntityBase{
     @Column(unique = true)
     private String email;
 
-    @OneToOne(mappedBy = "person")
+    @OneToOne(mappedBy = "person", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="role_p", referencedColumnName = "id_r")
     private RolePerson role;
     
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "person", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("startDate DESC") // This fetches them from newer to older grads
     private List<GradPerson> gradList= new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "person", orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<HandicapPerson> handicaps= new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "person", orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Conge> conges= new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<DemandeConge> demandes= new ArrayList<>();
 
     @OneToMany(mappedBy = "person", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SoldeConge> soldeList = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "dep", referencedColumnName = "id")
+    @JoinColumn(name = "dep", referencedColumnName = "id_dep")
     private Department depart;
+
+    @OneToOne
+    private Department departGere;
 
     @Lob
     @Column(columnDefinition = "BYTEA")
@@ -173,5 +176,13 @@ public class Person extends PanacheEntityBase{
 
     public void setAdresse(String adresse) {
         this.adresse = adresse;
+    }
+
+    public Department getDepart() {
+        return depart;
+    }
+
+    public void setDepart(Department depart) {
+        this.depart = depart;
     }
 }
