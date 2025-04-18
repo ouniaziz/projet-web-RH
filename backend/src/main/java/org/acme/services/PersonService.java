@@ -136,6 +136,7 @@ public class PersonService {
         notificationService.sendMsg(notif);
     }
 
+    @Deprecated(forRemoval = true)
     public void archivePerson(String cin){
         Person p = personRepository.findByIdOptional(cin).orElseThrow(()-> new EntityException("Person id="+cin+" not found", 404));
         p.setStatus_p(Person.STATUS_PERSON_ARCHIVED);
@@ -191,5 +192,13 @@ public class PersonService {
 
     public List<Person> getPersons(){
         return personRepository.findAll().list();
+    }
+
+    public boolean deletePerson(String cin, SecurityContext ctx){
+        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+            throw new EntityException("You can't modify other people's credentials", 401);
+
+
+        return personRepository.deleteById(cin);
     }
 }
