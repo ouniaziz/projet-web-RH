@@ -20,10 +20,11 @@ public interface CongeMapper {
     @Mapping(target="dateFin", source = "dto.dateFin")
     @Mapping(target="dateRetour", source = "dto.dateRetour")
     @Mapping(target="duree", source = "dto.duree")
-    @Mapping(target="statusConge", ignore = true)
     @Mapping(target="person", expression = "java(mapPerson(dto.cin, personRepo))")
     @Mapping(target="exercice", expression = "java(mapExercice(Year.now().getValue()))")
     @Mapping(target="type", expression = "java(mapType(dto.type_id))")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target="statusConge", ignore = true)
     DemandeConge dtoToDemande(DemandeCongeDTO dto, @Context PersonRepository personRepo);
 
     default Person mapPerson(String cin, @Context PersonRepository personRepo){
