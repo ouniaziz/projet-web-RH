@@ -33,7 +33,7 @@ public class SimplePersonResponseDTO {
         this.role = role;
         this.grad = grad;
         this.hasHandicaps = hasHandicaps;
-        this.image = image!=null?Base64.getEncoder().encodeToString(image):"No image";
+        this.image = image!=null?Base64.getEncoder().encodeToString(image):null;
         this.telephone = telephone;
         this.adresse = adresse;
         departement = dep;
