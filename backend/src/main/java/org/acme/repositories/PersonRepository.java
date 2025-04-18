@@ -67,6 +67,7 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
                     p.adresse,
                     p.depart.nomDep
                 FROM Person p
+                LEFT JOIN p.depart
                 WHERE p.role.id_r = ?1
                 """, role).project(SimplePersonResponseDTO.class).list();
     }
