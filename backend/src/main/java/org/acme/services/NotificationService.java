@@ -1,5 +1,6 @@
 package org.acme.services;
 
+import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
@@ -31,8 +32,12 @@ public class NotificationService {
 
     @PostConstruct
     public void initRoleEmitters(){
-        createRole(RolePerson.ADMIN_ID);
-        createRole(RolePerson.RH_ID);
+        Uni.createFrom().item(()->{
+            createRole(RolePerson.ADMIN_ID);
+            createRole(RolePerson.RH_ID);
+            return null;
+        }).runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
+                .subscribe().with(success->{}, Throwable::getStackTrace);
     }
 
     public List<Notification> getUndeliveredNotifications(String userId){
