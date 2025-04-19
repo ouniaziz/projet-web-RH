@@ -24,16 +24,15 @@ body {
 }
 
 .logo {
-    width: 120px;
+    width: 150px;
     height: auto;
-    margin: auto;
     margin-bottom: 0px;
     
 }
 
 .logo img {
     width: 100%;
-    height: auto;
+    height: inherit;
     object-fit: cover;
     border-radius: 50%;
     box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;

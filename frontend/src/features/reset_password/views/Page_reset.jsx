@@ -28,7 +28,7 @@ export default function Page_reset() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        <div className="logo">
+        <div className="logo-reset">
           <img src={logo_isimm} alt="ISIMM Logo" />
         </div>
         <form className="form">
