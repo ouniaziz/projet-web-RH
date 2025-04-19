@@ -4,6 +4,8 @@ import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.SecurityContext;
+import org.acme.dto.conge.DemandeAjoutSoldeDTO;
 import org.acme.dto.conge.DemandeCongeDTO;
 import org.acme.dto.conge.TypeCongeDTO;
 import org.acme.dto.response.CongeDTO;
@@ -35,7 +37,7 @@ public class CongeService {
     @Inject SoldeCongeRepository soldeCongeRepository;
     @Inject DemandeCongeRepository demandeCongeRepository;
     @Inject NotificationService notificationService;
-
+    @Inject JwtService jwtService;
 
     // TODO: Complete notify admins via websockets
     @Transactional
@@ -131,5 +133,18 @@ public class CongeService {
                     c.exercice.annee, c.type.nom
                 FROM Conge c
                 """).project(CongeDTO.class).list();
+    }
+
+    //TODO: to test
+    public List<Conge> getCongesByCin(String cin, SecurityContext ctx) {
+        // Check if the user has admin/RH privileges or is the concerned person
+        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+            throw new EntityException("You can't view people's congés history", 401);
+
+        return Conge.list("cin=?1", cin);
+    }
+
+    public void ajouterSoldeConge(DemandeAjoutSoldeDTO dto){
+        congeMapper.dtoToDemandeAjout(dto);
     }
 }

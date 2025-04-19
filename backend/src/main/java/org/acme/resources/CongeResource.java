@@ -2,7 +2,9 @@ package org.acme.resources;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import org.acme.dto.response.ApiResponseDTO;
 import org.acme.dto.conge.DemandeCongeDTO;
 import org.acme.dto.conge.TypeCongeDTO;
@@ -35,10 +37,17 @@ public class CongeResource {
     }
 
     @GET
-    @Path("conge")
     public Response getConges(){
         return Response.ok(new ApiResponseDTO(200,"Fetched conges successfully", null, congeService.getConges())).build();
     }
+
+    //This is to get état(history) of the conges of A person
+    @GET
+    @Path("/{cin}")
+    public Response getCongeOfPerson(@PathParam(value = "cin")String cin, @Context SecurityContext ctx){
+        return Response.ok(new ApiResponseDTO(200,"Fetched successfully", null,congeService.getCongesByCin(cin,ctx))).build();
+    }
+
     @POST
     @Path("/demande")
     public Response addDemande(DemandeCongeDTO demande){
@@ -59,4 +68,6 @@ public class CongeResource {
         congeService.refuseConge(demande_id);
         return Response.accepted(new ApiResponseDTO(201, "Demande congé id="+demande_id+ " refused successfully", null, null)).build();
     }
+
+
 }
