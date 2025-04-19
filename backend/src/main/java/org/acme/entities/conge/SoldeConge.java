@@ -9,7 +9,6 @@ import org.acme.entities.Person;
 @Entity
 @Table(name = "solde_conge")
 public class SoldeConge extends PanacheEntityBase {
-    public static int PLAFOND_ANNEE = 2;
     public static double HEURE_SUPP_TO_CONGES = 0.5; // conges = heures_supp * HEURE_SUPP_TO_CONGES
 
 
@@ -18,6 +17,9 @@ public class SoldeConge extends PanacheEntityBase {
 
     @Column(name = "solde_restant")
     private int soldeRestant;
+
+    @Column(name = "solde_compensatoir")
+    private int soldeCompRestant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("cin")
@@ -66,5 +68,13 @@ public class SoldeConge extends PanacheEntityBase {
 
     public void setSoldeRestant(int solde_restant) {
         this.soldeRestant = solde_restant;
+    }
+
+    public int getSoldeCompRestant() {
+        return soldeCompRestant;
+    }
+
+    public void setSoldeCompRestant(int soldeCompRestant) {
+        this.soldeCompRestant = soldeCompRestant;
     }
 }
