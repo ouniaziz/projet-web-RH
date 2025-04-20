@@ -191,17 +191,29 @@ function Table_enseignants() {
       return;
     }
     try {
-      // const dataToSend = {
-      //   cln: newEnseignant.nom,       
-      //   num: newEnseignant.cin,
-      //   presso: newEnseignant.email,
-      //   image: newEnseignant.image,
-      //   email: newEnseignant.email,
-      //   telephone: newEnseignant.telephone,
-      //   adresse: newEnseignant.adresse,
-      //   department: newEnseignant.departement,
-      // };
-      // const response = await myApi.addEnseignant(newEnseignant);
+      const dataToSend = {
+        cin: newEnseignant.cin,
+        nom: newEnseignant.nom,
+        prenom: newEnseignant.prenom,
+        sexe: newEnseignant.sexe,
+        dateN: newEnseignant.dateN,
+        anciennete: newEnseignant.anciennete,
+        image: newEnseignant.image,
+        email: newEnseignant.email,
+        roleId: 0,
+        gradId: 0,
+        telephone: newEnseignant.telephone,
+        adresse: newEnseignant.adresse,
+        departement: newEnseignant.departement,
+        handicaps: [
+          {
+            id: 1,
+            severity: newEnseignant.hasHandicaps,
+            assistiveDevice: "device"
+          }
+        ]
+      };
+      const response = await myApi.addEnseignant(newEnseignant);
       setEnseignants([...enseignants,{ ...newEnseignant}]); 
       setNewEnseignant({
         image: null,
