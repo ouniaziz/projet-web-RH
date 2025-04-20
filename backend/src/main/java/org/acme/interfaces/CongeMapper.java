@@ -1,9 +1,11 @@
 package org.acme.interfaces;
 
+import org.acme.dto.conge.DemandeAjoutSoldeDTO;
 import org.acme.dto.conge.DemandeCongeDTO;
 import org.acme.entities.Exercice;
 import org.acme.entities.Person;
 import org.acme.entities.conge.Conge;
+import org.acme.entities.conge.DemandeAjoutSolde;
 import org.acme.entities.conge.DemandeConge;
 import org.acme.entities.conge.TypeConge;
 import org.acme.exceptions.EntityException.EntityException;
@@ -37,5 +39,19 @@ public interface CongeMapper {
 
     default TypeConge mapType(int type_id){
         return TypeConge.<TypeConge>findByIdOptional(type_id).orElseThrow(()-> new EntityException("Conge de type ="+type_id+" not found",404));
+    }
+
+
+    @Mapping(target = "justification", source = "dto.justification")
+    @Mapping(target = "soldeAjoute", source = "dto.soldeAjouter")
+    @Mapping(target = "type", expression = "java(mapTypeConge(dto.typeId))")
+    @Mapping(target = "person_cin", expression = "java(mapPerson(dto.cin))")
+    DemandeAjoutSolde dtoToDemandeAjout(DemandeAjoutSoldeDTO dto);
+
+    default TypeConge mapTypeConge(int typeId){
+        return null;
+    }
+    default Person mapPerson(String cin){
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 package org.acme.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
@@ -19,6 +20,7 @@ public class Department extends PanacheEntityBase {
     private Person chefDep;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "depart")
+    @JsonIgnore
     private List<Person> personList;
 
     public Department() {}

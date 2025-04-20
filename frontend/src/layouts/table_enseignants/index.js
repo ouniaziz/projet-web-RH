@@ -69,7 +69,8 @@ function Table_enseignants() {
       renderCell: (params) => (
         <Author
           image={params.row.image}
-          name={params.row.nom+(params.row.prenom ? " " + params.row.prenom : "")}
+          name={params.row.nom}
+          prenom={params.row.prenom}
           email={params.row.email}
         />
       ),
@@ -155,6 +156,7 @@ function Table_enseignants() {
   const [newEnseignant, setNewEnseignant] = useState({
     image: null,
     nom: "",
+    prenom: "",
     email: "",
     cin: "",
     adresse: "",
@@ -169,10 +171,11 @@ function Table_enseignants() {
   const handleChange = (e) => {
     setNewEnseignant({ ...newEnseignant, [e.target.name]: e.target.value });
   };
-  const handleAddEnseignant = (e) => {
+  const handleAddEnseignant = async (e) => {
     e.preventDefault();
     if (
       !newEnseignant.nom ||
+      !newEnseignant.prenom ||
       !newEnseignant.cin ||
       !newEnseignant.email ||
       !newEnseignant.adresse ||
@@ -188,12 +191,22 @@ function Table_enseignants() {
       return;
     }
     try {
-      const response = myApi.addEnseignant(newEnseignant);
-  
-      setEnseignants([...enseignants, response]); // ou `setEnseignants(prev => [...prev, response])`
+      // const dataToSend = {
+      //   cln: newEnseignant.nom,       
+      //   num: newEnseignant.cin,
+      //   presso: newEnseignant.email,
+      //   image: newEnseignant.image,
+      //   email: newEnseignant.email,
+      //   telephone: newEnseignant.telephone,
+      //   adresse: newEnseignant.adresse,
+      //   department: newEnseignant.departement,
+      // };
+      // const response = await myApi.addEnseignant(newEnseignant);
+      setEnseignants([...enseignants,{ ...newEnseignant}]); 
       setNewEnseignant({
         image: null,
         nom: "",
+        prenom: "",
         email: "",
         cin: "",
         adresse: "",
@@ -221,13 +234,13 @@ function Table_enseignants() {
     const defaultImage="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=";
     return image ? `data:${mimeType};base64,${image}` : defaultImage;
   };
-  const Author = ({ image, name, email }) => {
+  const Author = ({ image, name, prenom, email }) => {
     return (
       <MDBox display="flex" alignItems="center" lineHeight={1}>
         <MDAvatar src={displayImgFromB64(image)} name={name} size="md" />
         <MDBox ml={2} lineHeight={1}>
           <MDTypography display="block" variant="button" fontWeight="medium">
-            {name}
+            {name} {prenom}
           </MDTypography>
           <MDTypography variant="caption">{email}</MDTypography>
         </MDBox>
@@ -238,6 +251,7 @@ function Table_enseignants() {
   Author.propTypes = {
     image: PropTypes.string,
     name: PropTypes.string.isRequired,
+    prenom: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
   };
   const handleEdit = (row) => {
@@ -355,9 +369,19 @@ function Table_enseignants() {
                       >
                         <TextField
                           fullWidth
-                          label="Nom et prenom"
+                          label="Nom"
                           name="nom"
                           value={newEnseignant.nom}
+                          onChange={handleChange}
+                          variant="outlined"
+                          margin="normal"
+                          required
+                        />
+                        <TextField
+                          fullWidth
+                          label="Prenom"
+                          name="prenom"
+                          value={newEnseignant.prenom}
                           onChange={handleChange}
                           variant="outlined"
                           margin="normal"
@@ -503,12 +527,14 @@ function Table_enseignants() {
                           margin="normal"
                           required
                           sx={{
-                            '.MuiSelect-select': {
-                              height: 45, 
-                              paddingTop: '18px',
-                              paddingBottom: '18px',
-                              display: 'flex',
-                              alignItems: 'center'
+                            '& .MuiOutlinedInput-root': {
+                              '& .MuiSelect-select': {
+                                height: 45,
+                                paddingTop: '18px',
+                                paddingBottom: '18px',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }
                             }
                           }}
                         >
@@ -563,7 +589,7 @@ function Table_enseignants() {
                       initialState={{ pagination: { paginationModel } }}
                       pageSizeOptions={[5, 10]}
                       sx={{ border: 0 }}
-                      getRowId={(row) => row.cin}
+                      getRowId={(row) => row.cin || `temp-id-${Math.random()}`} 
                       onRowClick={handleRowClick}
                       style={{ cursor: 'pointer' }}
                       loading={isLoading}

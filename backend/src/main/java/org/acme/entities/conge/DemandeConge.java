@@ -29,6 +29,7 @@ public class DemandeConge extends PanacheEntity {
     @Column(name="status_conge")
     private int statusConge;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "person", referencedColumnName = "cin",updatable = false)
