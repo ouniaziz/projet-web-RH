@@ -71,8 +71,9 @@ function Profile_enseignant() {
     return dateString;
   };
   const displayImgFromB64 = (image) => {
-    const mimeType = "application/octet-stream"; // ou "image/jpeg", "image/png", etc.
-    return image ? `data:${mimeType};base64,${image}` : user;
+    const mimeType = "application/octet-stream";
+    const defaultImage="https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1906669723.jpg"; 
+    return image ? `data:${mimeType};base64,${image}` : defaultImage;
   };
   return (
     <DashboardLayout>

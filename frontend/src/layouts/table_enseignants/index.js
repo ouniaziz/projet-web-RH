@@ -1,10 +1,11 @@
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-
+import axios from 'axios';
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
 import {useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
+import MenuItem from '@mui/material/MenuItem';
 import Button from "@mui/material/Button";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -40,7 +41,6 @@ function Table_enseignants() {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const theme = useTheme();
-  const defaultImage="url(${user})";
   const isDarkMode = theme.palette.mode === "dark";
   const delete_row = (params) => {
     if (!params || !params.row) {
@@ -68,7 +68,7 @@ function Table_enseignants() {
       width: 210,
       renderCell: (params) => (
         <Author
-          image={params.row.image || defaultImage}
+          image={params.row.image}
           name={params.row.nom+(params.row.prenom ? " " + params.row.prenom : "")}
           email={params.row.email}
         />
@@ -187,22 +187,29 @@ function Table_enseignants() {
       alert("Veuillez remplir tous les champs obligatoires ");
       return;
     }
-    setEnseignants([...enseignants, { ...newEnseignant}]);
-    setNewEnseignant({
-      image: null,
-      nom: "",
-      email: "",
-      cin: "",
-      adresse: "",
-      telephone: "",
-      grad: "",
-      dateN: "",
-      sexe: "",
-      departement: "",
-      anciennete: "",
-      hasHandicaps: "",
-    });
-    handleClose1();
+    try {
+      const response = myApi.addEnseignant(newEnseignant);
+  
+      setEnseignants([...enseignants, response]); // ou `setEnseignants(prev => [...prev, response])`
+      setNewEnseignant({
+        image: null,
+        nom: "",
+        email: "",
+        cin: "",
+        adresse: "",
+        telephone: "",
+        grad: "",
+        dateN: "",
+        sexe: "",
+        departement: "",
+        anciennete: "",
+        hasHandicaps: "",
+      });
+      handleClose1();
+    } catch (error) {
+      console.error("Erreur lors de l’ajout de l’enseignant :", error);
+      alert("Une erreur est survenue lors de l’ajout.");
+    }
   };
   // ---------------------------------------------------------------------------------------------------------
   const [open1, setOpen1] = useState(false);
@@ -211,6 +218,7 @@ function Table_enseignants() {
   const paginationModel = { page: 0, pageSize: 5 };
   const displayImgFromB64 = (image) => {
     const mimeType = "application/octet-stream"; // ou "image/jpeg", "image/png", etc.
+    const defaultImage="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=";
     return image ? `data:${mimeType};base64,${image}` : defaultImage;
   };
   const Author = ({ image, name, email }) => {
@@ -228,7 +236,7 @@ function Table_enseignants() {
   };
   
   Author.propTypes = {
-    image: PropTypes.object.isRequired,
+    image: PropTypes.string,
     name: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
   };
@@ -485,15 +493,30 @@ function Table_enseignants() {
                           required
                         />
                         <TextField
+                          select
                           fullWidth
-                          label="département"
+                          label="Département"
                           name="departement"
                           value={newEnseignant.departement}
                           onChange={handleChange}
                           variant="outlined"
                           margin="normal"
                           required
-                        />
+                          sx={{
+                            '.MuiSelect-select': {
+                              height: 45, 
+                              paddingTop: '18px',
+                              paddingBottom: '18px',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }
+                          }}
+                        >
+                          <MenuItem value="Informatique">Informatique</MenuItem>
+                          <MenuItem value="Mathématiques">Mathématiques</MenuItem>
+                          <MenuItem value="Physique">Physique</MenuItem>
+                          <MenuItem value="Electronique">Electronique</MenuItem>
+                        </TextField>
                         <TextField
                           fullWidth
                           label="ancienneté"
@@ -515,6 +538,7 @@ function Table_enseignants() {
                           margin="normal"
                           required
                         />
+                        
                         <Button
                           type="submit"
                           color="primary"

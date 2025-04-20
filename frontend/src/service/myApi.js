@@ -88,6 +88,15 @@ class MyAPI {
       return e
     }
   }
+  async addEnseignant(data) {
+    try {
+      const res = await this._instance.post("/persons", data);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  
 
   logout(){
     // Clear tokens from local storage
