@@ -59,6 +59,7 @@ public class PersonResource {
 */
     @DELETE
     @Path("/{cin}")
+    @Transactional
     //@RolesAllowed("**")
     public Response deletePerson(@PathParam("cin") String cin, @Context SecurityContext ctx){
         if(personService.deletePerson(cin, ctx))

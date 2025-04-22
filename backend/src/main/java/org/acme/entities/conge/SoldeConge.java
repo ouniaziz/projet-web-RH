@@ -16,10 +16,10 @@ public class SoldeConge extends PanacheEntityBase {
     private SoldeCongeId id;
 
     @Column(name = "solde_restant")
-    private int soldeRestant;
+    private Integer soldeRestant;
 
     @Column(name = "solde_compensatoir")
-    private int soldeCompRestant;
+    private Integer soldeCompRestant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("cin")
@@ -52,7 +52,7 @@ public class SoldeConge extends PanacheEntityBase {
         return exercice;
     }
 
-    public SoldeConge(SoldeCongeId id, int solde_restant) {
+    public SoldeConge(SoldeCongeId id, Integer solde_restant) {
         this.id = id;
         this.soldeRestant = solde_restant;
     }
@@ -61,20 +61,20 @@ public class SoldeConge extends PanacheEntityBase {
         return id;
     }
 
-    public int getSoldeRestant() {
+    public Integer getSoldeRestant() {
         return soldeRestant;
     }
 
 
-    public void setSoldeRestant(int solde_restant) {
+    public void setSoldeRestant(Integer solde_restant) {
         this.soldeRestant = solde_restant;
     }
 
-    public int getSoldeCompRestant() {
+    public Integer getSoldeCompRestant() {
         return soldeCompRestant;
     }
 
-    public void setSoldeCompRestant(int soldeCompRestant) {
+    public void setSoldeCompRestant(Integer soldeCompRestant) {
         this.soldeCompRestant = soldeCompRestant;
     }
 }

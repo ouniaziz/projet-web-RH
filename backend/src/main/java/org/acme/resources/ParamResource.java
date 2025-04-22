@@ -32,7 +32,7 @@ public class ParamResource {
     @GET
     //RolesAllowed(**)
     public Response getDepartement(){
-        return Response.ok(new ApiResponseDTO(200,"Departements fetched", null, Department.listAll())).build();
+        return Response.ok(new ApiResponseDTO(200,"Departements fetched", null, Department.list("SELECT d FROM Department d"))).build();
     }
 
 }
