@@ -23,7 +23,13 @@ const colors = {
   background: {
     default: "#f0f2f5",
   },
+  isimm:{
+    main: '#115eee',
+    dark: '#0a4bc4',
+    light: '#e1ebfd',
+    contrastText: '#fff',
 
+  },
   text: {
     main: "#7b809a",
     focus: "#7b809a",
