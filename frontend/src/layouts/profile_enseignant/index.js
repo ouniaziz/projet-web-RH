@@ -71,8 +71,9 @@ function Profile_enseignant() {
     return dateString;
   };
   const displayImgFromB64 = (image) => {
-    const mimeType = "application/octet-stream"; // ou "image/jpeg", "image/png", etc.
-    return image ? `data:${mimeType};base64,${image}` : user;
+    const mimeType = "application/octet-stream";
+    const defaultImage="https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1906669723.jpg"; 
+    return image ? `data:${mimeType};base64,${image}` : defaultImage;
   };
   return (
     <DashboardLayout>
@@ -82,7 +83,7 @@ function Profile_enseignant() {
 
                                   <div style={{width: "25%",backgroundColor: "#f4f5f7",padding: "2rem",display: "flex",flexDirection: "column",alignItems: "center",justifyContent: "center",textAlign: "center"}} className="gradient-custom ">
                                             <img src={displayImgFromB64(enseignant.image)} alt="Avatar" style={{ width: "120px",height:"125px", borderRadius: "50%", marginBottom: "1rem"}}/>
-                                            <h5 style={{ margin: "0.5rem 0", fontWeight: "bold" }}>{enseignant.nom+(enseignant.prenom ? " " + enseignant.prenom : "")}</h5>
+                                            <h5 style={{ margin: "0.5rem 0", fontWeight: "bold" }}>{enseignant.nom+" "+enseignant.prenom}</h5>
                                             <p style={{ margin: 0, color: "#6c757d" }}>{enseignant.grad}</p>
                                             <i className="far fa-edit"style={{marginTop:"20px",cursor:"pointer" }}onClick={handleOpen}></i>
                                   </div>

@@ -61,7 +61,7 @@ export default function Page_activation() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        <div className="logo-activation">
+        <div className="logo">
           <img src={logo_isimm} alt="ISIMM Logo" />
         </div>
         <form className="form" onSubmit={handleSubmit}>
