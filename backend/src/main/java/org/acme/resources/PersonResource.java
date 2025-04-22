@@ -22,6 +22,8 @@ import sendinblue.ApiException;
    TODO: Don't forget to turn addPerson from String into void
    TODO: use SimplePersonResponseDTO for fetching large-scale data for DataGrid
    TODO: Add CRUD for parameters like Grad, Handicaps, Roles, Exercice
+
+   TODO: URGENT reactivate RolesAllowed before submitting!!
  * replace java-jwt dependency with smallrye-jwt when necessary since it integrates well with quarkus.
 */
 public class PersonResource {
@@ -57,7 +59,7 @@ public class PersonResource {
 */
     @DELETE
     @Path("/{cin}")
-    @RolesAllowed("**")
+    //@RolesAllowed("**")
     public Response deletePerson(@PathParam("cin") String cin, @Context SecurityContext ctx){
         if(personService.deletePerson(cin, ctx))
             return Response.ok().build();
@@ -82,7 +84,7 @@ public class PersonResource {
     // Get person by Id
     @GET
     @Path("/{cin}")
-    @RolesAllowed("**") // similar to @Authenticated
+    //@RolesAllowed("**") // similar to @Authenticated
     public Response getDetailedPersonById(@PathParam(value = "cin") String cin, @Context SecurityContext ctx){
         Person p = personService.getPerson(cin, ctx);
         return Response.ok().entity(new ApiResponseDTO(200, null, null, p)).build();
@@ -91,7 +93,7 @@ public class PersonResource {
     @PUT
     @Path("/update")
     @Transactional
-    @RolesAllowed("**")
+    //@RolesAllowed("**")
     public Response modifyPerson(PersonDTO personDto, @Context SecurityContext ctx){
         personService.modifyPerson(personDto, ctx);
         return Response.status(200).entity(new ApiResponseDTO(200, "Modified person "+personDto.cin.get()+" successfully", null, null)).build();
