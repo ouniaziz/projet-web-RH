@@ -50,7 +50,6 @@ export default function PageConnexion() {
         <div
           className="wrapper"
           style={{
-            width: "480px",
             padding: "30px",
             borderRadius: "10px",
             backdropFilter: "blur(4px) brightness(70%)",
