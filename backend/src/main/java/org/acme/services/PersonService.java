@@ -83,7 +83,7 @@ public class PersonService {
         userRepository.persist(new User(personDTO.cin.get(), personDTO.email.get(), PasswordUtils.hashPassword(activationToken)));
 
         //TODO: Change this into the app's real uri
-        brevoService.sendEmail(person.getEmail(), "Activate your account", new BrevoAccountActivationTemplate(person.getPrenom() + " "+person.getNom(), "localhost:3000/reset_password?token="+activationToken));
+        brevoService.sendEmail(person.getEmail(), "Activate your account", new BrevoAccountActivationTemplate(person.getPrenom() + " "+person.getNom(), "localhost:3000/activation_compte?token="+activationToken));
         
         return activationToken;
     }

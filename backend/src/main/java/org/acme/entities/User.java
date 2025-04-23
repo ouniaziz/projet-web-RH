@@ -1,13 +1,7 @@
 package org.acme.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "USERS")
@@ -20,7 +14,7 @@ public class User extends PanacheEntityBase{
     @Column(length = 8)
     private String cin;
     
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId("cin")
     @JoinColumn(name = "cin", referencedColumnName = "cin")
     private Person person;

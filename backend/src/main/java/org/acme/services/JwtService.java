@@ -4,6 +4,9 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Set;
 
+import io.smallrye.jwt.auth.principal.JWTParser;
+import io.smallrye.jwt.auth.principal.ParseException;
+import org.acme.exceptions.EntityException.EntityException;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 
@@ -19,8 +22,14 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class JwtService {
+	public static Duration ACCESS_TOKEN_DURATION = Duration.ofDays(3);
+	public static Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
+
 	@Inject Logger log;
 	@Inject JsonWebToken jsonWebToken;
+	@Inject
+	JWTParser jsonParser;
+
 
 	public  String generateAccessToken(SecurityIdentity securityIden) {
 		String cin = securityIden.getPrincipal().getName();
@@ -28,8 +37,9 @@ public class JwtService {
 
 		return Jwt.issuer(JwtConfig.getIssuer())
 				.upn(cin)
+				.claim("type", "access")
 				.groups(roles)
-				.expiresIn(Duration.ofDays(3))
+				.expiresIn(ACCESS_TOKEN_DURATION)
 				.sign();
 	}
 
@@ -39,8 +49,9 @@ public class JwtService {
 
 		return Jwt.issuer(JwtConfig.getIssuer())
 				.upn(cin)
+				.claim("type","refresh")
 				.groups(roles)
-				.expiresIn(Duration.ofDays(7))
+				.expiresIn(REFRESH_TOKEN_DURATION)
 				.sign();
 	}
 
@@ -87,5 +98,20 @@ public class JwtService {
 	}
 	public Set<String> getAuthRoles(){
 		return jsonWebToken.getGroups();
+	}
+
+	public String generateAccessFromRefresh(String refreshToken) {
+		try {
+            var decoded = jsonParser.parse(refreshToken);
+			return Jwt.issuer(JwtConfig.getIssuer())
+					.upn(decoded.getSubject())
+					.claim("type", "access")
+					.expiresIn(ACCESS_TOKEN_DURATION)
+					.sign();
+        } catch (ParseException e) {
+            throw new EntityException("Couldn't parse refreshToken", 500);
+        }
+
+
 	}
 }
