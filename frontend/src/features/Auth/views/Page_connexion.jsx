@@ -31,7 +31,7 @@ export default function PageConnexion() {
         // push notification
         console.log("Logged AS ",username);
         localStorage.setItem("isAuthenticated", "true");
-        //navigate("/main/dashboard");
+        navigate("/main/dashboard");
     }catch(err){
         alert("password incorrect");
         console.error("An error produced\n",err)
