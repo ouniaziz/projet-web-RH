@@ -29,7 +29,7 @@ import sendinblue.ApiException;
 
 
 @ApplicationScoped
-//TODO: DELETE Person
+
 public class PersonService {
     Logger log = Logger.getLogger(PersonService.class);
 
@@ -196,6 +196,7 @@ public class PersonService {
         return personRepository.findAll().list();
     }
 
+    //TODO: DELETE Person
     public boolean deletePerson(String cin, SecurityContext ctx){
         /*
         if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
