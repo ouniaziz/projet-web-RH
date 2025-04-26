@@ -68,9 +68,9 @@ public interface PersonMapper{
     @Mapping(target = "adresse", source = "dto.adresse", qualifiedByName = "optionalTo")
     @Mapping(target = "role", expression = "java(mapRole(dto.roleId.orElse(null),roleRepo))")
     @Mapping(target = "depart", expression = "java(mapDepart(dto.departement.orElse(null)))")
+    @Mapping(target = "image", expression = "java(mapImage(dto.image.orElse(null)))")
     @Mapping(target = "gradList", ignore = true)
     @Mapping(target = "handicaps",ignore = true)
-    @Mapping(target = "image", ignore = true)
     @Mapping(target = "status_p", ignore = true)
     @Mapping(target = "soldeList", ignore = true)
     Person toNewEntity(PersonDTO dto, @Context RolesRepository roleRepo, @Context HandicapRepository handicapRepo);
