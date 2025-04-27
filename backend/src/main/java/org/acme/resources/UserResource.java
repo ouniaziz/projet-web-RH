@@ -1,11 +1,12 @@
 package org.acme.resources;
 
 
+import jakarta.ws.rs.core.NewCookie;
 import org.acme.dto.auth.ActivationRequestDTO;
 import org.acme.dto.response.ApiResponseDTO;
 import org.acme.dto.auth.LoginRequestDTO;
-import org.acme.dto.auth.LoginResponseDTO;
 import org.acme.dto.auth.PasswordResetRequestDTO;
+import org.acme.dto.response.LoginResponseDTO;
 import org.acme.services.CustomAuthService;
 import org.acme.services.JwtService;
 import org.jboss.logging.Logger;
@@ -27,6 +28,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import sendinblue.ApiException;
 
+import java.time.Duration;
+
 @Path("/api/users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,16 +47,25 @@ public class UserResource {
         return authService.authenticate(
             new UsernamePasswordAuthenticationRequest(
                 loginRequest.getUsername(), 
-                new PasswordCredential(loginRequest.getPassword().toCharArray())), null).onItem()
-            
-            .transform((securityIden)-> {
-                log.warn("Beginning of transform");
-                String accessToken = jwtService.generateAccessToken(securityIden);
-                String refreshToken = jwtService.generateRefreshToken(securityIden); 
-                log.warn("Generated tokens and ready to return");
-                ApiResponseDTO response = new ApiResponseDTO(200, "Logged in successfully", null, new LoginResponseDTO(accessToken, refreshToken));
-                return Response.ok().entity(response).build();
-            });
+                new PasswordCredential(loginRequest.getPassword().toCharArray())), null)
+                .onItem().transform((securityIden)-> {
+
+                    String accessToken = jwtService.generateAccessToken(securityIden);
+                    String refreshToken = jwtService.generateRefreshToken(securityIden);
+
+                    NewCookie accessTokenCookie = createHttpOnlyCookie(
+                            "access_token",
+                            accessToken,
+                            JwtService.ACCESS_TOKEN_DURATION);
+
+                    NewCookie refreshTokenCookie = createHttpOnlyCookie(
+                            "refresh_token",
+                            refreshToken,
+                            JwtService.REFRESH_TOKEN_DURATION);
+
+                    ApiResponseDTO response = new ApiResponseDTO(200, "Logged in successfully", null, new LoginResponseDTO(securityIden.getAttribute("role"),securityIden.getAttribute("nom"), securityIden.getPrincipal().getName()));
+                    return Response.ok().entity(response).cookie(accessTokenCookie,refreshTokenCookie).build();
+                });
     }
 
 
@@ -87,5 +99,33 @@ public class UserResource {
         authService.activate(activationRequest);
         
         return Response.status(200).entity(new ApiResponseDTO(200, activationRequest.cin()+" Account is activated", null, null)).build();
+    }
+
+    @Path("/logout")
+    @POST
+    @Blocking
+    public Response logout() {
+        // Create expired cookies to clear them
+        NewCookie clearAccessToken = new NewCookie.Builder("access_token")
+                .value("").maxAge(0).path("/").build();
+
+        NewCookie clearRefreshToken = new NewCookie.Builder("refresh_token")
+                .value("").maxAge(0).path("/").build();
+
+        return Response.ok().entity(new ApiResponseDTO(200, "Logged out successfully", null, null))
+                .cookie(clearAccessToken, clearRefreshToken)
+                .build();
+    }
+
+
+    private NewCookie createHttpOnlyCookie(String name, String value, Duration duration) {
+        return new NewCookie.Builder(name)
+                .value(value)
+                .maxAge((int)duration.toSeconds())
+                .httpOnly(true)
+                .secure(true) // Enable in production (requires HTTPS)
+                .sameSite(NewCookie.SameSite.STRICT) // Helps prevent CSRF
+                .path("/")
+                .build();
     }
 }

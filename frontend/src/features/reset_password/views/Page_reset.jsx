@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import styles from "../assets/page_reset.module.css";
 import logo_isimm from "../assets/logo_isimm.jpeg";                                                                    
 import isimm_photo from "../assets/isimm_photo.webp";
@@ -90,7 +90,7 @@ const IsimmButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export default function Page_reset() {
+export default function ActivateAccount() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false)
   const [retypePassword, setRetypePassword] = useState("");
@@ -204,19 +204,11 @@ export default function Page_reset() {
             Changer Mot de passe
           </button>
           */}
-          <IsimmButton>Changer mot de passe</IsimmButton>
+          <div className={styles.submit}>
+            <IsimmButton>Confirmer</IsimmButton>
+          </div>
         </form>
       </div>    
     </div>
   );
 }
-
-/*<input
-  type="password"
-  placeholder="Entrer mot de passe"
-  value={password}
-  onChange={handlePasswordChange}
-  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
-  title=""
-  required
-></input>*/

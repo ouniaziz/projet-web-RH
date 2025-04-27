@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import {useStore} from "../../../service/store";
 
 export default function PageConnexion() {
 
@@ -16,16 +17,24 @@ export default function PageConnexion() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [open, setOpen] = React.useState(false);
+  const login = useStore(state=>state.login);
+  const username = useStore(state=>state.username)
+
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   localStorage.setItem("isAuthenticated", "false");
-  const handledLogin = (event) => {
+  const handledLogin = async (event) => {
     event.preventDefault();
-    if (email === "" && password === "") {
-      localStorage.setItem("isAuthenticated", "true");
-      navigate("/main/dashboard");
-    } else {
-      alert("password incorrect");
+    try{
+        await login(email,password)
+        // push notification
+        console.log("Logged AS ",username);
+        localStorage.setItem("isAuthenticated", "true");
+        navigate("/main/dashboard");
+    }catch(err){
+        alert("password incorrect");
+        console.error("An error produced\n",err)
     }
   };
 
@@ -50,7 +59,6 @@ export default function PageConnexion() {
         <div
           className="wrapper"
           style={{
-            width: "480px",
             padding: "30px",
             borderRadius: "10px",
             backdropFilter: "blur(4px) brightness(70%)",

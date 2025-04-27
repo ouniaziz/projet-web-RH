@@ -29,7 +29,7 @@ import sendinblue.ApiException;
 
 
 @ApplicationScoped
-//TODO: DELETE Person
+
 public class PersonService {
     Logger log = Logger.getLogger(PersonService.class);
 
@@ -83,7 +83,7 @@ public class PersonService {
         userRepository.persist(new User(personDTO.cin.get(), personDTO.email.get(), PasswordUtils.hashPassword(activationToken)));
 
         //TODO: Change this into the app's real uri
-        brevoService.sendEmail(person.getEmail(), "Activate your account", new BrevoAccountActivationTemplate(person.getPrenom() + " "+person.getNom(), "localhost:3000/reset_password?token="+activationToken));
+        brevoService.sendEmail(person.getEmail(), "Activate your account", new BrevoAccountActivationTemplate(person.getPrenom() + " "+person.getNom(), "localhost:3000/activation_compte?token="+activationToken));
         
         return activationToken;
     }
@@ -196,6 +196,7 @@ public class PersonService {
         return personRepository.findAll().list();
     }
 
+    //TODO: DELETE Person
     public boolean deletePerson(String cin, SecurityContext ctx){
         /*
         if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))

@@ -1,6 +1,7 @@
 package org.acme.services;
 
 
+import jakarta.persistence.Tuple;
 import org.acme.dto.auth.ActivationRequestDTO;
 import org.acme.dto.auth.PasswordResetRequestDTO;
 import org.acme.dto.PersonStatusDTO;
@@ -26,6 +27,8 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import sendinblue.ApiException;
+
+import java.util.Optional;
 
 
 @ApplicationScoped
@@ -61,17 +64,19 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
                 if(!PasswordUtils.checkPassword(String.valueOf(request.getPassword().getPassword()), user.getPassw()))
                     throw new AuthenticationFailedException("Invalid password");
                 
-                Person pers = personRepo.findByIdOptional(user.getCin())
-                            .orElseThrow(()-> new AuthenticationFailedException("User not found"));
+                Tuple personTuple = personRepo.find("SELECT p.cin cin, p.nom nom, p.prenom prenom, p.role.nom_r role FROM Person p WHERE p.cin = ?1",user.getCin()).project(Tuple.class)
+                        .singleResultOptional().orElseThrow(()-> new AuthenticationFailedException("User not found"));
 
                 
                 return Uni.createFrom().item(
                     QuarkusSecurityIdentity.builder()
-                    .setPrincipal(new QuarkusPrincipal(pers.getCin()))
-                    .addRole(pers.getRole().getNomRole())
-                    .addCredential(request.getPassword())
-                    .setAnonymous(false)
-                    .build()
+                        .setPrincipal(new QuarkusPrincipal(personTuple.get("cin", String.class)))
+                        .addAttribute("nom",personTuple.get("prenom",String.class)+" "+personTuple.get("nom", String.class))
+                        .addAttribute("role", personTuple.get("role", String.class))
+                        .addRole(personTuple.get("role", String.class))
+                        .addCredential(request.getPassword())
+                        .setAnonymous(false)
+                        .build()
                 );
     }
     

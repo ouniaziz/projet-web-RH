@@ -39,7 +39,6 @@ public class CongeService {
     @Inject NotificationService notificationService;
     @Inject JwtService jwtService;
 
-    // TODO: Complete notify admins via websockets
     @Transactional
     public Long createDemande(DemandeCongeDTO dto){
         personRepository.existsOrElseThrow(dto.cin);
