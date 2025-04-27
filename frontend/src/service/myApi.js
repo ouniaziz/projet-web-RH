@@ -96,6 +96,31 @@ class MyAPI {
       return Promise.reject(e);
     }
   }
+  async deleteEnseignant(cin) {
+    try {
+      const res = await this._instance.delete(`/persons/${cin}`);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  async getGrades() {
+    try {
+      const res = await this._instance.get(`/params/grad`);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  async getHandicaps() {
+    try {
+      const res = await this._instance.get(`/params/handicap`);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  
   
 
   logout(){

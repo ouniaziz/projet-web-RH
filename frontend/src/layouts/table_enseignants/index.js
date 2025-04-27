@@ -21,9 +21,6 @@ import themeDark from "assets/theme-dark";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
-// Images
-import team2 from "assets/images/team-2.jpg";
-
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -42,20 +39,29 @@ function Table_enseignants() {
   const { darkMode } = controller;
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
-  const delete_row = (params) => {
+  const delete_row = async (params) => {
     if (!params || !params.row) {
       console.error("Impossible de supprimer : les données de la ligne sont invalides.");
       return;
     }
+  
     const idToDelete = params.row.cin;
-    setEnseignants((prevEnseignant) => prevEnseignant.filter((enseignant) => enseignant.cin !== idToDelete));
+  
+    try {
+      await myApi.deleteEnseignant(idToDelete);
+      setEnseignants((prevEnseignant) => prevEnseignant.filter((enseignant) => enseignant.cin !== idToDelete));
+      console.log(`Enseignant avec CIN ${idToDelete} supprimé.`);
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'enseignant :", error);
+    }
   };
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setNewEnseignant((prev) => ({ ...prev, image: reader.result.split(',')[1] })); // stocke uniquement les données base64
+        setNewEnseignant((prev) => ({ ...prev, image: reader.result.split(',')[1] }));
       };
       reader.readAsDataURL(file);
     }
@@ -190,7 +196,22 @@ function Table_enseignants() {
       alert("Veuillez remplir tous les champs obligatoires ");
       return;
     }
+    let depart="";
+    if (newEnseignant.departement === "Informatique") {
+      depart="INFO";
+    }
+    else if (newEnseignant.departement === "Mathématiques") {
+      depart="MATH";
+    }
+    else if (newEnseignant.departement === "Physique") {
+      depart="PHYS";
+    }
+    else if (newEnseignant.departement === "Electronique") {
+      depart="ELEC";
+    } 
     try {
+      const selectedGrade = grades.find(grade => grade.nom === newEnseignant.grad);
+      const selectedHandicap = handicaps.find(handicap => handicap.name_h === newEnseignant.hasHandicaps);
       const dataToSend = {
         cin: newEnseignant.cin,
         nom: newEnseignant.nom,
@@ -200,20 +221,20 @@ function Table_enseignants() {
         anciennete: newEnseignant.anciennete,
         image: newEnseignant.image,
         email: newEnseignant.email,
-        roleId: 0,
-        gradId: 0,
+        roleId: 2,
+        gradId: selectedGrade.id,
         telephone: newEnseignant.telephone,
         adresse: newEnseignant.adresse,
-        departement: newEnseignant.departement,
+        departement: depart,
         handicaps: [
           {
-            id: 1,
+            id: selectedHandicap.id_hand,
             severity: newEnseignant.hasHandicaps,
             assistiveDevice: "device"
           }
         ]
       };
-      const response = await myApi.addEnseignant(newEnseignant);
+      const response = await myApi.addEnseignant(dataToSend);
       setEnseignants([...enseignants,{ ...newEnseignant}]); 
       setNewEnseignant({
         image: null,
@@ -292,6 +313,26 @@ function Table_enseignants() {
     setIsLoading(true)
     myApi.getEnseignants().then(enseignants=>{
       setEnseignants(enseignants.data);
+    }).catch(err=>{
+      console.error("Error while fetching records", err)
+    }).finally(()=>{
+      setIsLoading(false)
+    })
+  }, []);
+  const [ grades , setGrades] = useState([]);
+  useEffect(() => {
+    myApi.getGrades().then(grades=>{
+      setGrades(grades.data);
+    }).catch(err=>{
+      console.error("Error while fetching records", err)
+    }).finally(()=>{
+      setIsLoading(false)
+    })
+  }, []);
+  const [ handicaps , setHandicaps] = useState([{id_hand: '0', name_h: 'None',desc_h: 'None'}]);
+  useEffect(() => {
+    myApi.getHandicaps().then(handicaps=>{
+      setHandicaps(prev => [...prev, ...handicaps.data]);
     }).catch(err=>{
       console.error("Error while fetching records", err)
     }).finally(()=>{
@@ -466,6 +507,7 @@ function Table_enseignants() {
                           required
                         />
                         <TextField
+                          select
                           fullWidth
                           label="Grade"
                           name="grad"
@@ -474,8 +516,24 @@ function Table_enseignants() {
                           variant="outlined"
                           margin="normal"
                           required
-                        />
-                        
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              '& .MuiSelect-select': {
+                                height: 45,
+                                paddingTop: '18px',
+                                paddingBottom: '18px',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }
+                            }
+                          }}
+                        >
+                          {grades.map((grade) => (
+                            <MenuItem value={grade.nom} key={grade.id}>
+                              {grade.nom}
+                            </MenuItem>
+                          ))}
+                        </TextField>
                       </MDBox>
                       <MDBox
                         display="flex"
@@ -567,6 +625,7 @@ function Table_enseignants() {
                           required
                         />
                         <TextField
+                          select
                           fullWidth
                           label="handicap"
                           name="hasHandicaps"
@@ -575,8 +634,24 @@ function Table_enseignants() {
                           variant="outlined"
                           margin="normal"
                           required
-                        />
-                        
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              '& .MuiSelect-select': {
+                                height: 45,
+                                paddingTop: '18px',
+                                paddingBottom: '18px',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }
+                            }
+                          }}
+                        >
+                          {handicaps.map((handicap) => (
+                            <MenuItem value={handicap.name_h} key={handicap.id_hand}>
+                              {handicap.name_h}
+                            </MenuItem>
+                          ))}
+                        </TextField>
                         <Button
                           type="submit"
                           color="primary"
