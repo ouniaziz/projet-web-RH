@@ -50,6 +50,34 @@ class MyAPI {
       return Promise.reject(e);
     }
   }
+  async deleteEnseignant(cin) {
+    try {
+      const res = await this._instance.delete(`/persons/${cin}`);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  async getGrades() {
+    try {
+      const res = await this._instance.get(`/params/grad`);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  async getHandicaps() {
+    try {
+      const res = await this._instance.get(`/params/handicap`);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  
 }
+
+MyAPI.REFRESH_TOKEN= "a3k5X9pLmQ2vR7sN1tY8";
+MyAPI.ACCESS_TOKEN="rT9f4xW6zP8qL3nB5vM7";
 
 export const myApi  =new MyAPI("http://localhost:8080/api");
