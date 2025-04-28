@@ -15,60 +15,69 @@ import {PlusIcon} from "lucide-react";
 const filter = createFilterOptions();
 
 HandicapAutoComplete.propTypes={
-    value: PropTypes.any,
-    setValue: PropTypes.func.isRequired,
-    toggleOpen: PropTypes.func.isRequired,
+    index: PropTypes.number.isRequired,
+    handicapValue: PropTypes.any,
+    setHandicapValue: PropTypes.func.isRequired,
+    setIsDialogOpen: PropTypes.func.isRequired,
     setDialogValue: PropTypes.func.isRequired,
     handicaps: PropTypes.array.isRequired,
-    open: PropTypes.bool.isRequired,
+    isDialogOpen: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     handleDialogSubmit: PropTypes.func.isRequired,
     dialogValue: PropTypes.object.isRequired
 }
-const handicaps=[
+const handicapsValue=[
     {
+        id: 1,
         handicapName: "Motor impairement",
         handicapDesc: "You can't move, can you?",
     },
     {
+        id: 2,
         handicapName: "Speech impairement",
         handicapDesc: "You can't speak properly, can you?",
     },
     {
+        id: 3,
         handicapName: "Missing hand",
         handicapDesc: "High five!.... WAIT!",
     }
 ]
-function HandicapAutoComplete({ value, setValue, toggleOpen,setDialogValue, handicaps,dialogValue, handleDialogSubmit, handleClose, open}){
+function HandicapAutoComplete({index, handicapValue, setHandicapValue, setIsDialogOpen,setDialogValue, handicaps,dialogValue, handleDialogSubmit, handleClose, isDialogOpen}){
     return(
         <>
             <Autocomplete
+
                 className={styles.span2}
-                value={value}
+                value={handicapValue}
                 onChange={(event, newValue) => {
                     if (typeof newValue === 'string') {
                         // timeout to avoid instant validation of the dialog's form.
                         setTimeout(() => {
-                            toggleOpen(true);
+                            setIsDialogOpen(true);
                             setDialogValue({
                                 handicapName: newValue,
                                 handicapDesc: '',
                             });
                         });
                     } else if (newValue && newValue.inputValue) {
-                        toggleOpen(true);
+                        setIsDialogOpen(true);
                         setDialogValue({
                             handicapName: newValue.inputValue,
                             handicapDesc: '',
                         });
                     } else {
-                        setValue(newValue);
+                        setHandicapValue(index, newValue);
                     }
                 }}
                 filterOptions={(options, params) => {
                     const filtered = filter(options, params);
 
-                    if (params.inputValue !== '') {
+                    const exactMatch = options.some(option =>
+                        option.handicapName.toLowerCase() === params.inputValue.toLowerCase()
+                    );
+
+                    if (params.inputValue !== '' && !exactMatch) {
                         filtered.push({
                             inputValue: params.inputValue,
                             handicapName: `Add "${params.inputValue}"`,
@@ -114,8 +123,8 @@ function HandicapAutoComplete({ value, setValue, toggleOpen,setDialogValue, hand
                     />)
                 }
             />
-            <Dialog open={open} onClose={handleClose}>
-                <form onSubmit={handleDialogSubmit}>
+            <Dialog open={isDialogOpen} onClose={handleClose}>
+                <form>
                     <DialogTitle>Add a new handicap</DialogTitle>
                     <DialogContent>
                         <TextField
@@ -149,7 +158,7 @@ function HandicapAutoComplete({ value, setValue, toggleOpen,setDialogValue, hand
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button type="submit">Add</Button>
+                        <Button onClick={handleDialogSubmit}>Add</Button>
                     </DialogActions>
                 </form>
             </Dialog>
@@ -157,12 +166,22 @@ function HandicapAutoComplete({ value, setValue, toggleOpen,setDialogValue, hand
     )
 }
 
-
+// TODO: make the handicapList a prop to inject from AddModal component
 export function HandicapDetails(){
-    const [value, setValue] = useState(null);
-    const[selectedSeverity, setSelectedSeverity]= useState("")
-
-    const [open, toggleOpen] = useState(false);
+    /*const [handicapValue, setHandicapValue] = useState(null);
+    const[selectedSeverity, setSelectedSeverity]= useState("")*/
+    const [dialogValue, setDialogValue] = useState({
+        handicapName: '',
+        handicapDesc: '',
+    });
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [handicapsList, setHandicapsList] = useState([
+        {
+            handicap: null,
+            severity: "",
+            assistiveDevices:""
+        }
+    ])
 
     const severityStyles = {
         Mild: {
@@ -179,107 +198,147 @@ export function HandicapDetails(){
         },
     };
 
-
-    const handleSeverity = (event) => {
-        const { value } = event.target;
-        setSelectedSeverity(value);
+    const addHandicap = () => {
+        setHandicapsList([...handicapsList, {
+            handicap: null,
+            severity: "",
+            assistiveDevices:""
+        }]);
     };
+
+    // ==================================Handle Handicappe Values===================================
+    const handleHandicapValue=(index, newValue)=>{
+        setHandicapsList(prev => prev.map((handicapElement, i) =>
+            i === index ? {
+                ...handicapElement,
+                handicap: {
+                    id: newValue.id || null,
+                    handicapName: newValue.handicapName || newValue.inputValue || '',
+                    handicapDesc: newValue.handicapDesc || '',
+                }
+            } : handicapElement
+        ));
+    }
+
+    const handleSeverity = (index, value) => {
+        setHandicapsList(prev => prev.map((item, i) =>
+            i === index ? { ...item, severity: value } : item
+        ));
+    };
+
+    const handleAssistiveChange = (index, value)=>{
+        setHandicapsList(prev => prev.map((item, i) =>
+            i === index ? { ...item, assistiveDevices: value } : item
+        ));
+    }
     const handleClose = () => {
         setDialogValue({
             handicapName: '',
             handicapDesc: '',
         });
-        toggleOpen(false);
+        setIsDialogOpen(false);
     };
 
-    const [dialogValue, setDialogValue] = useState({
-        handicapName: '',
-        handicapDesc: '',
-    });
-
-    const handleDialogSubmit = (event) => {
-        event.preventDefault();
-        setValue({
-            handicapName: dialogValue.title,
+    const handleDialogSubmit = (index) => {
+        setHandicapsList(prev=>prev.map((handicap,i)=>
+            i===index ? {handicap:{
+                    id: handicapsValue.length+1,
+                    handicapName: dialogValue.handicapName,
+                    handicapDesc: dialogValue.handicapDesc,
+                },
+                ...handicap
+            } : handicap)
+        )
+        /*setHandicapValue({
+            id: handicapsValue.length+1,
+            handicapName: dialogValue.handicapName,
             handicapDesc: dialogValue.handicapDesc,
-        });
+        });*/
         handleClose();
     };
     return(
         <>
-            <div className={styles.handicappeRow}>
-                <HandicapAutoComplete
-                    setValue={setValue}
-                    toggleOpen={toggleOpen}
-                    setDialogValue={setDialogValue}
-                    handicaps={handicaps}
-                    dialogValue={dialogValue}
-                    handleDialogSubmit={handleDialogSubmit}
-                    handleClose={handleClose}
-                    open={open}
-                    />
-                <TextField
-                    className={styles.flexItem}
-                    select
-                    fullWidth
-                    label="Severity"
-                    name="severity"
-                    variant="outlined"
-                    value={selectedSeverity}
-                    onChange={handleSeverity}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            '& .MuiSelect-select': {
-                                height: 45,
-                                paddingTop: '18px',
-                                paddingBottom: '18px',
-                                display: 'flex',
-                                alignItems: 'center'
+            {handicapsList.map((handicapElement, index) => (
+                <div key={index} className={styles.handicappeRow}>
+                    <HandicapAutoComplete
+                        index={index}
+                        setHandicapValue={handleHandicapValue}
+                        handicapValue={handicapElement.handicap}
+                        setIsDialogOpen={setIsDialogOpen}
+                        setDialogValue={setDialogValue}
+                        handicaps={handicapsValue}
+                        dialogValue={dialogValue}
+                        handleDialogSubmit={handleDialogSubmit}
+                        handleClose={handleClose}
+                        isDialogOpen={isDialogOpen}
+                        />
+                    <TextField
+                        className={styles.flexItem}
+                        select
+                        fullWidth
+                        label="Severity"
+                        name="severity"
+                        variant="outlined"
+                        value={handicapElement.severity}
+                        onChange={(e)=>handleSeverity(index, e.target.value)}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                '& .MuiSelect-select': {
+                                    height: 45,
+                                    paddingTop: '18px',
+                                    paddingBottom: '18px',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }
                             }
-                        }
-                    }}
-                >
-                    {['Mild', 'Moderate', 'Severe'].map((severity) => (
-                        <MenuItem
-                            key={severity}
-                            value={severity}
-                            sx={{
-                                color: severityStyles[severity].text,  // Persistent text color
-                                '&:hover': {
-                                    backgroundColor: severityStyles[severity].hoverBg,  // Semi-transparent dark bg
-                                },
-                                '&.Mui-selected': {
-                                    backgroundColor: severityStyles[severity].hoverBg,  // Keep style when selected
+                        }}
+                    >
+                        {['Mild', 'Moderate', 'Severe'].map((severity) => (
+                            <MenuItem
+                                key={severity}
+                                value={severity}
+                                sx={{
+                                    color: severityStyles[severity].text,  // Persistent text color
                                     '&:hover': {
-                                        backgroundColor: severityStyles[severity].hoverBg,  // Override MUI defaults
+                                        backgroundColor: severityStyles[severity].hoverBg,  // Semi-transparent dark bg
                                     },
-                                },
-                            }}
-                        >
-                            {severity}
-                        </MenuItem>
-                        )
-                    )}
-                </TextField>
-                <TextField
-                    className={styles.span2}
-                    fullWidth
-                    name={"assistiveDevices"}
-                    label={"Assistive devices"}
-                    variant={"outlined"}
-                />
-            </div>
+                                    '&.Mui-selected': {
+                                        backgroundColor: severityStyles[severity].hoverBg,  // Keep style when selected
+                                        '&:hover': {
+                                            backgroundColor: severityStyles[severity].hoverBg,  // Override MUI defaults
+                                        },
+                                    },
+                                }}
+                            >
+                                {severity}
+                            </MenuItem>
+                            )
+                        )}
+                    </TextField>
+                    <TextField
+                        className={styles.span2}
+                        fullWidth
+                        name={"assistiveDevices"}
+                        label={"Assistive devices"}
+                        variant={"outlined"}
+                        value={handicapElement.assistiveDevices}
+                        onChange={(e)=>handleAssistiveChange(index,e.target.value)}
+                    />
+                </div>
+
+            ))}
 
             <div>
-                <Button
-                    variant="outlined"
-                    startIcon={<PlusIcon />}
+                <Button variant="outlined" startIcon={<PlusIcon />} onClick={(e)=> {
+                    console.log(handicapsList);
+                    addHandicap();
+                }}
                     sx={{
-                        color: '#1565c0',        // Your custom blue
+                        color: '#1565c0',
                         '&:hover': {
-                            color: '#1565c0',      // Keeps text blue on hover
-                            borderColor: '#1565c0 !important',  // Forces border to stay white
-                            backgroundColor: 'rgba(255, 255, 255, 0.08)', // Optional: subtle hover effect
+                            color: '#1565c0',
+                            borderColor: '#1565c0 !important',
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
                         },
                     }}
                 >
