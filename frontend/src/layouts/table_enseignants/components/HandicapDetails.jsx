@@ -10,7 +10,7 @@ import Button from '@mui/material/Button';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import PropTypes from "prop-types";
 import MenuItem from "@mui/material/MenuItem";
-import {PlusIcon} from "lucide-react";
+import {MinusIcon, PlusIcon} from "lucide-react";
 
 const filter = createFilterOptions();
 
@@ -206,6 +206,9 @@ export function HandicapDetails(){
         }]);
     };
 
+    const popHandicap = ()=>{
+        setHandicapsList(prev=>prev.slice(0,-1))
+    }
     // ==================================Handle Handicappe Values===================================
     const handleHandicapValue=(index, newValue)=>{
         setHandicapsList(prev => prev.map((handicapElement, i) =>
@@ -328,7 +331,7 @@ export function HandicapDetails(){
 
             ))}
 
-            <div>
+            <div style={{display: "flex", gap:"10px"}}>
                 <Button variant="outlined" startIcon={<PlusIcon />} onClick={(e)=> {
                     console.log(handicapsList);
                     addHandicap();
@@ -343,6 +346,22 @@ export function HandicapDetails(){
                     }}
                 >
                     Ajouter handicappe
+                </Button>
+
+                <Button variant="outlined" startIcon={<MinusIcon />} onClick={(e)=> {
+                    popHandicap();
+                }}
+                        sx={{
+                            color: '#c01515',
+                            borderColor: '#c01515 !important',
+                            '&:hover': {
+                                color: '#c01515',
+                                borderColor: '#c01515 !important',
+                                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                            },
+                        }}
+                >
+                    Supprimer
                 </Button>
             </div>
         </>
