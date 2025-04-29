@@ -329,7 +329,7 @@ function Table_enseignants() {
       setIsLoading(false)
     })
   }, []);
-  const [ handicaps , setHandicaps] = useState([{id_hand: '0', name_h: 'None',desc_h: 'None'}]);
+  const [ handicaps , setHandicaps] = useState([{id_hand: '0', name_h: 'None',desc_h: 'None'}]);  
   useEffect(() => {
     myApi.getHandicaps().then(handicaps=>{
       setHandicaps(prev => [...prev, ...handicaps.data]);
