@@ -1,6 +1,8 @@
 package org.acme.resources;
 
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 import org.acme.dto.response.ApiResponseDTO;
@@ -26,6 +28,14 @@ public class ParamResource {
     //RolesAllowed(**)
     public Response getHandicaps(){
         return Response.ok(new ApiResponseDTO(200,"Handicappe fetched", null, Handicap.listAll())).build();
+    }
+
+    @Path("/handicap")
+    @POST
+    @Transactional
+    public Response addHandicap(Handicap handicap){
+        Handicap.persist(handicap);
+        return Response.ok(new ApiResponseDTO(200,"Handicap id="+handicap.getId_hand()+" added successfully", null, null)).build();
     }
 
     @Path("/departement")
