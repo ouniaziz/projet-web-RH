@@ -23,25 +23,47 @@ import MDButtonRoot from "components/MDButton/MDButtonRoot";
 
 // Material Dashboard 2 React contexts
 import { useMaterialUIController } from "context";
+import {CircularProgress} from "@mui/material";
+
 
 const MDButton = forwardRef(
-  ({ color, variant, size, circular, iconOnly, children, ...rest }, ref) => {
-    const [controller] = useMaterialUIController();
-    const { darkMode } = controller;
+    (
+        {
+          color,
+          variant,
+          size,
+          circular,
+          iconOnly,
+          children,
+          loading = false, // New loading prop
+          ...rest
+        },
+        ref
+    ) => {
+      const [controller] = useMaterialUIController();
+      const { darkMode } = controller;
 
-    return (
-      <MDButtonRoot
-        {...rest}
-        ref={ref}
-        color="primary"
-        variant={variant === "gradient" ? "contained" : variant}
-        size={size}
-        ownerState={{ color, variant, size, circular, iconOnly, darkMode }}
-      >
-        {children}
-      </MDButtonRoot>
-    );
-  }
+      return (
+          <MDButtonRoot
+              {...rest}
+              ref={ref}
+              color="primary"
+              variant={variant === "gradient" ? "contained" : variant}
+              size={size}
+              disabled={loading || rest.disabled} // Disable when loading
+              ownerState={{ color, variant, size, circular, iconOnly, darkMode, loading }}
+          >
+            {loading ? (
+                <CircularProgress
+                    size={size === "small" ? 20 : 24}
+                    color="white"
+                />
+            ) : (
+                children
+            )}
+          </MDButtonRoot>
+      );
+    }
 );
 
 // Setting default values for the props of MDButton
@@ -51,6 +73,7 @@ MDButton.defaultProps = {
   color: "white",
   circular: false,
   iconOnly: false,
+  loading: false, // Default loading state
 };
 
 // Typechecking props for the MDButton
@@ -70,7 +93,7 @@ MDButton.propTypes = {
   ]),
   circular: PropTypes.bool,
   iconOnly: PropTypes.bool,
+  loading: PropTypes.bool, // New prop type
   children: PropTypes.node.isRequired,
 };
-
 export default MDButton;
