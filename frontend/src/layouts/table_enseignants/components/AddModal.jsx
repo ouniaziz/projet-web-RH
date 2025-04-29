@@ -9,7 +9,7 @@ import Radio from "@mui/material/Radio";
 import MenuItem from "@mui/material/MenuItem";
 import PropTypes from "prop-types";
 import {myApi} from "../../../service/myApi";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import styles from "../assets/addModalStyle.module.css"
 import {Accordion, AccordionDetails, AccordionSummary, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import {styled} from "@mui/material/styles";
@@ -42,7 +42,7 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
     },
 });
 
-const StyledToggleButton = styled(ToggleButton)(({ theme, value, $gender }) => ({
+const StyledToggleButton = styled(ToggleButton)(({ theme, value }) => ({
     // Selected state: colored segment
     '&.Mui-selected': {
         color: value === 'Homme' ? '#fff' : '#fff', // White text for contrast
@@ -114,6 +114,7 @@ const MyAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
 }));
 
 export default function AddModal({open1, handleClose1, addToEnseignants, b64ToImage}){
+    const handiRef = useRef(null);
     const [newEnseignant, setNewEnseignant] = useState({
         image: null,
         nom: "",
@@ -122,84 +123,45 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
         cin: "",
         adresse: "",
         telephone: "",
-        grad: "",
+        gradId: "",
         dateN: "",
-        sexe: "",
+        sexe: "Homme",
         departement: "",
         anciennete: 0,
-        hasHandicaps: "",
+        handicaps:null,
+        roleId:2
     });
     const [gender, setGender] = useState("Homme");
     const [expanded, setExpanded] = useState('0');
+    const [isLoading, setIsLoading] = useState(false)
 
-    const handleAddEnseignant = async (e) => {
-        e.preventDefault();
+    const handleAddEnseignant = async () => {
         if (
             !newEnseignant.nom ||
             !newEnseignant.prenom ||
             !newEnseignant.cin ||
             !newEnseignant.email ||
-            !newEnseignant.adresse ||
-            !newEnseignant.grad ||
-            !newEnseignant.hasHandicaps ||
-            !newEnseignant.dateN ||
-            !newEnseignant.sexe ||
-            !newEnseignant.telephone ||
-            !newEnseignant.departement ||
-            !newEnseignant.anciennete
+            !newEnseignant.dateN
         ) {
             alert("Veuillez remplir tous les champs obligatoires ");
             return;
         }
+
+        setIsLoading(true)
         try {
-            const dataToSend = {
-                cin: newEnseignant.cin,
-                nom: newEnseignant.nom,
-                prenom: newEnseignant.prenom,
-                sexe: newEnseignant.sexe,
-                dateN: newEnseignant.dateN,
-                anciennete: newEnseignant.anciennete,
-                image: newEnseignant.image,
-                email: newEnseignant.email,
-                roleId: 0,
-                gradId: 0,
-                telephone: newEnseignant.telephone,
-                adresse: newEnseignant.adresse,
-                departement: newEnseignant.departement,
-                handicaps: [
-                    {
-                        id: 1,
-                        severity: newEnseignant.hasHandicaps,
-                        assistiveDevice: "device"
-                    }
-                ]
-            };
             // TODO: Display notification && validation
-            const response = await myApi.addEnseignant(newEnseignant);
-            // setEnseignants([...enseignants,{ ...newEnseignant}]);
-
-            // Add to enseignants if success
-            addToEnseignants(newEnseignant);
-
-            setNewEnseignant({
-                image: null,
-                nom: "",
-                prenom: "",
-                email: "",
-                cin: "",
-                adresse: "",
-                telephone: "",
-                grad: "",
-                dateN: "",
-                sexe: "",
-                departement: "",
-                anciennete: "",
-                hasHandicaps: "",
+            await myApi.addEnseignant(newEnseignant).then((response)=>{
+                if(response.status===201)
+                    addToEnseignants(newEnseignant);
+                else
+                    console.log(response)
             });
             handleClose1();
         } catch (error) {
             console.error("Erreur lors de l’ajout de l’enseignant :", error);
             alert("Une erreur est survenue lors de l’ajout.");
+        }finally {
+            setIsLoading(false)
         }
     };
 
@@ -211,16 +173,55 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
         setExpanded(newExpanded? panel:"0")
     }
     const handleGenderChange = (event, newGender) => {
+        console.log(newGender)
         if (newGender !== null) {
-            setGender(newGender);
+            setGender(newGender)
         }
     };
 
+    const handleCloseModal = ()=>{
+        handleClose1()
+        setNewEnseignant({
+            image: null,
+            nom: "",
+            prenom: "",
+            email: "",
+            cin: "",
+            adresse: "",
+            telephone: "",
+            gradId: "",
+            dateN: "",
+            sexe: "",
+            departement: "",
+            anciennete: 0,
+            handicaps:null,
+            roleId:2
+        })
+    }
 
+    const handleAjouter = ()=>{
+        const handicapData =handiRef.current.getHandicaps()
+            .filter(({handicap}) => handicap!=null).map(({handicap: {id_hand}, ...rest})=>({
+            id: id_hand,
+            ...rest
+        }))
+        setNewEnseignant(prev=>{
+            const newState = {
+                ...prev,
+                sexe:gender,
+                handicaps: handicapData
+            }
+
+            console.log(newState)
+            return newState
+        })
+
+        handleAddEnseignant()
+    }
     return(
         <Modal
             open={open1}
-            onClose={handleClose1}
+            onClose={handleCloseModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
             style={{
@@ -250,7 +251,7 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                     components={"form"}
                     onSubmit={(e)=>{
                         e.preventDefault();
-                        handleClose1();
+                        handleCloseModal();
                     }}>
                     <div className={styles.flexContainer} style={{gap: "10px"}}>
                         <div className={styles.flexRow}>
@@ -292,6 +293,9 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                                 variant="outlined"
                                 margin="normal"
                                 required
+                               inputProps={{
+                                   maxLength: 8, // This provides visual feedback in the input
+                               }}
                             />
                             <TextField
                                 className={styles.flexItem}
@@ -322,10 +326,10 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                                 exclusive
                                 aria-label="gender selection"
                             >
-                                <StyledToggleButton value="Homme" aria-label="male" $gender={gender}>
+                                <StyledToggleButton value="Homme" aria-label="male">
                                     <Man2 fontSize={"medium"}/>
                                 </StyledToggleButton>
-                                <StyledToggleButton value="Femme" aria-label="female" $gender={gender}>
+                                <StyledToggleButton value="Femme" aria-label="female">
                                     <Woman2 fontSize={"medium"}/>
                                 </StyledToggleButton>
                             </StyledToggleButtonGroup>
@@ -359,15 +363,14 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                                 <MDTypography component="span">Handicappe</MDTypography>
                                 <MDTypography component="span" color={"secondary"} sx={{marginLeft: "8px"}}>(optional)</MDTypography>
                             </MyAccordionSummary>
-                            {/* TODO: Make the combo box create handicappe*/}
                             <MyAccordionDetails className={styles.handicappeContainer}>
-                                <HandicapDetails />
+                                <HandicapDetails ref={handiRef}/>
                             </MyAccordionDetails>
                         </MyAccordion>
                     </div>
                     {/* Buttons*/}
                     <div className={styles.buttonContainer}>
-                        <MDButton color={"info"} >Ajouter</MDButton>
+                        <MDButton color={"info"} onClick={handleAjouter} loading={isLoading}>Ajouter</MDButton>
                     </div>
                 </MDBox>
             </MDBox>
