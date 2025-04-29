@@ -3,6 +3,9 @@ import styles from "../assets/addModalStyle.module.css";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
+import {useStore} from "../../../service/store";
+import {useEffect, useState} from "react";
+import {myApi} from "../../../service/myApi";
 
 AdditionalInfoDetails.propTypes={
     b64ToImage: PropTypes.func.isRequired,
@@ -12,6 +15,8 @@ AdditionalInfoDetails.propTypes={
 }
 
 export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsChange, setNewEnseignant}){
+    const [ grades , setGrades] = useState([]);
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -22,6 +27,14 @@ export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsCh
             reader.readAsDataURL(file);
         }
     };
+
+    useEffect(() => {
+        myApi.getGrades().then(grades=>{
+            setGrades(grades.data);
+        }).catch(err=>{
+            console.error("Error while fetching records", err)
+        })
+    }, []);
     return(
         <>
             <div className={styles.additionalInfoRow}>
@@ -45,15 +58,33 @@ export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsCh
                     />
                     <div className={styles.flexRow}>
                         <TextField
+                            select={grades?.length>0}
                             className={styles.span2}
                             fullWidth
-                            label="Grade"
-                            name="grad"
-                            value={newEnseignant.grad}
+                            value={newEnseignant.gradId}
                             onChange={handleNewEnsChange}
+                            label="Grade"
+                            name="gradId"
                             variant="outlined"
                             margin="normal"
-                        />
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '& .MuiSelect-select': {
+                                        height: 45,
+                                        paddingTop: '18px',
+                                        paddingBottom: '18px',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }
+                                }
+                            }}
+                        >
+                            {grades?.map((grade) => (
+                                <MenuItem value={grade.id} key={grade.id}>
+                                    {grade.nom}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         <TextField
                             className={styles.flexItem}
                             select
@@ -76,10 +107,10 @@ export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsCh
                                 }
                             }}
                         >
-                            <MenuItem value="Informatique">Informatique</MenuItem>
-                            <MenuItem value="Mathématiques">Mathématiques</MenuItem>
-                            <MenuItem value="Physique">Physique</MenuItem>
-                            <MenuItem value="Electronique">Electronique</MenuItem>
+                            <MenuItem value="INFO">Informatique</MenuItem>
+                            <MenuItem value="MATH">Mathématiques</MenuItem>
+                            <MenuItem value="PHYS">Physique</MenuItem>
+                            <MenuItem value="ELEC">Electronique</MenuItem>
                         </TextField>
                     </div>
 
@@ -115,12 +146,7 @@ export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsCh
                                     }
                                 }
                             }}
-                        >
-                            <MenuItem value="Informatique">Informatique</MenuItem>
-                            <MenuItem value="Mathématiques">Mathématiques</MenuItem>
-                            <MenuItem value="Physique">Physique</MenuItem>
-                            <MenuItem value="Electronique">Electronique</MenuItem>
-                        </TextField>
+                        />
                     </div>
                 </div>
             </div>
