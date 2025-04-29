@@ -63,7 +63,7 @@ function Table_enseignants() {
       field: "nom",
       headerName: "profile ",
       sortable: false,
-      width: 210,
+      width: 270,
       renderCell: (params) => (
         <Author
           image={params.row.image}
@@ -77,26 +77,29 @@ function Table_enseignants() {
       field: "cin",
       headerName: "CIN",
       sortable: false,
-      width: 0,
+      width: 180,
     },
     {
       field: "adresse",
       headerName: "adresse",
       sortable: false,
       width: 100,
+      "renderCell": (params)=>(params.row.adresse && params.row.adresse.trim() !== '' ? params.row.adresse : "⸻")
     },
     {
       field: "telephone",
       headerName: "telephone",
       sortable: false,
       type: "number",
-      width: 100,
+      width: 140,
+      "renderCell": (params)=>(params.row.telephone && params.row.telephone.trim() !== '' ? params.row.telephone : "⸻")
     },
     {
       field: "grad",
       headerName: "Grade",
       sortable: false,
-      width: 100,
+      width: 200,
+      "renderCell": (params)=>(params.row.grad && params.row.grad.trim() !== '' ? params.row.grad : "⸻")
     },
     {
       field: "dateN",
@@ -115,6 +118,7 @@ function Table_enseignants() {
       headerName: "département",
       sortable: false,
       width: 130,
+      "renderCell": (params)=>(params.row.departement && params.row.departement.trim() !== '' ? params.row.departement : "⸻")
     },
     {
       field: "anciennete",
@@ -127,13 +131,14 @@ function Table_enseignants() {
       headerName: "handicap",
       sortable: false,
       width: 100,
+      "renderCell": (params)=>(params.row.hasHandicaps?"Oui": "Non")
     },
     {
       "field": "status",
       "headerName": "Status",
       "sortable": false,
       "width": 100,
-        "renderCell": (params)=>(<Chip  label={params.row.status?"Actif":"Inactif"} variant={"outlined"} color={params.row.status?"success":"error"}/>)
+      "renderCell": (params)=>(<Chip  label={params.row.status?"Actif":"Inactif"} variant={"outlined"} color={params.row.status?"success":"error"}/>)
     },
     {
       field: "actions",
@@ -152,89 +157,7 @@ function Table_enseignants() {
 
   const [enseignants,   setEnseignants] = useState([]);
 
-  const handleChange = (e) => {
-    setNewEnseignant({ ...newEnseignant, [e.target.name]: e.target.value });
-  };
-  /*const handleAddEnseignant = async (e) => {
-    e.preventDefault();
-    if (
-      !newEnseignant.nom ||
-      !newEnseignant.prenom ||
-      !newEnseignant.cin ||
-      !newEnseignant.email ||
-      !newEnseignant.adresse ||
-      !newEnseignant.grad ||
-      !newEnseignant.hasHandicaps ||
-      !newEnseignant.dateN ||
-      !newEnseignant.sexe ||
-      !newEnseignant.telephone ||
-      !newEnseignant.departement ||
-      !newEnseignant.anciennete
-    ) {
-      alert("Veuillez remplir tous les champs obligatoires ");
-      return;
-    }
-    let depart="";
-    if (newEnseignant.departement === "Informatique") {
-      depart="INFO";
-    }
-    else if (newEnseignant.departement === "Mathématiques") {
-      depart="MATH";
-    }
-    else if (newEnseignant.departement === "Physique") {
-      depart="PHYS";
-    }
-    else if (newEnseignant.departement === "Electronique") {
-      depart="ELEC";
-    } 
-    try {
-      const selectedGrade = grades.find(grade => grade.nom === newEnseignant.grad);
-      const selectedHandicap = handicaps.find(handicap => handicap.name_h === newEnseignant.hasHandicaps);
-      const dataToSend = {
-        cin: newEnseignant.cin,
-        nom: newEnseignant.nom,
-        prenom: newEnseignant.prenom,
-        sexe: newEnseignant.sexe,
-        dateN: newEnseignant.dateN,
-        anciennete: newEnseignant.anciennete,
-        image: newEnseignant.image,
-        email: newEnseignant.email,
-        roleId: 2,
-        gradId: selectedGrade.id,
-        telephone: newEnseignant.telephone,
-        adresse: newEnseignant.adresse,
-        departement: depart,
-        handicaps: [
-          {
-            id: selectedHandicap.id_hand,
-            severity: newEnseignant.hasHandicaps,
-            assistiveDevice: "device"
-          }
-        ]
-      };
-      const response = await myApi.addEnseignant(dataToSend);
-      setEnseignants([...enseignants,{ ...newEnseignant}]); 
-      setNewEnseignant({
-        image: null,
-        nom: "",
-        prenom: "",
-        email: "",
-        cin: "",
-        adresse: "",
-        telephone: "",
-        grad: "",
-        dateN: "",
-        sexe: "",
-        departement: "",
-        anciennete: "",
-        hasHandicaps: "",
-      });
-      handleClose1();
-    } catch (error) {
-      console.error("Erreur lors de l’ajout de l’enseignant :", error);
-      alert("Une erreur est survenue lors de l’ajout.");
-    }
-  };*/
+
   const addToEnseignant = (newEnseignant)=>{
     setEnseignants([...enseignants,{ ...newEnseignant}]);
   }
@@ -253,7 +176,7 @@ function Table_enseignants() {
         <MDAvatar src={displayImgFromB64(image)} name={name} size="md" />
         <MDBox ml={2} lineHeight={1}>
           <MDTypography display="block" variant="button" fontWeight="medium">
-            {name} {prenom}
+            {prenom} {name}
           </MDTypography>
           <MDTypography variant="caption">{email}</MDTypography>
         </MDBox>
@@ -299,26 +222,9 @@ function Table_enseignants() {
       setIsLoading(false)
     })
   }, []);
-  const [ grades , setGrades] = useState([]);
-  useEffect(() => {
-    myApi.getGrades().then(grades=>{
-      setGrades(grades.data);
-    }).catch(err=>{
-      console.error("Error while fetching records", err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
-  }, []);
+
   const [ handicaps , setHandicaps] = useState([{id_hand: '0', name_h: 'None',desc_h: 'None'}]);
-  useEffect(() => {
-    myApi.getHandicaps().then(handicaps=>{
-      setHandicaps(prev => [...prev, ...handicaps.data]);
-    }).catch(err=>{
-      console.error("Error while fetching records", err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
-  }, []);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
