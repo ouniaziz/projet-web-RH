@@ -94,7 +94,7 @@ public interface PersonMapper{
     }
 
     default Department mapDepart(String depId){
-        if(depId==null) return null;
+        if(depId==null || depId.trim().isEmpty()) return null;
         return Department.<Department>findByIdOptional(depId).orElseThrow(()->new EntityException("Dep not found", 404));
     }
     default RolePerson mapRole(Long roleId, @Context RolesRepository rolesRepository) {
