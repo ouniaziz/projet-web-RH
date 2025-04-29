@@ -1,15 +1,8 @@
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import axios from 'axios';
 import AddIcon from "@mui/icons-material/Add";
-import Modal from "@mui/material/Modal";
 import {useEffect, useState } from "react";
-import TextField from "@mui/material/TextField";
-import MenuItem from '@mui/material/MenuItem';
-import Button from "@mui/material/Button";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
+
 import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 
@@ -32,6 +25,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import { myApi } from "../../service/myApi";
 import { Chip } from "@mui/material";
+import AddModal from "./components/AddModal";
+import placeholderImg from "assets/img_placeholder.jpg"
 
 
 function Table_enseignants() {
@@ -55,23 +50,13 @@ function Table_enseignants() {
       console.error("Erreur lors de la suppression de l'enseignant :", error);
     }
   };
-  
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewEnseignant((prev) => ({ ...prev, image: reader.result.split(',')[1] }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+
   const enseignants_columns = [
     {
       field: "nom",
       headerName: "profile ",
       sortable: false,
-      width: 210,
+      width: 270,
       renderCell: (params) => (
         <Author
           image={params.row.image}
@@ -85,26 +70,29 @@ function Table_enseignants() {
       field: "cin",
       headerName: "CIN",
       sortable: false,
-      width: 0,
+      width: 180,
     },
     {
       field: "adresse",
       headerName: "adresse",
       sortable: false,
       width: 100,
+      "renderCell": (params)=>(params.row.adresse && params.row.adresse.trim() !== '' ? params.row.adresse : "⸻")
     },
     {
       field: "telephone",
       headerName: "telephone",
       sortable: false,
       type: "number",
-      width: 100,
+      width: 140,
+      "renderCell": (params)=>(params.row.telephone && params.row.telephone.trim() !== '' ? params.row.telephone : "⸻")
     },
     {
       field: "grad",
       headerName: "Grade",
       sortable: false,
-      width: 100,
+      width: 200,
+      "renderCell": (params)=>(params.row.grad && params.row.grad.trim() !== '' ? params.row.grad : "⸻")
     },
     {
       field: "dateN",
@@ -123,6 +111,7 @@ function Table_enseignants() {
       headerName: "département",
       sortable: false,
       width: 130,
+      "renderCell": (params)=>(params.row.departement && params.row.departement.trim() !== '' ? params.row.departement : "⸻")
     },
     {
       field: "anciennete",
@@ -135,13 +124,14 @@ function Table_enseignants() {
       headerName: "handicap",
       sortable: false,
       width: 100,
+      "renderCell": (params)=>(params.row.hasHandicaps?"Oui": "Non")
     },
     {
       "field": "status",
       "headerName": "Status",
       "sortable": false,
       "width": 100,
-        "renderCell": (params)=>(<Chip  label={params.row.status?"Actif":"Inactif"} variant={"outlined"} color={params.row.status?"success":"error"}/>)
+      "renderCell": (params)=>(<Chip  label={params.row.status?"Actif":"Inactif"} variant={"outlined"} color={params.row.status?"success":"error"}/>)
     },
     {
       field: "actions",
@@ -159,104 +149,11 @@ function Table_enseignants() {
   ];
 
   const [enseignants,   setEnseignants] = useState([]);
-  const [newEnseignant, setNewEnseignant] = useState({
-    image: null,
-    nom: "",
-    prenom: "",
-    email: "",
-    cin: "",
-    adresse: "",
-    telephone: "",
-    grad: "",
-    dateN: "",
-    sexe: "",
-    departement: "",
-    anciennete: "",
-    hasHandicaps: "",
-  });
-  const handleChange = (e) => {
-    setNewEnseignant({ ...newEnseignant, [e.target.name]: e.target.value });
-  };
-  const handleAddEnseignant = async (e) => {
-    e.preventDefault();
-    if (
-      !newEnseignant.nom ||
-      !newEnseignant.prenom ||
-      !newEnseignant.cin ||
-      !newEnseignant.email ||
-      !newEnseignant.adresse ||
-      !newEnseignant.grad ||
-      !newEnseignant.hasHandicaps ||
-      !newEnseignant.dateN ||
-      !newEnseignant.sexe ||
-      !newEnseignant.telephone ||
-      !newEnseignant.departement ||
-      !newEnseignant.anciennete
-    ) {
-      alert("Veuillez remplir tous les champs obligatoires ");
-      return;
-    }
-    let depart="";
-    if (newEnseignant.departement === "Informatique") {
-      depart="INFO";
-    }
-    else if (newEnseignant.departement === "Mathématiques") {
-      depart="MATH";
-    }
-    else if (newEnseignant.departement === "Physique") {
-      depart="PHYS";
-    }
-    else if (newEnseignant.departement === "Electronique") {
-      depart="ELEC";
-    } 
-    try {
-      const selectedGrade = grades.find(grade => grade.nom === newEnseignant.grad);
-      const selectedHandicap = handicaps.find(handicap => handicap.name_h === newEnseignant.hasHandicaps);
-      const dataToSend = {
-        cin: newEnseignant.cin,
-        nom: newEnseignant.nom,
-        prenom: newEnseignant.prenom,
-        sexe: newEnseignant.sexe,
-        dateN: newEnseignant.dateN,
-        anciennete: newEnseignant.anciennete,
-        image: newEnseignant.image,
-        email: newEnseignant.email,
-        roleId: 2,
-        gradId: selectedGrade.id,
-        telephone: newEnseignant.telephone,
-        adresse: newEnseignant.adresse,
-        departement: depart,
-        handicaps: [
-          {
-            id: selectedHandicap.id_hand,
-            severity: newEnseignant.hasHandicaps,
-            assistiveDevice: "device"
-          }
-        ]
-      };
-      const response = await myApi.addEnseignant(dataToSend);
-      setEnseignants([...enseignants,{ ...newEnseignant}]); 
-      setNewEnseignant({
-        image: null,
-        nom: "",
-        prenom: "",
-        email: "",
-        cin: "",
-        adresse: "",
-        telephone: "",
-        grad: "",
-        dateN: "",
-        sexe: "",
-        departement: "",
-        anciennete: "",
-        hasHandicaps: "",
-      });
-      handleClose1();
-    } catch (error) {
-      console.error("Erreur lors de l’ajout de l’enseignant :", error);
-      alert("Une erreur est survenue lors de l’ajout.");
-    }
-  };
+
+
+  const addToEnseignant = (newEnseignant)=>{
+    setEnseignants([...enseignants,{ ...newEnseignant}]);
+  }
   // ---------------------------------------------------------------------------------------------------------
   const [open1, setOpen1] = useState(false);
   const handleOpen1 = () => setOpen1(true);
@@ -264,8 +161,7 @@ function Table_enseignants() {
   const paginationModel = { page: 0, pageSize: 5 };
   const displayImgFromB64 = (image) => {
     const mimeType = "application/octet-stream"; // ou "image/jpeg", "image/png", etc.
-    const defaultImage="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=";
-    return image ? `data:${mimeType};base64,${image}` : defaultImage;
+    return image ? `data:${mimeType};base64,${image}` : placeholderImg;
   };
   const Author = ({ image, name, prenom, email }) => {
     return (
@@ -273,7 +169,7 @@ function Table_enseignants() {
         <MDAvatar src={displayImgFromB64(image)} name={name} size="md" />
         <MDBox ml={2} lineHeight={1}>
           <MDTypography display="block" variant="button" fontWeight="medium">
-            {name} {prenom}
+            {prenom} {name}
           </MDTypography>
           <MDTypography variant="caption">{email}</MDTypography>
         </MDBox>
@@ -319,26 +215,9 @@ function Table_enseignants() {
       setIsLoading(false)
     })
   }, []);
-  const [ grades , setGrades] = useState([]);
-  useEffect(() => {
-    myApi.getGrades().then(grades=>{
-      setGrades(grades.data);
-    }).catch(err=>{
-      console.error("Error while fetching records", err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
-  }, []);
-  const [ handicaps , setHandicaps] = useState([{id_hand: '0', name_h: 'None',desc_h: 'None'}]);  
-  useEffect(() => {
-    myApi.getHandicaps().then(handicaps=>{
-      setHandicaps(prev => [...prev, ...handicaps.data]);
-    }).catch(err=>{
-      console.error("Error while fetching records", err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
-  }, []);
+
+  const [ handicaps , setHandicaps] = useState([{id_hand: '0', name_h: 'None',desc_h: 'None'}]);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -364,308 +243,12 @@ function Table_enseignants() {
                   <AddIcon color="white" fontSize="inherit"/>
                 </IconButton>
 
-                <Modal
-                  open={open1}
-                  onClose={handleClose1}
-                  aria-labelledby="modal-modal-title"
-                  aria-describedby="modal-modal-description"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    backgroundColor: "rgba(142, 235, 248, 0.4)",
-                  }}
-                >
-                  <MDBox
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    position="absolute"
-                    top="8%"
-                    left="27%"
-                    transform="translate(-50%, -50%)"
-                    width={800}
-                    boxShadow={24}
-                    p={4}
-                    borderRadius="2px"
-                    style={{ backgroundColor: "white" }}
-                  >
-                    <MDTypography id="modal-title" variant="h6" mb={3}>
-                      Ajouter un enseignant
-                    </MDTypography>
-                    <MDBox
-                      component="form"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        handleClose();
-                      }}
-                      display="flex"
-                      flexDirection="row"
-                      alignItems="center"
-                      justifyContent="center"
-                      transform="translate(-50%, -50%)"
-                      boxShadow={10}
-                      p={28}
-                      borderRadius="2px"
-                      style={{ backgroundColor: "white" }}
-                    >
-                      <MDBox
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="center"
-                        position="absolute"
-                        left="80px"
-                        top="64px"
-                        width={300}
-                      >
-                        <TextField
-                          fullWidth
-                          label="Nom"
-                          name="nom"
-                          value={newEnseignant.nom}
-                          onChange={handleChange}
-                          variant="outlined"
-                          margin="normal"
-                          required
-                        />
-                        <TextField
-                          fullWidth
-                          label="Prenom"
-                          name="prenom"
-                          value={newEnseignant.prenom}
-                          onChange={handleChange}
-                          variant="outlined"
-                          margin="normal"
-                          required
-                        />
-                        <MDBox style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
-                          <input
-                            accept="image/*"
-                            type="file"
-                            id="upload-photo"
-                            style={{ display: "none" }}
-                            onChange={handleImageChange}
-                            required
-                          />
-                          <label htmlFor="upload-photo">
-                            <Button
-                              variant="contained"
-                              component="span"
-                              color="secondary"
-                              sx={{ mt: 1 }}
-                              style={{ width: 210, height: "50px", color: "white" }}
-                            >
-                              Upload Photo
-                            </Button>
-                          </label>
-                          {newEnseignant.image && (
-                            <img
-                              src={displayImgFromB64(newEnseignant.image)}
-                              alt="Preview"
-                              style={{
-                                marginTop: "10px",
-                                width: "80px",
-                                height: "50px",
-                                objectFit: "cover",
-                                borderRadius: "10px",
-                              }}
-                            />
-                          )}
-                        </MDBox>
-                        <TextField
-                          fullWidth
-                          label="CIN"
-                          type="number"
-                          name="cin"
-                          value={newEnseignant.cin}
-                          onChange={handleChange}
-                          variant="outlined"
-                          margin="normal"
-                          required
-                        />
-                        <TextField
-                          fullWidth
-                          label="Email"
-                          type="email"
-                          name="email"
-                          value={newEnseignant.email}
-                          onChange={handleChange}
-                          variant="outlined"
-                          margin="normal"
-                          required
-                        />
-                        <TextField
-                          fullWidth
-                          label="adresse"
-                          name="adresse"
-                          value={newEnseignant.adresse}
-                          onChange={handleChange}
-                          variant="outlined"
-                          margin="normal"
-                          required
-                        />
-                        <TextField
-                          select
-                          fullWidth
-                          label="Grade"
-                          name="grad"
-                          value={newEnseignant.grad}
-                          onChange={handleChange}
-                          variant="outlined"
-                          margin="normal"
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& .MuiSelect-select': {
-                                height: 45,
-                                paddingTop: '18px',
-                                paddingBottom: '18px',
-                                display: 'flex',
-                                alignItems: 'center'
-                              }
-                            }
-                          }}
-                        >
-                          {grades.map((grade) => (
-                            <MenuItem value={grade.nom} key={grade.id}>
-                              {grade.nom}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      </MDBox>
-                      <MDBox
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="center"
-                        position="absolute"
-                        right="80px"
-                        top="64px"
-                        width={300}
-                      >
-                        <TextField
-                          fullWidth
-                          label="date de naissance"
-                          name="dateN"
-                          value={newEnseignant.dateN}
-                          onChange={handleChange}
-                          type="date"
-                          variant="outlined"
-                          margin="normal"
-                          required
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                        <RadioGroup
-                          aria-labelledby="demo-radio-buttons-group-label"
-                          defaultValue="male"
-                          name="sexe"
-                          value={newEnseignant.sexe}
-                          onChange={handleChange}
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            height: "30px",
-                            margin: "14px",
-                          }}
-                        >
-                          <FormControlLabel value="Homme" control={<Radio />} label="Homme" />
-                          <FormControlLabel value="Femme" control={<Radio />} label="Femme" />
-                        </RadioGroup>
-                        <TextField
-                          fullWidth
-                          label="telephone"
-                          name="telephone"
-                          value={newEnseignant.telephone}
-                          onChange={handleChange}
-                          type="tel"
-                          variant="outlined"
-                          margin="normal"
-                          required
-                        />
-                        <TextField
-                          select
-                          fullWidth
-                          label="Département"
-                          name="departement"
-                          value={newEnseignant.departement}
-                          onChange={handleChange}
-                          variant="outlined"
-                          margin="normal"
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& .MuiSelect-select': {
-                                height: 45,
-                                paddingTop: '18px',
-                                paddingBottom: '18px',
-                                display: 'flex',
-                                alignItems: 'center'
-                              }
-                            }
-                          }}
-                        >
-                          <MenuItem value="Informatique">Informatique</MenuItem>
-                          <MenuItem value="Mathématiques">Mathématiques</MenuItem>
-                          <MenuItem value="Physique">Physique</MenuItem>
-                          <MenuItem value="Electronique">Electronique</MenuItem>
-                        </TextField>
-                        <TextField
-                          fullWidth
-                          label="ancienneté"
-                          name="anciennete"
-                          value={newEnseignant.anciennete}
-                          onChange={handleChange}
-                          type="number"
-                          variant="outlined"
-                          margin="normal"
-                          required
-                        />
-                        <TextField
-                          select
-                          fullWidth
-                          label="handicap"
-                          name="hasHandicaps"
-                          value={newEnseignant.hasHandicaps}
-                          onChange={handleChange}
-                          variant="outlined"
-                          margin="normal"
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& .MuiSelect-select': {
-                                height: 45,
-                                paddingTop: '18px',
-                                paddingBottom: '18px',
-                                display: 'flex',
-                                alignItems: 'center'
-                              }
-                            }
-                          }}
-                        >
-                          {handicaps.map((handicap) => (
-                            <MenuItem value={handicap.name_h} key={handicap.id_hand}>
-                              {handicap.name_h}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                        <Button
-                          type="submit"
-                          color="primary"
-                          variant="contained"
-                          onClick={handleAddEnseignant}
-                          sx={{ mt: 3}}
-                          style={{ width: 300, color: "white" }}
-                        >
-                          Ajouter
-                        </Button>
-                      </MDBox>
-                    </MDBox>
-                  </MDBox>
-                </Modal>
+                <AddModal
+                    open1={open1}
+                      Close1={handleClose1}
+                    addToEnseignants={addToEnseignant}
+                    b64ToImage={displayImgFromB64}
+                    />
               </MDBox>
               <MDBox pt={3}>
                 <ThemeProvider theme={darkMode ? themeDark : theme}>

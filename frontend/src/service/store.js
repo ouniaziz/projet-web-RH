@@ -1,13 +1,39 @@
 import {create} from "zustand/react";
 import {myApi} from "./myApi";
 
+
 export const useStore= create((set)=>({
+    //general
+    isLoading: false,
+
+    // Auth
     role: null,
     cin: null,
     isAuthenticated: false,
-    isLoading: false,
     error: null,
     username: null,
+
+    // TableEns
+    grades:null,
+    handicaps:null,
+    enseignants:null,
+
+
+
+    getHandicaps: async()=>{
+        try{
+            const response = await myApi.getHandicaps()
+            set({handicaps: {
+                    id: response.data.id_hand,
+                    handicapName: response.data.name_h,
+                    handicapDesc: response.data.desc_h
+                }})
+        }catch(err){
+            set({error:err.message})
+            throw err
+        }
+    },
+
 
     login: async (username, password) => {
         set({ isLoading: true, error: null });

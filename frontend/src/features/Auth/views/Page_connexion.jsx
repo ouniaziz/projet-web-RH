@@ -27,9 +27,12 @@ export default function PageConnexion() {
   const handledLogin = async (event) => {
     event.preventDefault();
     try{
+        // Uncomment this to apply authenticatoin
+        /*
         await login(email,password)
         // push notification
-        console.log("Logged AS ",username);
+        //console.log("Logged AS ",username);
+        */
         localStorage.setItem("isAuthenticated", "true");
         navigate("/main/dashboard");
     }catch(err){

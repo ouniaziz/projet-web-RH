@@ -1,0 +1,50 @@
+.flexContainer {
+    display: flex;
+    flex-direction: column; /* Stack rows vertically */
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.flexRow {
+    display: flex;
+    gap: 10px; /* Gap between columns */
+}
+
+.flexItem {
+    flex: 1; /* Distribute space equally */
+}
+
+.span2 {
+    flex: 2; /* Takes twice the space (since default is 1) */
+}
+.additionalInfoContainer{
+    display: flex;
+    flex-direction: column;
+}
+
+.additionalInfoRow{
+    display: flex;
+    flex: 2;
+    gap: 20px;
+}
+.imgContainer{
+    width: auto;
+    height: 182px;
+}
+
+.handicappeContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.handicappeRow{
+    display: flex;
+    gap: 10px;
+}
+.buttonContainer{
+    display: flex;
+    margin-top: 50px;
+
+    justify-content: end;
+}
