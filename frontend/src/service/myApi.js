@@ -5,6 +5,7 @@ class MyAPI {
     this._instance = axios.create({
       baseURL,
     });
+    //TODO Check the problem with error.response, error is undefined
     this._instance.interceptors.response.use(
         response => response,
         error => {
@@ -69,6 +70,14 @@ class MyAPI {
   async getHandicaps() {
     try {
       const res = await this._instance.get(`/params/handicap`);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  async addHandicap(handicap) {
+    try {
+      const res = await this._instance.post(`/params/handicap`, handicap);
       return res.data;
     } catch (e) {
       return Promise.reject(e);
