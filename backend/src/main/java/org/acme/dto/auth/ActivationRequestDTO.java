@@ -1,3 +1,3 @@
 package org.acme.dto.auth;
 
-public record ActivationRequestDTO(String cin, String token, String password){}
+public record ActivationRequestDTO(String token, String password){}
