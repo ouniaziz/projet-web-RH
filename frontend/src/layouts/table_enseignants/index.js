@@ -34,13 +34,14 @@ import { myApi } from "../../service/myApi";
 import { Chip } from "@mui/material";
 import AddModal from "./components/AddModal";
 import placeholderImg from "assets/img_placeholder.jpg"
+import {useNotificationStore} from "../../service/notificationService";
 
 
 function Table_enseignants() {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
+  const showNotification = useNotificationStore((state) => state.showNotification);
   const delete_row = async (params) => {
     if (!params || !params.row) {
       console.error("Impossible de supprimer : les données de la ligne sont invalides.");
@@ -50,9 +51,14 @@ function Table_enseignants() {
     const idToDelete = params.row.cin;
   
     try {
-      await myApi.deleteEnseignant(idToDelete);
-      setEnseignants((prevEnseignant) => prevEnseignant.filter((enseignant) => enseignant.cin !== idToDelete));
-      console.log(`Enseignant avec CIN ${idToDelete} supprimé.`);
+      await myApi.deleteEnseignant(idToDelete).then(()=>{
+        setEnseignants((prevEnseignant) => prevEnseignant.filter((enseignant) => enseignant.cin !== idToDelete));
+        showNotification({
+          type:"success",
+          title:"Suppression de l'enseignant",
+          message:`Enseignant avec CIN ${idToDelete} supprimé.`
+        })
+      });
     } catch (error) {
       console.error("Erreur lors de la suppression de l'enseignant :", error);
     }
