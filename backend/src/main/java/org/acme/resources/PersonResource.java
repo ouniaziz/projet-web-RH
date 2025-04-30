@@ -45,18 +45,6 @@ public class PersonResource {
         }
     }
 
-/*
-    @GET
-    //@RolesAllowed({"Personnel RH", "Administrator"})
-    public Response getPersonsByFilters(@DefaultValue("-1")   @RestQuery int grad,
-                                        @RestQuery String sexe,
-                                        @DefaultValue("-1")   @RestQuery int anciennete,
-                                        @RestQuery String actif,
-                                        @DefaultValue("-1")   @RestQuery int handicap){
-
-        return Response.ok(new ApiResponseDTO(200, "Filtered successfully", null, personService.filterRecords(sexe,grad,anciennete,handicap, actif))).build();
-    }
-*/
     @DELETE
     @Path("/{cin}")
     @Transactional
