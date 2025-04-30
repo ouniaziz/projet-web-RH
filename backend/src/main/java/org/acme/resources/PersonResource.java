@@ -20,7 +20,6 @@ import sendinblue.ApiException;
 @Produces(MediaType.APPLICATION_JSON)
 /* TODO: Ask chatbot how to integrate realtime notification manager that's fired upon every modification made to the Person's data
    TODO: Don't forget to turn addPerson from String into void
-   TODO: use SimplePersonResponseDTO for fetching large-scale data for DataGrid
    TODO: Add CRUD for parameters like Grad, Handicaps, Roles, Exercice
 
    TODO: URGENT reactivate RolesAllowed before submitting!!
