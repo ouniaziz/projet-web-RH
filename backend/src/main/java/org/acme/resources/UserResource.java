@@ -98,7 +98,7 @@ public class UserResource {
     public Response activateAccount(ActivationRequestDTO activationRequest){
         authService.activate(activationRequest);
         
-        return Response.status(200).entity(new ApiResponseDTO(200, activationRequest.cin()+" Account is activated", null, null)).build();
+        return Response.status(200).entity(new ApiResponseDTO(200, "Account is activated", null, null)).build();
     }
 
     @Path("/logout")
