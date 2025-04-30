@@ -1,4 +1,5 @@
 package org.acme.entities.handicap;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.acme.entities.Person;
@@ -7,6 +8,7 @@ import org.acme.entities.Person;
 @Table(name = "Handicap_Person")
 public class HandicapPerson extends PanacheEntityBase{
     @EmbeddedId
+    @JsonIgnore
     private HandicapPersonId id;
     
     @Column
@@ -63,5 +65,11 @@ public class HandicapPerson extends PanacheEntityBase{
         this.handicap = handicap;
     }
 
-    
+    public String getHandicapName(){
+        return handicap.getName_h();
+    }
+
+    public Long getHandicapId(){
+        return id.getHandicapId();
+    }
 }
