@@ -83,10 +83,33 @@ class MyAPI {
       return Promise.reject(e);
     }
   }
-  
+
+  async activateAccount(activationRequest){
+    try{
+      const res = await this._instance.put("/users/activate", activationRequest)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async resetPassword(resetRequest){
+    try{
+      const res = await this._instance.put("/users/reset-password", resetRequest)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async forgotPassword(email){
+    try{
+      const res = await this._instance.post(`/users/forgot-password/${email}`)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
 }
-
-MyAPI.REFRESH_TOKEN= "a3k5X9pLmQ2vR7sN1tY8";
-MyAPI.ACCESS_TOKEN="rT9f4xW6zP8qL3nB5vM7";
-
 export const myApi  =new MyAPI("http://localhost:8080/api");
