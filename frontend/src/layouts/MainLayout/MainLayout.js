@@ -12,6 +12,7 @@ import theme from "assets/theme";
 import themeDark from "assets/theme-dark";
 import routes from "routes";
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
+import {NotificationManager} from "../../components/NotificationManager";
 
 
 export default function MainLayout() {
@@ -79,6 +80,7 @@ export default function MainLayout() {
       )}
       {layout === "vr" && <Configurator />}
       <Outlet /> {/* Rend les pages enfants ici */}
+      <NotificationManager />
     </ThemeProvider>
   );
 }

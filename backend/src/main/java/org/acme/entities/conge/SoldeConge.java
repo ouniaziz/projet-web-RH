@@ -13,6 +13,7 @@ public class SoldeConge extends PanacheEntityBase {
 
 
     @Id
+    @JsonIgnore
     private SoldeCongeId id;
 
     @Column(name = "solde_restant")

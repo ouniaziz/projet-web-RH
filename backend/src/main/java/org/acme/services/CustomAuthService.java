@@ -149,10 +149,11 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
 
     
     public void activate(ActivationRequestDTO activationRequestDTO){
-        User user = userRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()->new EntityException("user cin="+activationRequestDTO.cin()+" not found", 404));
+        String cin = jwtService.getNonAuthUpn(activationRequestDTO.token());
+        User user = userRepo.findByIdOptional(cin).orElseThrow(()->new EntityException("user cin="+cin+" not found", 404));
         
         if(user.getStatus_passw()!=User.PASSWORD_NOT_ACTIVE)
-            throw new ActivationFailedException("user "+activationRequestDTO.cin()+" already activated", 409);
+            throw new ActivationFailedException("user "+cin+" already activated", 409);
         
         else if(user.getPass_token() ==null || user.getPass_token().isEmpty())
             throw new ActivationFailedException("activation token not found", 404);
@@ -163,7 +164,7 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         if(jwtService.isTokenExpired(activationRequestDTO.token()))
             throw new ActivationFailedException("Provided token is expired, please contact the administrator", 401);
 
-        Person person = personRepo.findByIdOptional(activationRequestDTO.cin()).orElseThrow(()-> new EntityException("Person cin="+activationRequestDTO.cin()+ " not found", 404));
+        Person person = personRepo.findByIdOptional(cin).orElseThrow(()-> new EntityException("Person cin="+cin+ " not found", 404));
         
         // perform activation
         person.setStatus_p(Person.STATUS_PERSON_ACTIVE);

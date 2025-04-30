@@ -18,6 +18,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import {AdditionalInfoDetails} from "./AdditionalInfoDetails";
 import {HandicapDetails} from "./HandicapDetails";
 import MDButton from "../../../components/MDButton";
+import {useNotificationStore} from "../../../service/notificationService";
 
 AddModal.propTypes={
     open1: PropTypes.bool.isRequired,
@@ -135,6 +136,8 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
     const [expanded, setExpanded] = useState('0');
     const [isLoading, setIsLoading] = useState(false)
 
+    const showNotification = useNotificationStore((state) => state.showNotification);
+
     const handleAddEnseignant = async () => {
         if (
             !newEnseignant.nom ||
@@ -151,8 +154,14 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
         try {
             // TODO: Display notification && validation
             await myApi.addEnseignant(newEnseignant).then((response)=>{
-                if(response.status===201)
+                if(response.status===201){
                     addToEnseignants(newEnseignant);
+                    showNotification({
+                        type: 'success',
+                        message: response.message,
+                        title: 'Une personne ajouté avec succes!',
+                    })
+                }
                 else
                     console.log(response)
             });
@@ -160,6 +169,11 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
         } catch (error) {
             console.error("Erreur lors de l’ajout de l’enseignant :", error);
             alert("Une erreur est survenue lors de l’ajout.");
+            showNotification({
+                type: 'error',
+                message: "S'il vous plaît, contacter l'administrateur",
+                title: "Une erreur s'est produit",
+            })
         }finally {
             setIsLoading(false)
         }

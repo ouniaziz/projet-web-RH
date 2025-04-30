@@ -16,6 +16,8 @@ import org.hibernate.type.SqlTypes;
 
 
 @Entity
+//TODO: Make getSimplified PErson record for profile
+// TODO: The profile needs to include name of handicap, severiy then devices instead of exhaustive JSON response
 public class Person extends PanacheEntityBase{
     public static int STATUS_PERSON_ARCHIVED = -1;
     public static int STATUS_PERSON_INACTIVE = 0;
@@ -184,5 +186,13 @@ public class Person extends PanacheEntityBase{
 
     public void setDepart(Department depart) {
         this.depart = depart;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public String getAdresse() {
+        return adresse;
     }
 }

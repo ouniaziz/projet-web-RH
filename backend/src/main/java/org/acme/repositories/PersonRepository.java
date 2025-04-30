@@ -78,7 +78,7 @@ public class PersonRepository implements PanacheRepositoryBase<Person, String>{
 
     public void existsThrow(String cin){
         find("SELECT p.cin FROM Person p WHERE p.cin =?1", cin).project(String.class).firstResultOptional().ifPresent(p-> {
-            throw new EntityException("Person cin=" + cin + " not found", 404);
+            throw new EntityException("Person cin=" + cin + " Found", 404);
         });
     }
 }

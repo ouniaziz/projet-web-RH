@@ -20,7 +20,6 @@ import sendinblue.ApiException;
 @Produces(MediaType.APPLICATION_JSON)
 /* TODO: Ask chatbot how to integrate realtime notification manager that's fired upon every modification made to the Person's data
    TODO: Don't forget to turn addPerson from String into void
-   TODO: use SimplePersonResponseDTO for fetching large-scale data for DataGrid
    TODO: Add CRUD for parameters like Grad, Handicaps, Roles, Exercice
 
    TODO: URGENT reactivate RolesAllowed before submitting!!
@@ -45,18 +44,6 @@ public class PersonResource {
         }
     }
 
-/*
-    @GET
-    //@RolesAllowed({"Personnel RH", "Administrator"})
-    public Response getPersonsByFilters(@DefaultValue("-1")   @RestQuery int grad,
-                                        @RestQuery String sexe,
-                                        @DefaultValue("-1")   @RestQuery int anciennete,
-                                        @RestQuery String actif,
-                                        @DefaultValue("-1")   @RestQuery int handicap){
-
-        return Response.ok(new ApiResponseDTO(200, "Filtered successfully", null, personService.filterRecords(sexe,grad,anciennete,handicap, actif))).build();
-    }
-*/
     @DELETE
     @Path("/{cin}")
     @Transactional
