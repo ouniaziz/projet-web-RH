@@ -20,6 +20,7 @@ public class HandicapPerson extends PanacheEntityBase{
     @JoinColumn(name = "cin", referencedColumnName = "cin")
     private Person person;
 
+    //TODO: GET HANDICAP NAME WITH @GET PERSON
     @MapsId("handicapId")
     @ManyToOne
     @JoinColumn(name = "HANDICAP_ID", referencedColumnName = "ID_HAND")
