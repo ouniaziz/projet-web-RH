@@ -1,8 +1,11 @@
 import React,{ useState } from 'react';
+import {useEffect} from "react";
 import "./assests/profile.css";
+import "./assests/loader.css";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { useLocation } from "react-router-dom";
+import Handicaps from './components/Handicaps';
 import {
   Modal,
   TextField,
