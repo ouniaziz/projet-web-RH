@@ -3,102 +3,32 @@ import styles from "../assets/page_activation.module.css";
 import logo_isimm from "../assets/logo_isimm.jpeg";                                                                    
 import isimm_photo from "../assets/isimm_photo.webp";
 import {
-  Button,
   FormControl,
   FormHelperText,
   InputAdornment,
-  InputLabel,
-  keyframes,
-  OutlinedInput,
-  TextField
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
-import {styled} from "@mui/material/styles";
+import {Visibility, VisibilityOff} from "@mui/icons-material";;
+import {
+  IsimmButton,
+  SuccessInputLabel,
+  SuccessOutlinedInput,
+  SuccessTextField
+} from "../../../components/CustomComponents";
+import {myApi} from "../../../service/myApi";
+import {useNavigate} from "react-router-dom";
 
-const isimm_main = "#115eee"
-const isimm_dark = "#0a4bc4"
-const isimm_text = "#fff"
-
-const SuccessOutlinedInput = styled(OutlinedInput)(({ theme, success }) => ({
-  '& .MuiOutlinedInput-notchedOutline': {
-    borderWidth: success ? '2px' : '1px',  // Thicker border when valid
-    borderColor: success ? theme.palette.success.main : undefined,
-  },
-  '&:hover .MuiOutlinedInput-notchedOutline': {
-    borderWidth: success ? '2px' : '1px',
-    borderColor: success ? theme.palette.success.main : undefined,
-  },
-  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderWidth: '2px',
-    borderColor: success ? theme.palette.success.main: theme.palette.error.main,
-  },
-}));
-const SuccessTextField = styled(TextField)(({ theme, success }) => ({
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderWidth: success ? '2px' : '1px',
-      borderColor: success ? theme.palette.success.main : undefined,
-    },
-    '&:hover fieldset': {
-      borderWidth: success ? '2px' : '1px',
-      borderColor: success ? theme.palette.success.main : undefined,
-    },
-    '&.Mui-focused fieldset': {
-      borderWidth: '2px',
-      borderColor: success ? theme.palette.success.main : undefined,
-    },
-  },
-  '& .MuiInputLabel-root': {
-    color: success ? theme.palette.success.main : undefined,
-    '&.Mui-focused': {
-      color: success ? theme.palette.success.main :undefined,
-    }
-  }
-}));
-const SuccessInputLabel = styled(InputLabel)(({ theme, success }) => ({
-  '&.MuiInputLabel-root': {
-    color: success ? theme.palette.success.main : undefined,
-    '&.Mui-focused': {
-      color: success ? theme.palette.success.main : theme.palette.error.main,
-    }
-  }
-}));
-
-const IsimmButton = styled(Button)(({ theme }) => ({
-  backgroundColor: isimm_main,
-  color: isimm_text,
-  padding: '10px 24px',
-  borderRadius: '8px',
-  fontWeight: 600,
-  textTransform: 'none',
-
-  '&:hover': {
-    backgroundColor: isimm_dark,
-    boxShadow: '0 4px 12px rgba(17, 94, 238, 0.3)',
-  },
-
-
-  '&.Mui-disabled': {
-    backgroundColor: 'rgba(17, 94, 238, 0.5)',
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-
-  // Ripple effect color
-  '& .MuiTouchRipple-root': {
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
-}));
-
+//TODO: link this with Backend
 export default function Page_activation() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false)
   const [retypePassword, setRetypePassword] = useState("");
-  const [confirmPasswordSuccess, setConfirmPasswordSuccess] = useState(false)
   const [errorMessage, setErrorMessage] = useState("");
   const [passwordErrMsg, setPasswordErrMsg] = useState("");
-  const [resetToken,setResetToken] = useState("")
+  const [activationToken,setActivationToken] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
+  const navigate = useNavigate();
 
   const validatePassword = (pwd) => {
     if(!pwd) return "";
@@ -141,10 +71,24 @@ export default function Page_activation() {
 
   const handleClickShowPassword =()=>setShowPassword((show) => !show);
 
+  const activateAccount=()=>{
+    setIsLoading(true)
+    myApi.activateAccount({
+      token: activationToken,
+      password: password
+    }).then(res=>{
+        console.log(res.message)
+        navigate("/");
+    }).catch(e=>{
+      console.error(e)
+    }).finally(()=>setIsLoading(false));
+  }
+
+
   useLayoutEffect(() => {
     const params = new URLSearchParams(location.search)
     if(params.get("token")){
-      setResetToken(params.get("token"))
+      setActivationToken(params.get("token"))
       window.history.replaceState({}, document.title, window.location.pathname);
     }
     else {
@@ -157,7 +101,7 @@ export default function Page_activation() {
         <div className={styles.logoReset}>
           <img src={logo_isimm} alt="ISIMM Logo" />
         </div>
-        <form>
+        <form onSubmit={(e)=>e.preventDefault()}>
           <p className={styles.formTitle}>Activer votre compte</p>
           <div className={styles.inputContainer}>
             <FormControl fullWidth error={!isPasswordValid()} variant="outlined">
@@ -205,7 +149,7 @@ export default function Page_activation() {
           </button>
           */}
           <div className={styles.submit}>
-            <IsimmButton>Activer</IsimmButton>
+            <IsimmButton onClick={activateAccount} loading={isLoading}>Activer</IsimmButton>
           </div>
         </form>
       </div>    
