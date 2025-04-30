@@ -245,7 +245,7 @@ function Table_enseignants() {
 
                 <AddModal
                     open1={open1}
-                      Close1={handleClose1}
+handle                      Close1={handleClose1}
                     addToEnseignants={addToEnseignant}
                     b64ToImage={displayImgFromB64}
                     />
