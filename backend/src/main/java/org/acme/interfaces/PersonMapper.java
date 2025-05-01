@@ -73,6 +73,7 @@ public interface PersonMapper{
     @Mapping(target = "handicaps",ignore = true)
     @Mapping(target = "status_p", ignore = true)
     @Mapping(target = "soldeList", ignore = true)
+    @Mapping(target = "emploiDuTemps", ignore = true)
     Person toNewEntity(PersonDTO dto, @Context RolesRepository roleRepo, @Context HandicapRepository handicapRepo);
 
     @Named("optionalTo")

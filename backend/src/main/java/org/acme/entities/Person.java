@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.acme.entities.conge.Conge;
@@ -11,6 +13,7 @@ import org.acme.entities.conge.DemandeConge;
 import org.acme.entities.conge.SoldeConge;
 import org.acme.entities.grad.GradPerson;
 import org.acme.entities.handicap.HandicapPerson;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -72,6 +75,13 @@ public class Person extends PanacheEntityBase{
     @Column(columnDefinition = "BYTEA")
     @JdbcTypeCode(SqlTypes.BINARY)
     private byte[] image;
+
+    @Lob
+    @Column(columnDefinition = "BYTEA", name = "emploi_de_temps")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @JsonIgnore
+    private byte[] emploiDuTemps= null;
+
 
     public Person() {}
     
@@ -194,5 +204,12 @@ public class Person extends PanacheEntityBase{
 
     public String getAdresse() {
         return adresse;
+    }
+    public byte[] getEmploiDuTemps(){
+        return emploiDuTemps;
+    }
+
+    public void setEmploiDuTemps(byte[] emploiDuTemps) {
+        this.emploiDuTemps = emploiDuTemps;
     }
 }
