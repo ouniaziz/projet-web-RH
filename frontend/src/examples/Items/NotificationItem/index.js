@@ -28,10 +28,63 @@ import MDTypography from "components/MDTypography";
 
 // custom styles for the NotificationItem
 import menuItem from "examples/Items/NotificationItem/styles";
+import {CheckCircleOutlined, ErrorOutline} from "@mui/icons-material";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
-const NotificationItem = forwardRef(({ icon, title, ...rest }, ref) => (
-  <MenuItem {...rest} ref={ref} sx={(theme) => menuItem(theme)}>
-    <MDBox component={Link} py={0.5} display="flex" alignItems="center" lineHeight={1}>
+const typeToIcon=(severity)=>{
+    switch (severity) {
+        case "success":
+            return <CheckCircleOutlined />
+        case "error":
+            return <ErrorOutline/>
+    }
+}
+
+const NotificationItem = forwardRef(({ title, content, type, remove }, ref) => (
+  <MenuItem ref={ref} sx={(theme) => menuItem(theme)} >
+      <div style={{
+          display: "flex",
+          position: "relative",
+          width: "inherit"
+      }}>
+          <MDTypography variant="h4" color="secondary" lineHeight={0.75} sx={{
+              alignSelf:"center"
+          }}>
+              {typeToIcon(type)}
+          </MDTypography>
+          <div style={{
+              display: "flex",
+              flexDirection:"column",
+              flex: "1"
+          }}
+          >
+              <MDTypography variant="button" fontWeight="regular" sx={{ ml: 1 }}>
+                  {title}
+              </MDTypography>
+              <MDTypography variant="button" fontWeight="light" sx={{ ml: 1 }}>
+                  {content}
+              </MDTypography>
+          </div>
+
+          <IconButton disableRipple onClick={remove}>
+              <CloseIcon/>
+          </IconButton>
+      </div>
+  </MenuItem>
+));
+
+// Typechecking props for the NotificationItem
+NotificationItem.propTypes = {
+    title: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    remove: PropTypes.func.isRequired
+};
+
+export default NotificationItem;
+
+/*<MDBox component={Link} py={0.5} display="flex" alignItems="center" lineHeight={1}>
       <MDTypography variant="body1" color="secondary" lineHeight={0.75}>
         {icon}
       </MDTypography>
@@ -39,13 +92,6 @@ const NotificationItem = forwardRef(({ icon, title, ...rest }, ref) => (
         {title}
       </MDTypography>
     </MDBox>
-  </MenuItem>
-));
-
-// Typechecking props for the NotificationItem
-NotificationItem.propTypes = {
-  icon: PropTypes.node.isRequired,
-  title: PropTypes.string.isRequired,
-};
-
-export default NotificationItem;
+          <MDTypography variant="button" fontWeight="light" sx={{ ml: 1 }}>
+              {content}
+          </MDTypography>*/
