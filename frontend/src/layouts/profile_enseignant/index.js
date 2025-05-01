@@ -6,6 +6,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { useLocation } from "react-router-dom";
 import Handicaps from './components/Handicaps';
+import Conges from './components/Conges';
 import {
   Modal,
   TextField,
@@ -46,20 +47,14 @@ function Profile_enseignant() {
     ],
     handicaps: [
       {
-        id: {
-          handicapId: 1,
-          cin: ""
-        },
-        severity: "",
-        assistive_devices: ""
+        severity: "non",
+        handicapName: "Motor impairement",
+        handicapId: 1,
+        assistive_devices: "device"
       }
     ],
     soldeList: [
       {
-        id: {
-          annee: 2025,
-          cin: ""
-        },
         soldeRestant: 0,
         soldeCompRestant: null
       }
@@ -71,7 +66,8 @@ function Profile_enseignant() {
     image: null,
     status: 0,
     currentGrad: ""
-  });
+  }
+);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -195,14 +191,21 @@ function Profile_enseignant() {
                                             <div style={{ display: "flex" }}>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Département</h6>
-                                                        <p style={{  fontSize: "0.9rem",margin: 0 }}>{enseignant.depart.nomDep}</p>
+                                                        <p style={{  fontSize: "0.9rem",margin: 0 }}>{enseignant.depart ? enseignant.depart.nomDep : ""}</p>
                                                       </div>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Ancienneté</h6>
                                                         <p style={{ fontSize: "0.9rem", margin: 0 }}>{enseignant.anciennete} ans</p>
                                                       </div>
                                             </div>
-                                            {enseignant.handicaps && (
+                                            {enseignant.soldeList.length > 0 && (
+                                              <>
+                                              <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem" }}>Congés</h6>
+                                              <hr style={{ margin: "0 0 1rem 0" }} />
+                                              <Conges conges={enseignant.soldeList}/>
+                                            </>
+                                            )}
+                                            {enseignant.handicaps.length > 0 && (
                                                 <>
                                                   <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem" }}>Handicaps</h6>
                                                   <hr style={{ margin: "0 0 1rem 0" }} />
