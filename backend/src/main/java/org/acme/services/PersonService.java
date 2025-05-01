@@ -1,5 +1,7 @@
 package org.acme.services;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.*;
@@ -24,6 +26,7 @@ import org.acme.repositories.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.SecurityContext;
+import org.codehaus.plexus.util.IOUtil;
 import org.jboss.logging.Logger;
 import sendinblue.ApiException;
 
@@ -196,13 +199,20 @@ public class PersonService {
         return personRepository.findAll().list();
     }
 
-    //TODO: DELETE Person
     public boolean deletePerson(String cin, SecurityContext ctx){
         /*
+        TODO: ONLY the admin can delete, the users can not delete their own accounts, but we can let them flag their accounts for deletion!
         if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't modify other people's credentials", 401);
 
         */
         return personRepository.deleteById(cin);
+    }
+
+    public void updateEmploiDuTemps(String cin, InputStream fileStream) throws IOException {
+        personRepository.existsOrElseThrow(cin);
+        byte[] emploiDuTemps = IOUtil.toByteArray(fileStream);
+
+        personRepository.update("emploiDuTemps = ?1 WHERE cin =?2",emploiDuTemps, cin);
     }
 }

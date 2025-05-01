@@ -13,7 +13,12 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import org.codehaus.plexus.util.IOUtil;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 import sendinblue.ApiException;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 @Path("/api/persons")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -96,4 +101,30 @@ public class PersonResource {
     }
 
 
+    // =================================== Emploi Du Temps ======================================
+    @PUT
+    @Path("/update/emploi/{cin}")
+    @Transactional
+    //RolesAllowed({"Personnel RH", "Admin"})
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response updateEmploi(
+            @PathParam("cin") String cin,
+            @FormParam("file") InputStream fileStream){
+            // TODO: can set limit to the size of pdf
+        try{
+            personService.updateEmploiDuTemps(cin,fileStream);
+            return Response.ok(new ApiResponseDTO(200, "Emploi du temps ajouté avec succes", null,null)).build();
+        }catch (IOException e){
+            e.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ApiResponseDTO(400, "Error occured", e.getMessage(), null)).build();
+        }
+    }
+
+    @GET
+    @Path("/emploi/{cin}")
+    @Produces("application/pdf")
+    public Response getEmploiParCin(@PathParam("cin") String cin){
+        byte[] emploiPdf= Person.find("SELECT p.emploiDuTemps FROM Person p WHERE p.cin= ?1", cin).project(byte[].class).singleResult();
+        return Response.ok(emploiPdf).header("Content-Disposition", "inline; filename=\"" +"EmploiDuTemps"+ "\"").build();
+    }
 }
