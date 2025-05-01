@@ -2,17 +2,13 @@ import { useState, useEffect } from "react";
 import { Outlet, useLocation, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Icon from "@mui/material/Icon";
 
-import MDBox from "components/MDBox";
 import Sidenav from "examples/Sidenav";
 import Configurator from "examples/Configurator";
 
 import theme from "assets/theme";
-import themeDark from "assets/theme-dark";
 import routes from "routes";
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
-import {NotificationManager} from "../../components/NotificationManager";
 
 
 export default function MainLayout() {
@@ -80,7 +76,6 @@ export default function MainLayout() {
       )}
       {layout === "vr" && <Configurator />}
       <Outlet /> {/* Rend les pages enfants ici */}
-      <NotificationManager />
     </ThemeProvider>
   );
 }
