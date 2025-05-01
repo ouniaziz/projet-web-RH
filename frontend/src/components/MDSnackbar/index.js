@@ -1,3 +1,5 @@
+//TODO: To be removed
+
 /**
 =========================================================
 * Material Dashboard 2 React - v2.2.0
@@ -32,8 +34,9 @@ import MDSnackbarIconRoot from "components/MDSnackbar/MDSnackbarIconRoot";
 
 // Material Dashboard 2 React context
 import { useMaterialUIController } from "context";
+import {forwardRef} from "react";
 
-function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...rest }) {
+const MDSnackbar = forwardRef(({ color, icon, title, dateTime, content, close, bgWhite, onClose,...rest }, ref) =>{
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
 
@@ -57,19 +60,19 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
 
   return (
     <Snackbar
-      TransitionComponent={Fade}
-      autoHideDuration={null}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}
-      {...rest}
-      action={
-        <IconButton size="small" aria-label="close" color="inherit" onClick={close}>
-          <Icon fontSize="small">close</Icon>
-        </IconButton>
-      }
-    >
+        ref={ref}
+        TransitionComponent={Fade}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        {...rest}
+        action={
+          <IconButton size="small" aria-label="close" color="inherit" onClick={onClose}>
+            <Icon fontSize="small">close</Icon>
+          </IconButton>
+        }
+      >
       <MDBox
         variant={bgWhite ? "contained" : "gradient"}
         bgColor={bgWhite ? "white" : color}
@@ -143,7 +146,7 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
       </MDBox>
     </Snackbar>
   );
-}
+});
 
 // Setting default values for the props of MDSnackbar
 MDSnackbar.defaultProps = {
@@ -169,6 +172,7 @@ MDSnackbar.propTypes = {
   content: PropTypes.node.isRequired,
   close: PropTypes.func.isRequired,
   bgWhite: PropTypes.bool,
+  onClose: PropTypes.func
 };
 
 export default MDSnackbar;
