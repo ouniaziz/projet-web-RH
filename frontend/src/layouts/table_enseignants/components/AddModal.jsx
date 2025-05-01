@@ -2,11 +2,6 @@ import Modal from "@mui/material/Modal";
 import MDBox from "../../../components/MDBox";
 import MDTypography from "../../../components/MDTypography";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Radio from "@mui/material/Radio";
-import MenuItem from "@mui/material/MenuItem";
 import PropTypes from "prop-types";
 import {myApi} from "../../../service/myApi";
 import {useRef, useState} from "react";
@@ -158,21 +153,19 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                     addToEnseignants(newEnseignant);
                     showNotification({
                         type: 'success',
-                        message: response.message,
+                        content: response.message,
                         title: 'Une personne ajouté avec succes!',
                     })
                 }
-                else
-                    console.log(response)
+
             });
             handleClose1();
         } catch (error) {
             console.error("Erreur lors de l’ajout de l’enseignant :", error);
-            alert("Une erreur est survenue lors de l’ajout.");
             showNotification({
                 type: 'error',
-                message: "S'il vous plaît, contacter l'administrateur",
-                title: "Une erreur s'est produit",
+                content: "S'il vous plaît, contacter l'administrateur",
+                title: "Une erreur est survenue lors de l’ajout",
             })
         }finally {
             setIsLoading(false)
@@ -192,6 +185,14 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
             setGender(newGender)
         }
     };
+
+    const testNotification=()=>{
+        showNotification({
+            type: 'success',
+            content: "response.message",
+            title: 'Une personne ajouté avec succes!',
+        })
+    }
 
     const handleCloseModal = ()=>{
         handleClose1()
@@ -385,6 +386,7 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                     {/* Buttons*/}
                     <div className={styles.buttonContainer}>
                         <MDButton color={"info"} onClick={handleAjouter} loading={isLoading}>Ajouter</MDButton>
+                        <MDButton color={"warning"} onClick={testNotification}>Test the notification</MDButton>
                     </div>
                 </MDBox>
             </MDBox>
