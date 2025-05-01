@@ -52,14 +52,22 @@ import {
   setMiniSidenav,
   setOpenConfigurator,
 } from "context";
+import MenuItem from "@mui/material/MenuItem";
+import MDTypography from "../../../components/MDTypography";
+import Fade from "@mui/material/Fade";
+import {CheckIcon} from "lucide-react";
+import Badge from "@mui/material/Badge";
+import {useNotificationStore} from "../../../service/notificationService";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
-  const [openMenu, setOpenMenu] = useState(false);
+  const [openMenu, setOpenMenu] = useState(null);
   const route = useLocation().pathname.split("/").slice(1);
-
+  const notifications = useNotificationStore((state)=>state.notifications);
+  const removeNotification = useNotificationStore((state)=>state.removeNotification)
+  const clearAll = useNotificationStore((state)=>state.clearAll)
   useEffect(() => {
     // Setting the navbar type
     if (fixedNavbar) {
@@ -89,7 +97,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
-
+  const handleMenuClose= ()=>setOpenMenu(null);
   // Styles for the navbar icons
   const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }) => ({
     color: () => {
@@ -100,7 +108,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
       }
 
       return colorValue;
-    },
+    }
   });
 
   return (
@@ -144,18 +152,59 @@ function DashboardNavbar({ absolute, light, isMini }) {
               >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
+              {/*TODO: Make this toggle a menu full of notifications*/}
               <IconButton
                 size="small"
-                disableRipple
                 color="inherit"
                 sx={navbarIconButton}
                 aria-controls="notification-menu"
                 aria-haspopup="true"
                 variant="contained"
-                onClick={handleOpenMenu}
+                onClick={(e)=> {
+                  handleOpenMenu(e);
+                }}
               >
-                <Icon sx={iconsStyle}>notifications</Icon>
+                <Badge badgeContent={notifications.length} color={"info"} max={9}>
+                  <Icon sx={iconsStyle}>notifications</Icon>
+                </Badge>
               </IconButton>
+              {/* Notification menu*/}
+              <Menu
+                  id="notification-menu"
+                  anchorEl={openMenu}
+                  open={Boolean(openMenu)}
+                  onClose={handleMenuClose}
+                  TransitionComponent={Fade}
+                  MenuListProps={{
+                    'aria-labelledby': 'notification-button',
+                    sx: {
+                      minWidth: 300,
+                      maxHeight: 400,
+                      overflow: 'auto',
+                      py: 0,
+                    }
+                  }}
+              >
+                {/* Menu header */}
+                <MenuItem disabled sx={{ backgroundColor: 'background.paper' }}>
+                  <MDTypography variant="h5">Notifications</MDTypography>
+                </MenuItem>
+                {notifications.map((notification, index)=>(
+                    <NotificationItem
+                        key={index}
+                        title={notification.title}
+                        content={notification.content}
+                        type={notification.type}
+                        remove={()=>removeNotification(index)}
+                    />
+                ))}
+                {/* Footer with button CLEAR ALL*/}
+                {notifications.length>0 &&
+                    <MenuItem onClick={clearAll} sx={{ backgroundColor: 'background.paper' }}>
+                      <MDTypography variant="button">CLEAR ALL</MDTypography>
+                    </MenuItem>
+                }
+              </Menu>
             </MDBox>
           </MDBox>
         )}
