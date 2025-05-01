@@ -9,12 +9,12 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
-import ComplexStatisticsCard from "./examples/Cards/StatisticsCards/ComplexStatisticsCard";
+import ComplexStatisticsCard from "../../examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
 // Data
-import DefaultDoughnutChart from "./examples/Charts/DoughnutCharts/DefaultDoughnutChart";
+import DefaultDoughnutChart from "../../examples/Charts/DoughnutCharts/DefaultDoughnutChart";
 import reportsLineChartData from "./data/reportsLineChartData";
-import VerticalBarChart from "./examples/Charts/BarCharts/VerticalBarChart";
+import VerticalBarChart from "../../examples/Charts/BarCharts/VerticalBarChart";
 
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
