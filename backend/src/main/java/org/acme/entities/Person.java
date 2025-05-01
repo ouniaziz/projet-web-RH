@@ -42,6 +42,7 @@ public class Person extends PanacheEntityBase{
     private String email;
 
     @OneToOne(mappedBy = "person", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
