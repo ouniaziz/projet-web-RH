@@ -59,6 +59,14 @@ class MyAPI {
       return Promise.reject(e);
     }
   }
+  async getPerson(cin) {
+    try {
+      const res = await this._instance.get(`/persons/${cin}`);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
   async getGrades() {
     try {
       const res = await this._instance.get(`/params/grad`);

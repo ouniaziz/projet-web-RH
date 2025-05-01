@@ -1,8 +1,11 @@
 import React,{ useState } from 'react';
+import {useEffect} from "react";
 import "./assests/profile.css";
+import "./assests/loader.css";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { useLocation } from "react-router-dom";
+import Handicaps from './components/Handicaps';
 import {
   Modal,
   TextField,
@@ -13,23 +16,61 @@ import {
 } from "@mui/material";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import { Grade } from '@mui/icons-material';
+import { myApi } from "../../service/myApi";
+
 function Profile_enseignant() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const [enseignant, setEnseignant] = useState(location.state || {
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsb_V_Ha4XAl47doWf_2lF-actuld60ssYew&s",
-    nom: "Marie Horwitz",
-    email: "info@example.com",
-    telephone: "123 456 789",
-    cin: "12345678",
-    adresse: "Adresse par défaut",
-    dateN: "01/01/1990",
-    grad: "Professeur",
-    sexe: "Femme",
-    hasHandicaps: "Non",
-    departement: "Poste par défaut",
-    anciennete: "5 ans"
+  const cin = location.state ? location.state.cin : null;
+  const [enseignant, setEnseignant] = useState({
+    cin: "",
+    nom: "",
+    prenom: "",
+    sexe: "",
+    date_n: "",
+    anciennete: 0,
+    email: "",
+    role: {
+      id_r: 2,
+      nomRole: "Enseignant"
+    },
+    gradList: [
+      {
+        grad: {
+          id: 4,
+          nom: ""
+        },
+        endDate: null,
+        start: ""
+      }
+    ],
+    handicaps: [
+      {
+        id: {
+          handicapId: 1,
+          cin: ""
+        },
+        severity: "",
+        assistive_devices: ""
+      }
+    ],
+    soldeList: [
+      {
+        id: {
+          annee: 2025,
+          cin: ""
+        },
+        soldeRestant: 0,
+        soldeCompRestant: null
+      }
+    ],
+    depart: {
+      nomDep: "",
+      chefDep: null
+    },
+    image: null,
+    status: 0,
+    currentGrad: ""
   });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -64,17 +105,40 @@ function Profile_enseignant() {
     // par exemple une requête API pour mettre à jour l'employé en base de données
   };
   const formatDate = (dateString) => {
-    if (dateString.includes('/')) {
+    if (!dateString) return ""; // Retourne une chaîne vide si dateString est undefined/null
+    
+    // Vérifie si dateString est une chaîne avant d'appeler includes()
+    if (typeof dateString === 'string' && dateString.includes('/')) {
       const [day, month, year] = dateString.split('/');
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
-    return dateString;
+    
+    return dateString; // Retourne la valeur originale si ce n'est pas une date avec slash
   };
   const displayImgFromB64 = (image) => {
     const mimeType = "application/octet-stream";
     const defaultImage="https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1906669723.jpg"; 
     return image ? `data:${mimeType};base64,${image}` : defaultImage;
   };
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+      myApi.getPerson(cin).then(person=>{
+        setEnseignant(person.data);
+      }).catch(err=>{
+        console.error("Error while fetching records", err)
+      }).finally(() => setLoading(false));
+    }, []);
+    console.log(enseignant);
+  if (loading) {
+      return (
+          <DashboardLayout>
+              <DashboardNavbar />
+              <div className="loader"></div>
+          </DashboardLayout>
+      );
+  }
+    
   return (
     <DashboardLayout>
       <DashboardNavbar />  
@@ -84,7 +148,7 @@ function Profile_enseignant() {
                                   <div style={{width: "25%",backgroundColor: "#f4f5f7",padding: "2rem",display: "flex",flexDirection: "column",alignItems: "center",justifyContent: "center",textAlign: "center"}} className="gradient-custom ">
                                             <img src={displayImgFromB64(enseignant.image)} alt="Avatar" style={{ width: "120px",height:"125px", borderRadius: "50%", marginBottom: "1rem"}}/>
                                             <h5 style={{ margin: "0.5rem 0", fontWeight: "bold" }}>{enseignant.nom+" "+enseignant.prenom}</h5>
-                                            <p style={{ margin: 0, color: "#6c757d" }}>{enseignant.grad}</p>
+                                            <p style={{ margin: 0, color: "#6c757d" }}>{enseignant.currentGrad}</p>
                                             <i className="far fa-edit"style={{marginTop:"20px",cursor:"pointer" }}onClick={handleOpen}></i>
                                   </div>
                                   
@@ -117,18 +181,12 @@ function Profile_enseignant() {
                                             <div style={{ display: "flex", marginBottom: "1.5rem" }}>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Date de naissance</h6>
-                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{formatDate(enseignant.dateN)}</p>
+                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{formatDate(enseignant.date_n)}</p>
                                                       </div>
-                                                      <div style={{ width: "50%" }}>
-                                                        <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Handicap</h6>
-                                                        <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.hasHandicaps}</p>
-                                                      </div>                                                      
-                                            </div>
-                                            <div style={{ display: "flex", marginBottom: "1.5rem" }}>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Sexe </h6>
                                                         <p style={{ fontSize: "0.9rem",margin: 0 }}>{enseignant.sexe}</p>
-                                                      </div>         
+                                                      </div>                                                                                                                
                                             </div>
                               
                                             <h6 style={{ fontWeight: "bold", marginBottom: "1rem",fontSize:"25px" }}>Informations Professionnelles</h6>
@@ -137,13 +195,21 @@ function Profile_enseignant() {
                                             <div style={{ display: "flex" }}>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Département</h6>
-                                                        <p style={{  fontSize: "0.9rem",margin: 0 }}>{enseignant.departement}</p>
+                                                        <p style={{  fontSize: "0.9rem",margin: 0 }}>{enseignant.depart.nomDep}</p>
                                                       </div>
                                                       <div style={{ width: "50%" }}>
                                                         <h6 style={{ fontSize: "0.8rem", color: "#6c757d", marginBottom: "0.5rem" }}>Ancienneté</h6>
                                                         <p style={{ fontSize: "0.9rem", margin: 0 }}>{enseignant.anciennete} ans</p>
                                                       </div>
                                             </div>
+                                            {enseignant.handicaps && (
+                                                <>
+                                                  <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem" }}>Handicaps</h6>
+                                                  <hr style={{ margin: "0 0 1rem 0" }} />
+                                                  <Handicaps handicaps={enseignant.handicaps}/>
+                                                </>
+                                            )}
+
                                   </div>
                         </div>
 

@@ -1,15 +1,8 @@
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import axios from 'axios';
 import AddIcon from "@mui/icons-material/Add";
-import Modal from "@mui/material/Modal";
 import {useEffect, useState } from "react";
-import TextField from "@mui/material/TextField";
-import MenuItem from '@mui/material/MenuItem';
-import Button from "@mui/material/Button";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
+
 import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 
@@ -258,7 +251,7 @@ function Table_enseignants() {
 
                 <AddModal
                     open1={open1}
-                    handleClose1={handleClose1}
+handle                      Close1={handleClose1}
                     addToEnseignants={addToEnseignant}
                     b64ToImage={displayImgFromB64}
                     />
