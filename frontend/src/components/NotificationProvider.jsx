@@ -27,7 +27,8 @@ export const NotistackProvider = ({ children }) => {
             }}
             Components={{
                     success: CustomNotification,
-                    error: CustomNotification
+                    error: CustomNotification,
+                    info: CustomNotification
             }}
         >
             {children}
