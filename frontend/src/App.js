@@ -13,22 +13,24 @@ const getRoutes = (allRoutes) =>
 
 export default function App() {
   return (
-    <Routes>
-          <Route path="/" element={<Page_connexion />} />
-          <Route path="/activation_compte" element={<ActivateAccount />} />
-          <Route path="/reset_password" element={<Page_reset />} />
-          <Route element={<ProtectedRoute />}>
+        <NotistackProvider>
+            <Routes>
+                  <Route path="/" element={<Page_connexion />} />
+                  <Route path="/activation_compte" element={<ActivateAccount />} />
+                  <Route path="/reset_password" element={<Page_reset />} />
+                  <Route element={<ProtectedRoute />}>
 
-            <Route path="/main" element={
-                <NotistackProvider>
-                    <MainLayout />
-                </NotistackProvider>
-            }>
-              {getRoutes(routes)}
-            </Route>
-          </Route>
-      {/* <Route path="*" element={<Navigate to="/" />} /> */}
-    </Routes>
+                    <Route path="/main" element={
+
+                            <MainLayout />
+                    }>
+                      {getRoutes(routes)}
+                    </Route>
+                  </Route>
+              {/* <Route path="*" element={<Navigate to="/" />} /> */}
+
+            </Routes>
+        </NotistackProvider>
   );
 }
 // {
