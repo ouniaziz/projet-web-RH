@@ -51,10 +51,10 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
             AuthenticationRequestContext context) {
         
                 User user = userRepo.findByEmailOrCin(request.getUsername())
-                        .orElseThrow(()-> new AuthenticationFailedException("invalid email or cin"));
+                        .orElseThrow(()-> new EntityException("invalid email or cin", 404));
                 
                 if(user.getStatus_passw()==User.PASSWORD_NOT_ACTIVE)
-                    throw new AuthenticationFailedException("Account not activated");
+                    throw new EntityException("Account not activated", 401);
                 
                 if(user.getStatus_passw() == User.PASSWORD_FORGOT){
                     /*  TODO: How to treat an authentication to an account that requested password reset
@@ -62,10 +62,9 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
                     */
                 }
                 if(!PasswordUtils.checkPassword(String.valueOf(request.getPassword().getPassword()), user.getPassw()))
-                    throw new AuthenticationFailedException("Invalid password");
+                    throw new EntityException("Invalid password",401);
                 
-                Tuple personTuple = personRepo.find("SELECT p.cin cin, p.nom nom, p.prenom prenom, p.role.nom_r role FROM Person p WHERE p.cin = ?1",user.getCin()).project(Tuple.class)
-                        .singleResultOptional().orElseThrow(()-> new AuthenticationFailedException("User not found"));
+                Tuple personTuple = personRepo.find("SELECT p.cin cin, p.nom nom, p.prenom prenom, p.role.nom_r role FROM Person p WHERE p.cin = ?1",user.getCin()).project(Tuple.class).singleResult();
 
                 
                 return Uni.createFrom().item(
@@ -115,35 +114,37 @@ public class CustomAuthService implements IdentityProvider<UsernamePasswordAuthe
         user.setStatus_passw(User.PASSWORD_FORGOT);
         user.setPass_token(PasswordUtils.hashPassword(token));
 
-        brevoService.sendEmail(email, "Password reset", new BrevoPasswordResetTemplate("localhost:8081/"+token));
+        brevoService.sendEmail(email, "Password reset", new BrevoPasswordResetTemplate("localhost:3000/reset_password?token="+token));
     }
 
     
     public void resetPassword(PasswordResetRequestDTO passwordResetRequestDTO){
         String email = jwtService.getNonAuthUpn(passwordResetRequestDTO.token());
-        
-        PersonStatusDTO personStatus = personRepo.findStatusByEmail(email)
-                                        .orElseThrow(()-> new PasswordResetFailedException("No record of user with email "+ email, 404));
-        if(personStatus.status_p()==Person.STATUS_PERSON_ACTIVE)
-            throw new PasswordResetFailedException("Your account is yet to be activated. Please activate it using the link we sent in the email", 403);
-        if(personStatus.status_p() == Person.STATUS_PERSON_ARCHIVED)
-            throw new PasswordResetFailedException("Your account is archived, please contact the admin", 403);
-        User user = userRepo.findByEmail(email).get();
 
+        //TODO: There's a slight flaw in this logic
+        PersonStatusDTO personStatus = personRepo.findStatusByEmail(email)
+                                        .orElseThrow(()-> new EntityException("No record of user with email "+ email, 404));
+
+        if(personStatus.status_p()!=Person.STATUS_PERSON_ACTIVE)
+            throw new EntityException("Your account is yet to be activated. Please activate it using the link we sent in the email", 403);
+        if(personStatus.status_p() == Person.STATUS_PERSON_ARCHIVED)
+            throw new EntityException("Your account is archived, please contact the admin", 403);
+
+        User user = userRepo.findByEmail(email).get();
         if(user.getStatus_passw()!=User.PASSWORD_FORGOT)
-            throw new PasswordResetFailedException("Account didn't issue password reset request", 403);
+            throw new EntityException("Account didn't issue password reset request", 403);
         
         if(!PasswordUtils.checkPassword(passwordResetRequestDTO.token(), user.getPass_token()))
-            throw new PasswordResetFailedException("Invalid reset token", 401);
+            throw new EntityException("Invalid reset token", 401);
         
         if(jwtService.isTokenExpired(passwordResetRequestDTO.token())){
             // remove expired token
             user.setPass_token("");
-            throw new PasswordResetFailedException("Token expired, please try to reset password", 403);
+            throw new EntityException("Token expired, please try to reset password", 403);
         }
 
         user.setPassw(PasswordUtils.hashPassword(passwordResetRequestDTO.password()));
-        user.setStatus_passw(1);
+        user.setStatus_passw(User.PASSWORD_OK);
         user.setPass_token("");
     }
 
