@@ -49,7 +49,7 @@ function Table_enseignants() {
         showNotification({
           type:"success",
           title:"Suppression de l'enseignant",
-          message:`Enseignant avec CIN ${idToDelete} supprimé.`
+          content:`Enseignant avec CIN ${idToDelete} supprimé.`
         })
       });
     } catch (error) {
