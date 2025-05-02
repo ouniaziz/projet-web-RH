@@ -58,6 +58,9 @@ import Fade from "@mui/material/Fade";
 import {CheckIcon} from "lucide-react";
 import Badge from "@mui/material/Badge";
 import {useNotificationStore} from "../../../service/notificationService";
+import {Transition} from "notistack";
+import { TransitionGroup } from 'react-transition-group';
+import {Collapse} from "@mui/material";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -189,15 +192,18 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <MenuItem disabled sx={{ backgroundColor: 'background.paper' }}>
                   <MDTypography variant="h5">Notifications</MDTypography>
                 </MenuItem>
-                {notifications.map((notification, index)=>(
-                    <NotificationItem
-                        key={index}
-                        title={notification.title}
-                        content={notification.content}
-                        type={notification.type}
-                        remove={()=>removeNotification(index)}
-                    />
-                ))}
+                <TransitionGroup>
+                  {notifications.map((notification, index)=>(
+                      <Collapse key={index}>
+                        <NotificationItem
+                            title={notification.title}
+                            content={notification.content}
+                            type={notification.type}
+                            remove={()=>removeNotification(index)}
+                        />
+                      </Collapse>
+                  ))}
+                </TransitionGroup>
                 {/* Footer with button CLEAR ALL*/}
                 {notifications.length>0 &&
                     <MenuItem onClick={clearAll} sx={{ backgroundColor: 'background.paper' }}>
