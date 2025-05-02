@@ -41,7 +41,6 @@ public class UserResource {
 
     @Path("/login")
     @POST
-    @PermitAll
     @Blocking
     public Uni<Response> login(LoginRequestDTO loginRequest){
         return authService.authenticate(
@@ -71,20 +70,18 @@ public class UserResource {
 
     @PUT
     @Path("/forgot-password/{email}")
-    @PermitAll
     @Transactional
     public Response forgotPassword(@PathParam("email") String email){
         try{    
             authService.forgotPassword(email);
             return Response.status(200).entity(new ApiResponseDTO(200, "You shall receive an email", null, null)).build();
         }catch(ApiException e){
-            return Response.status(500).entity(e).build();
+            return Response.status(500).entity(new ApiResponseDTO(500, null, e.getMessage(), null)).build();
         }
     }
 
     @PUT
     @Path("/reset-password/")
-    @PermitAll
     @Transactional
     public Response resetPassowrd(PasswordResetRequestDTO passwordResetRequestDTO){
         authService.resetPassword(passwordResetRequestDTO);
@@ -93,7 +90,6 @@ public class UserResource {
 
     @PUT 
     @Path("/activate")
-    @PermitAll
     @Transactional
     public Response activateAccount(ActivationRequestDTO activationRequest){
         authService.activate(activationRequest);
