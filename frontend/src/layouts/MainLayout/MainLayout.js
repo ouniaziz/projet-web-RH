@@ -9,10 +9,12 @@ import Configurator from "examples/Configurator";
 import theme from "assets/theme";
 import routes from "routes";
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
+import {useNotificationStore} from "../../service/notificationService";
 
 
 export default function MainLayout() {
   const [controller, dispatch] = useMaterialUIController();
+  const showNotification = useNotificationStore((state)=>state.showNotification)
   const {
     miniSidenav,
     layout,
@@ -49,9 +51,25 @@ export default function MainLayout() {
   // Establir connection SSE (Server-side-event) pour la notification
   useEffect(() => {
     const es = new EventSource("http://localhost:8080/notify/user/B987654")
-    es.onopen = ()=>console.info("Connection established");
-    es.onerror = (e)=>console.error("An error produced", e);
-    es.onmessage = (msg) =>console.log(JSON.parse(msg.data));
+    es.onopen = ()=> {
+      console.info("Connection established")
+    };
+    es.onerror = (e)=> {
+      showNotification({
+        type:"error",
+        title: "An error produced",
+        content: "Couldn't establish connection with the server"
+      })
+      console.error("An error produced", e)
+    };
+    es.onmessage = (msg) => {
+      const data = JSON.parse(msg.data)
+      showNotification({
+        type:data.color,
+        title:data.title,
+        content:data.desc
+      })
+    };
 
     return () => es.close();
   }, []);
