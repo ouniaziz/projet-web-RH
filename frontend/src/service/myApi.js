@@ -112,7 +112,7 @@ class MyAPI {
 
   async forgotPassword(email){
     try{
-      const res = await this._instance.post(`/users/forgot-password/${email}`)
+      const res = await this._instance.put(`/users/forgot-password/${email}`)
       return res.data;
     }catch(err){
       return Promise.reject(err)
