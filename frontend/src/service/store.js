@@ -35,24 +35,6 @@ export const useStore= create((set)=>({
     },
 
 
-    login: async (username, password) => {
-        set({ isLoading: true, error: null });
-        try{
-            const response = await myApi.login(username, password)
-            set({
-                role: response.data.role,
-                username: response.data.nom,
-                cin: response.data.cin,
-                isAuthenticated: true,
-                isLoading: false,
-            });
-            console.log(username)
-        }
-        catch(error){
-            set({ error: error.message, isLoading: false });
-            throw error;
-        }
-    },
 
     // Logout action
     logout: async () => {
