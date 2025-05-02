@@ -9,39 +9,81 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import {useStore} from "../../../service/store";
+import {useNotificationStore} from "../../../service/notificationService";
+import {myApi} from "../../../service/myApi";
 
 export default function PageConnexion() {
+    const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [open, setOpen] = React.useState(false);
+    const [isLoading, setIsLoading] = useState(false)
+    const showFloatingNotification = useNotificationStore((state)=>state.showFloatingNotification)
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    localStorage.setItem("isAuthenticated", "false");
 
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [open, setOpen] = React.useState(false);
-  const login = useStore(state=>state.login);
-  const username = useStore(state=>state.username)
+    //TODO: Set store states
+    /*
+        set({
+            role: response.data.role,
+            username: response.data.nom,
+            cin: response.data.cin,
+            isAuthenticated: true,
+            isLoading: false,
+        });
+    */
+    const handledLogin = async (event) => {
+        event.preventDefault();
+        setIsLoading(true)
 
+        try{
+            /* To apply authentication:
+                Uncomment this:
+            */
+            /*await myApi.login(email, password).then((response)=>{
+                showFloatingNotification({
+                    type:"success",
+                    title:"Auth",
+                    content:"Bienvenu, "+response.data.nom
+                })
+                localStorage.setItem("isAuthenticated", "true");
+                navigate("/main/dashboard");
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  localStorage.setItem("isAuthenticated", "false");
-  const handledLogin = async (event) => {
-    event.preventDefault();
-    try{
-        // Uncomment this to apply authenticatoin
-        /*
-        await login(email,password)
-        // push notification
-        //console.log("Logged AS ",username);
-        */
-        localStorage.setItem("isAuthenticated", "true");
-        navigate("/main/dashboard");
-    }catch(err){
-        alert("password incorrect");
-        console.error("An error produced\n",err)
+            })*/
+            /* Comment this:*/
+            localStorage.setItem("isAuthenticated", "true");
+            navigate("/main/dashboard");
+
+        }catch(err){
+            showFloatingNotification({
+                type:"error",
+                content:err.response.data.error,
+                title:"Auth"
+            })
+        }finally {
+            setIsLoading(false)
+        }
+    };
+
+    const forgotPassword = async ()=>{
+        setIsLoading(true)
+        await myApi.forgotPassword(email).then((res)=>{
+            showFloatingNotification({
+                type:"success",
+                title:"Password reset",
+                content: res.data.message
+            })
+        }).catch((err)=>{
+            showFloatingNotification({
+                type:"error",
+                content:err.response.data.error,
+                title:"Auth"
+            })
+        }).finally(()=>setIsLoading(false))
     }
-  };
-
-  return (
+    return (
     <>
       <div
         style={{
@@ -65,7 +107,7 @@ export default function PageConnexion() {
             padding: "30px",
             borderRadius: "10px",
             backdropFilter: "blur(4px) brightness(70%)",
-            
+
           }}
         >
           <div className="logo">
@@ -73,7 +115,7 @@ export default function PageConnexion() {
           </div>
           <br></br>
           <div style={{ fontSize: "30px",fontFamily: "initial",fontWeight:"bold", color: "#115eee" }}>
-            ISIMM 
+            ISIMM
           </div>
           <br></br>
           <form>
@@ -103,7 +145,7 @@ export default function PageConnexion() {
               </label>
             </div>
             <div className="btn-container">
-              <button id="lol" onClick={handledLogin}>
+              <button id="lol" onClick={handledLogin} disabled={isLoading}>
                 Sign In
               </button>
               <br />
@@ -115,11 +157,6 @@ export default function PageConnexion() {
           </form>
         </div>
       </div>
-
-
-
-
-
 
       <div>
               <Modal
@@ -139,7 +176,7 @@ export default function PageConnexion() {
                   Retrieve Password via Email
                   </Typography>
                   <br></br>
-                  <form action="">
+                  <form>
                       <input
                             placeholder="Email"
                             className="input"
@@ -147,16 +184,15 @@ export default function PageConnexion() {
                             style={{ color: "black"}}
                             onChange={(e) => setEmail(e.target.value)}
                       ></input>
-                      <Button type="submit" style={{marginTop:"10px", marginLeft:"79%",fontSize:"16px", }}>Envoyer</Button>
-
-                  </form>    
+                      <Button disabled={isLoading} style={{marginTop:"10px", marginLeft:"79%",fontSize:"16px", }} onClick={forgotPassword}>Envoyer</Button>
+                  </form>
                 </Box>
               </Modal>
       </div>
 
-  </>         
-    
-  );
+    </>
+
+    );
 }
 
 

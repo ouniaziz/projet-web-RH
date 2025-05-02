@@ -17,6 +17,7 @@ import {
 } from "../../../components/CustomComponents";
 import {myApi} from "../../../service/myApi";
 import {useNavigate} from "react-router-dom";
+import {useNotificationStore} from "../../../service/notificationService";
 
 //TODO: link this with Backend
 export default function Page_activation() {
@@ -27,7 +28,7 @@ export default function Page_activation() {
   const [passwordErrMsg, setPasswordErrMsg] = useState("");
   const [activationToken,setActivationToken] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-
+  const showFloatingNotification = useNotificationStore((state)=>state.showFloatingNotification)
   const navigate = useNavigate();
 
   const validatePassword = (pwd) => {
@@ -78,9 +79,19 @@ export default function Page_activation() {
       password: password
     }).then(res=>{
         console.log(res.message)
+        showFloatingNotification({
+          type:"success",
+          content:res.message,
+          title:"Account activation"
+        })
         navigate("/");
     }).catch(e=>{
       console.error(e)
+      showFloatingNotification({
+        type:"error",
+        content:"An error occured",
+        title:"Account activation"
+      })
     }).finally(()=>setIsLoading(false));
   }
 

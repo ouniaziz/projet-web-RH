@@ -16,17 +16,21 @@ import {
   SuccessOutlinedInput,
   SuccessTextField
 } from "../../../components/CustomComponents";
+import {useNavigate} from "react-router-dom";
+import {useNotificationStore} from "../../../service/notificationService";
+import {myApi} from "../../../service/myApi";
 
 //TODO: MAKE IT WORK!!!
 export default function ActivateAccount() {
+  const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false)
   const [retypePassword, setRetypePassword] = useState("");
-  const [confirmPasswordSuccess, setConfirmPasswordSuccess] = useState(false)
   const [errorMessage, setErrorMessage] = useState("");
   const [passwordErrMsg, setPasswordErrMsg] = useState("");
   const [resetToken,setResetToken] = useState("")
-
+  const [isLoading, setIsLoading] = useState(false)
+  const showFloatingNotification = useNotificationStore((state)=>state.showFloatingNotification)
 
   const validatePassword = (pwd) => {
     if(!pwd) return "";
@@ -68,6 +72,29 @@ export default function ActivateAccount() {
   };
 
   const handleClickShowPassword =()=>setShowPassword((show) => !show);
+
+  const ResetAccount=()=>{
+    setIsLoading(true)
+    myApi.resetPassword({
+      token: resetToken,
+      password: password
+    }).then(res=>{
+      console.log(res.message)
+      showFloatingNotification({
+        type:"success",
+        content:res.message,
+        title:"Account Reset"
+      })
+      navigate("/");
+    }).catch(e=>{
+      console.error(e)
+      showFloatingNotification({
+        type:"error",
+        content:"An error occured",
+        title:"Account Reset"
+      })
+    }).finally(()=>setIsLoading(false));
+  }
 
   useLayoutEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -133,7 +160,7 @@ export default function ActivateAccount() {
           </button>
           */}
           <div className={styles.submit}>
-            <IsimmButton>Confirmer</IsimmButton>
+            <IsimmButton loading={isLoading} onClick={ResetAccount}>Confirmer</IsimmButton>
           </div>
         </form>
       </div>    
