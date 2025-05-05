@@ -119,4 +119,9 @@ public class DemandeConge extends PanacheEntity {
         if (this.person == null) return null;
         return this.person.getCin();
     }
+
+    @JsonIgnore
+    public int getTypeId() {
+        return type.getId();
+    }
 }
