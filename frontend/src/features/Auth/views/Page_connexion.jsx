@@ -16,10 +16,11 @@ export default function PageConnexion() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = useState(false)
     const showFloatingNotification = useNotificationStore((state)=>state.showFloatingNotification)
+    const fillUserInfo = useStore(state=>state.fillUserInfo);
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     localStorage.setItem("isAuthenticated", "false");
@@ -42,19 +43,20 @@ export default function PageConnexion() {
             /* To apply authentication:
                 Uncomment this:
             */
-            /*await myApi.login(email, password).then((response)=>{
+            await myApi.login(email, password).then((response)=>{
                 showFloatingNotification({
                     type:"success",
                     title:"Auth",
                     content:"Bienvenu, "+response.data.nom
                 })
+                fillUserInfo(response.data.cin, response.data.nom, response.data.role)
                 localStorage.setItem("isAuthenticated", "true");
                 navigate("/main/dashboard");
 
-            })*/
+            })
             /* Comment this:*/
-            localStorage.setItem("isAuthenticated", "true");
-            navigate("/main/dashboard");
+            /*localStorage.setItem("isAuthenticated", "true");
+            navigate("/main/dashboard");*/
 
         }catch(err){
             showFloatingNotification({

@@ -16,6 +16,7 @@ import {myApi} from "../../service/myApi";
 import {Chip} from "@mui/material";
 import {Cancel, CheckCircle, Pending} from "@mui/icons-material";
 import {CongeDetailsModal} from "./components/CongeDetailsModal";
+import {useStore} from "../../service/store";
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -110,6 +111,8 @@ function CongeAdmin(){
     const [openDetailsModal, setOpenDetailsModal] = useState(false);
     const [selectedConge, setSelectedConge] = useState(null)
     const [isLoading, setIsLoading] = useState(false);
+
+    const role = useStore(state=>state.role);
 
     const theme = useTheme();
     const congeColumns = [

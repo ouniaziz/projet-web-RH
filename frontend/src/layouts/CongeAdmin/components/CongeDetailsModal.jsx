@@ -9,6 +9,7 @@ import {statusToColor, statusToText} from "../index";
 import MDButton from "../../../components/MDButton";
 import {myApi} from "../../../service/myApi";
 import {useNotificationStore} from "../../../service/notificationService";
+import {useStore} from "../../../service/store";
 
 CongeDetailsModal.propTypes= {
     open: PropTypes.bool.isRequired,

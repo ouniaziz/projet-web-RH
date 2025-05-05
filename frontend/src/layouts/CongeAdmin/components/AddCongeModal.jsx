@@ -9,6 +9,7 @@ import MDButton from "../../../components/MDButton";
 import Typography from "@mui/material/Typography";
 import {myApi} from "../../../service/myApi";
 import {useNotificationStore} from "../../../service/notificationService";
+import {useStore} from "../../../service/store";
 AddCongeModal.propTypes= {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -17,8 +18,11 @@ AddCongeModal.propTypes= {
 }
 //TODO: test this one out à tête reposée
 export function AddCongeModal({open, onClose, handleNewConge, id}){
+    const username = useStore(state=>state.username);
+    const cin = useStore(state=>state.cin);
+
     const [newConge, setNewConge] = useState({
-        personCin: "B987654",
+        personCin: cin,
         type:{
             id: 0,
             nom: "Congé annuelle"
@@ -31,6 +35,7 @@ export function AddCongeModal({open, onClose, handleNewConge, id}){
     const [typesConges, setTypesConges] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const showFloatingNotification = useNotificationStore((state)=>state.showFloatingNotification)
+
     const handleNewCongeChange = (e) => {
         setNewConge({ ...newConge, [e.target.name]: e.target.value });
     };
@@ -177,6 +182,7 @@ export function AddCongeModal({open, onClose, handleNewConge, id}){
                             fullWidth
                             disabled
                             label={"Nom et prenom"}
+                            value={username}
                             variant={"outlined"}
                             margin={"normal"}
                             InputLabelProps={{
