@@ -53,9 +53,10 @@ public class SoldeConge extends PanacheEntityBase {
         return exercice;
     }
 
-    public SoldeConge(SoldeCongeId id, Integer solde_restant) {
+    public SoldeConge(SoldeCongeId id, Integer solde_restant, Integer soldeCompRestant) {
         this.id = id;
         this.soldeRestant = solde_restant;
+        this.soldeCompRestant = soldeCompRestant;
     }
 
     public SoldeCongeId getId() {
