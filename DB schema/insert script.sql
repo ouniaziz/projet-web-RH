@@ -1,6 +1,8 @@
 INSERT INTO public.handicap(
     id_hand, desc_h, name_h)
-VALUES (1, 'Please enable your settings', 'Motor impairement');
+VALUES (1, 'Please enable your settings', 'Motor impairement'),
+       (2, 'You can not talk, can you?', 'Speech impairement'),
+       (3, 'high five...WAIT!!', 'Missing Hand');
 
 INSERT INTO public.role_person(
     id_r, nom_r)
@@ -23,7 +25,8 @@ VALUES
 
 INSERT INTO public.type_conge(
     id, solde_initial, nom)
-VALUES (0,26,'Congé annuelle');
+VALUES (0,26,'Congé annuelle'),
+       (1,6,'Congé Compensatoire');
 
 INSERT INTO public.department (id_dep, nom_dep)
 VALUES
