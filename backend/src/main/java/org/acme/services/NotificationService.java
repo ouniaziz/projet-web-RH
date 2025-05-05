@@ -1,5 +1,6 @@
 package org.acme.services;
 
+import io.quarkus.runtime.Startup;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -11,6 +12,8 @@ import jakarta.transaction.Transactional;
 import org.acme.entities.Notification;
 import org.acme.entities.Person;
 import org.acme.entities.RolePerson;
+import org.jboss.logging.Logger;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +25,9 @@ import java.util.stream.Collectors;
 // TODO: Check if enseignants and employés roles need to be added
 // For now, I'll just include RH and Administrator roles, which will make this join role and ignore requests where roleId != Admin AND RH
 @ApplicationScoped
+@Startup
 public class NotificationService {
+    Logger log = Logger.getLogger(NotificationService.class);
 
     private final Map<String, UnicastProcessor<Notification>> userEmitters =
             new ConcurrentHashMap<>();
@@ -37,7 +42,9 @@ public class NotificationService {
             createRole(RolePerson.RH_ID);
             return null;
         }).runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
-                .subscribe().with(success->{}, Throwable::getStackTrace);
+                .subscribe().with(success->{
+                    log.info("Notification service is up-and-running");
+                }, Throwable::getStackTrace);
     }
 
     public List<Notification> getUndeliveredNotifications(String userId){
@@ -71,6 +78,7 @@ public class NotificationService {
                 });
     }
 
+    @Transactional
     public void sendMsg(Notification notification) {
         UnicastProcessor<Notification> emitter = userEmitters.get(notification.getUserId());
         if (emitter != null) {
@@ -81,6 +89,17 @@ public class NotificationService {
         }
     }
 
+    @Transactional
+    public void sendMsgToUser(Notification notification, String userId) {
+        UnicastProcessor<Notification> emitter = userEmitters.get(userId);
+        if (emitter != null) {
+            emitter.onNext(notification);
+        }
+        else{
+            notification.setUserId(userId);
+            notification.persist(); // Save notif
+        }
+    }
     public void createRole(Long role) {
         roleEmitters
                 .computeIfAbsent(role, roleId -> Person.find("SELECT DISTINCT p.cin FROM Person p WHERE p.role.id_r=?1", roleId)
@@ -90,7 +109,7 @@ public class NotificationService {
     public void sendToRole(Long roleId, Notification notification) {
         Set<String> members = roleEmitters.get(roleId);
         if (members != null) {
-            members.forEach(userId -> sendMsg(notification));
+            members.forEach(userId -> sendMsgToUser(notification, userId));
         }
     }
 
