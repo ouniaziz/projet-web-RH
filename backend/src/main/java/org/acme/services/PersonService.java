@@ -71,8 +71,9 @@ public class PersonService {
                     newExercice.persist();
                     return newExercice;
                 });
-        var soldeInitial =  TypeConge.<TypeConge>findByIdOptional(TypeConge.ID_CONGE_ANNUELLE).orElseThrow(()-> new EntityException("Type conge annuelle not found", 404)).getSold_initial();
-        SoldeConge solde = new SoldeConge(new SoldeCongeId(), soldeInitial);
+        var soldeAnnuelleInitial =  TypeConge.<TypeConge>findByIdOptional(TypeConge.ID_CONGE_ANNUELLE).orElseThrow(()-> new EntityException("Type conge annuelle not found", 404)).getSold_initial();
+        var soldeCompensatoireInitial =  TypeConge.<TypeConge>findByIdOptional(TypeConge.ID_CONGE_COMPENSATOIRE).orElseThrow(()-> new EntityException("Type conge annuelle not found", 404)).getSold_initial();
+        SoldeConge solde = new SoldeConge(new SoldeCongeId(), soldeAnnuelleInitial, soldeCompensatoireInitial);
         solde.setExercice(exercice);
         solde.setPerson(person);
         person.getSoldeList().add(solde);
