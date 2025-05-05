@@ -155,7 +155,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
               >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
-              {/*TODO: Make this toggle a menu full of notifications*/}
               <IconButton
                 size="small"
                 color="inherit"
