@@ -9,6 +9,7 @@ import ProfilePage from "layouts/user_profile";
 import Mes_taches from "layouts/mes_taches";
 import Table_demandes from "layouts/Mes_demandes";
 import Icon from "@mui/material/Icon";
+import {CongeAdmin} from "./layouts/CongeAdmin";
 
 const routes = [
   {
@@ -37,6 +38,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "CongeAdmin",
+    key: "main/conge_admin",
+    icon: <Icon fontSize="small">calendar_today</Icon>,
+    route: "conge_admin",
+    component: <CongeAdmin />,
+  },
+  {
+    type: "collapse",
     name: "Documents Administratifs",
     key: "main/DocumentsAdministratifs",
     icon: <Icon fontSize="small">receipt_long</Icon>,
@@ -50,14 +59,6 @@ const routes = [
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "Mes_demandes",
     component: <Table_demandes />,
-  },
-  {
-    type: "collapse",
-    name: "Notifications",
-    key: "main/notifications",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "notifications",
-    component: <Notifications />,
   },
   {
     key: "main/profile",
@@ -74,6 +75,7 @@ const routes = [
     route: "Mes_taches",
     component: <Mes_taches />,
   },
+
   {
     type: "collapse",
     name: "Profile",
@@ -82,6 +84,7 @@ const routes = [
     route: "mon_profile",
     component: <ProfilePage />,
   },
+
 ];
 
 export default routes;
