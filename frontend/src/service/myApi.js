@@ -154,5 +154,23 @@ class MyAPI {
       return Promise.reject(err)
     }
   }
+
+  async acceptDemande(demandeId){
+    try{
+      const res = await this._instance.put(`/conges/demande/accept/${demandeId}`)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async refuseDemande(demandeId){
+    try{
+      const res = await this._instance.put(`/conges/demande/refuse/${demandeId}`)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
 }
 export const myApi  =new MyAPI("http://localhost:8080/api");
