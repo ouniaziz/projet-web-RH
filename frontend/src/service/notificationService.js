@@ -25,7 +25,7 @@ export const useNotificationStore = create((set, get) => ({
         if (enqueueSnackbar) {
             enqueueSnackbar(notification.content, {
                 variant: notification.type || 'default',
-                autoHideDuration: null, // Persistent until clicked
+                autoHideDuration: 5000, // Persistent until clicked
                 anchorOrigin: {
                     vertical: 'bottom',
                     horizontal: 'right',
@@ -47,7 +47,7 @@ export const useNotificationStore = create((set, get) => ({
         if (enqueueSnackbar) {
             enqueueSnackbar(notification.content, {
                 variant: notification.type || 'default',
-                autoHideDuration: null, // Persistent until clicked
+                autoHideDuration: 5000, // Persistent until clicked
                 anchorOrigin: {
                     vertical: 'bottom',
                     horizontal: 'right',
