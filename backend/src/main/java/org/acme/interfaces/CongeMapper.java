@@ -25,7 +25,7 @@ public interface CongeMapper {
     @Mapping(target="person", expression = "java(mapPerson(dto.cin, personRepo))")
     @Mapping(target="exercice", expression = "java(mapExercice(Year.now().getValue()))")
     @Mapping(target="type", expression = "java(mapType(dto.type_id))")
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "id", source = "dto.id")
     @Mapping(target="statusConge", ignore = true)
     DemandeConge dtoToDemande(DemandeCongeDTO dto, @Context PersonRepository personRepo);
 
