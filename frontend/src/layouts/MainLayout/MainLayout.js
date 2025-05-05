@@ -50,7 +50,7 @@ export default function MainLayout() {
 
   // Establir connection SSE (Server-side-event) pour la notification
   useEffect(() => {
-    const es = new EventSource("http://localhost:8080/notify/user/B987654")
+    const es = new EventSource("http://localhost:8080/notify/user/admin11")
     es.onopen = ()=> {
       console.info("Connection established")
     };
