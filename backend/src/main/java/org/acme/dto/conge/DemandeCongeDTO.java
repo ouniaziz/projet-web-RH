@@ -3,6 +3,7 @@ package org.acme.dto.conge;
 import java.time.LocalDate;
 
 public class DemandeCongeDTO {
+    public Long id;
     public LocalDate dateDebut;
     public LocalDate dateFin;
     public LocalDate dateRetour;

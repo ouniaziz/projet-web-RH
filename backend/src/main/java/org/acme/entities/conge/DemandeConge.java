@@ -2,6 +2,7 @@ package org.acme.entities.conge;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.acme.dto.conge.PersonDTO;
 import org.acme.entities.Exercice;
@@ -11,10 +12,13 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "demande_conge")
-public class DemandeConge extends PanacheEntity {
+public class DemandeConge extends PanacheEntityBase {
     public static int DEMANDE_REFUSE=0;
     public static int DEMANDE_PENDING=-1;
     public static int DEMANDE_ACCEPTED=1;
+
+    @Id
+    public Long id;
 
     @Column(name = "date_debut")
     private LocalDate dateDebut;
