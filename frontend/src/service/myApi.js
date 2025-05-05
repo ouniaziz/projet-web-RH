@@ -119,5 +119,40 @@ class MyAPI {
     }
   }
 
+  async getTypesConges(){
+    try{
+      const res = await this._instance.get("/conges/type")
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async getDemandesConges(){
+    try{
+      const res = await this._instance.get("/conges/demande")
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async getDateFinRetour(dateDebutDuree){
+    try{
+      const res = await this._instance.post("/conges/dateFinRetour", dateDebutDuree)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async addDemandeConge(demandeConge){
+    try{
+      const res = await this._instance.post("/conges/demande", demandeConge)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
 }
 export const myApi  =new MyAPI("http://localhost:8080/api");
