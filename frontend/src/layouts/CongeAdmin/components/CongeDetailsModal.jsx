@@ -2,31 +2,62 @@ import {Modal, TextField} from "@mui/material";
 import PropTypes from "prop-types";
 import MDBox from "../../../components/MDBox";
 import MDTypography from "../../../components/MDTypography";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 import styles from "../assets/CongeDetailsModal.module.css"
 import {statusToColor, statusToText} from "../index";
 import MDButton from "../../../components/MDButton";
+import {myApi} from "../../../service/myApi";
+import {useNotificationStore} from "../../../service/notificationService";
 
 CongeDetailsModal.propTypes= {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    conge: PropTypes.object
+    conge: PropTypes.object,
+    updateCongeStatus: PropTypes.func.isRequired,
 }
-export function CongeDetailsModal({open, onClose, conge}){
-    const [isLoading, setIsLoading] = useState(false)
 
-    const handleCloseModal= ()=>{
-        // Clear fields
-        onClose()
+export function CongeDetailsModal({open, onClose, conge, updateCongeStatus}){
+    const [isLoading, setIsLoading] = useState(false)
+    const showFloatingNotification = useNotificationStore((state)=>state.showFloatingNotification)
+
+    const acceptDemande=async()=>{
+        setIsLoading(true)
+        await myApi.acceptDemande(conge.id).then((res)=>{
+            showFloatingNotification({
+                title:"Conge",
+                content:res.message,
+                type:"success"
+            })
+            updateCongeStatus(conge.id, 1)
+        }).catch(err=>{
+            console.error("Error Accepting demande", err)
+        }).finally(()=>{
+            setIsLoading(false)
+            onClose()
+        })
     }
 
-
-
+    const refuseDemande=async()=>{
+        setIsLoading(true)
+        await myApi.refuseDemande(conge.id).then((res)=>{
+            showFloatingNotification({
+                title:"Conge",
+                content:res.message,
+                type:"success"
+            })
+            updateCongeStatus(conge.id ,0)
+        }).catch(err=>{
+            console.error("Error Refusing demande", err)
+        }).finally(()=>{
+            setIsLoading(false)
+            onClose()
+        })
+    }
     return (
         <Modal
             open={open}
-            onClose={handleCloseModal}
+            onClose={onClose}
             style={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -47,7 +78,7 @@ export function CongeDetailsModal({open, onClose, conge}){
                 }}
             >
                 <MDTypography id="modal-title" variant="h4" mb={3}>
-                    Détailles du congé
+                    Demande du congé #{conge?.id}
                 </MDTypography>
 
                 <div className={styles.container}>
@@ -58,7 +89,7 @@ export function CongeDetailsModal({open, onClose, conge}){
                     </div>
                     <div className={styles.rightElement}>
                         <MDTypography variant="span"  mb={3}>
-                            {conge?.personCin}
+                            {conge?.personCin ?? "[CIN]"}
                         </MDTypography>
                     </div>
                 </div>
@@ -86,19 +117,19 @@ export function CongeDetailsModal({open, onClose, conge}){
                     </div>
                     <div className={styles.rightElement}>
                         <MDTypography variant="span" mb={3}>
-                            {conge?.type.nom}
+                            {conge?.type.nom?? "[NOM TYPE CONGE]"}
                         </MDTypography>
                         <MDTypography variant="span" mb={3}>
-                            {conge?.dateDebut}
+                            {conge?.dateDebut ?? "[DATE DEBUT]"}
                         </MDTypography>
                         <MDTypography variant="span" mb={3}>
                             {conge?.duree} jours
                         </MDTypography>
                         <MDTypography variant="span" mb={3}>
-                            {conge?.dateFin}
+                            {conge?.dateFin ?? "[DATE FIN]"}
                         </MDTypography>
                         <MDTypography variant="span" mb={3}>
-                            {conge?.dateRetour}
+                            {conge?.dateRetour ?? "[DATE RETOUR]"}
                         </MDTypography>
                         <MDTypography variant="span" color={statusToColor((conge?.statusConge))} mb={3}>
                             {statusToText(conge?.statusConge)}
@@ -106,8 +137,8 @@ export function CongeDetailsModal({open, onClose, conge}){
                     </div>
                 </div>
                 <div className={styles.buttonContainer}>
-                    <MDButton  color={"error"} disabled={isLoading || conge?.statusConge !==-1}>Refuser</MDButton>
-                    <MDButton  color={"success"} disabled={isLoading || conge?.statusConge !==-1}>Accepter</MDButton>
+                    <MDButton  color={"error"} disabled={isLoading || conge?.statusConge !==-1} onClick={refuseDemande}>Refuser</MDButton>
+                    <MDButton  color={"success"} disabled={isLoading || conge?.statusConge !==-1} onClick={acceptDemande}>Accepter</MDButton>
                 </div>
             </MDBox>
         </Modal>
