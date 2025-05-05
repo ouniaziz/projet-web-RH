@@ -12,6 +12,7 @@ import java.util.List;
 @Entity(name = "type_conge")
 public class TypeConge extends PanacheEntityBase {
     public static int ID_CONGE_ANNUELLE = 0;
+    public static int ID_CONGE_COMPENSATOIRE = 1;
 
 
     @Id
