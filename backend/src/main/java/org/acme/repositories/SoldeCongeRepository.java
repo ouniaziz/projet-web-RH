@@ -15,6 +15,6 @@ public class SoldeCongeRepository implements PanacheRepositoryBase<SoldeConge, S
                     SELECT s
                     FROM SoldeConge s
                     WHERE s.id.cin = ?1 AND s.soldeRestant>0
-                    ORDER BY id.annee ASC""", cin, demande_annee).list();
+                    ORDER BY id.annee ASC""", cin/*, demande_annee*/).list();
     }
 }
