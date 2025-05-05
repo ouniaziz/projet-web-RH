@@ -20,7 +20,6 @@ import {useNavigate} from "react-router-dom";
 import {useNotificationStore} from "../../../service/notificationService";
 import {myApi} from "../../../service/myApi";
 
-//TODO: MAKE IT WORK!!!
 export default function ActivateAccount() {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");

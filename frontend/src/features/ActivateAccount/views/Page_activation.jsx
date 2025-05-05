@@ -19,7 +19,6 @@ import {myApi} from "../../../service/myApi";
 import {useNavigate} from "react-router-dom";
 import {useNotificationStore} from "../../../service/notificationService";
 
-//TODO: link this with Backend
 export default function Page_activation() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false)
