@@ -1,0 +1,26 @@
+.container{
+    box-shadow: rgba(17, 17, 26, 0.05) 0 1px 0, rgba(17, 17, 26, 0.1) 0 0 8px;
+    padding: 20px 10px 10px;
+    border-radius: 12px;
+    position: relative;
+    margin-bottom: 10px;
+    display: flex;
+    gap:15px;
+    width: 100%;
+}
+.buttonContainer{
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+}
+.leftElement{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 130px;
+}
+
+.rightElement{
+    display: flex;
+    flex-direction: column;
+}
