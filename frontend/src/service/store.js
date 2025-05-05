@@ -13,28 +13,12 @@ export const useStore= create((set)=>({
     error: null,
     username: null,
 
-    // TableEns
-    grades:null,
-    handicaps:null,
-    enseignants:null,
-
-
-
-    getHandicaps: async()=>{
-        try{
-            const response = await myApi.getHandicaps()
-            set({handicaps: {
-                    id: response.data.id_hand,
-                    handicapName: response.data.name_h,
-                    handicapDesc: response.data.desc_h
-                }})
-        }catch(err){
-            set({error:err.message})
-            throw err
-        }
-    },
-
-
+    fillUserInfo: (cin, username, role)=> set({
+        isAuthenticated: true,
+        cin:cin,
+        role:role,
+        username:username
+    }),
 
     // Logout action
     logout: async () => {
