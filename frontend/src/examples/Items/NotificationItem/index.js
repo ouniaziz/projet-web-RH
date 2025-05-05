@@ -28,7 +28,7 @@ import MDTypography from "components/MDTypography";
 
 // custom styles for the NotificationItem
 import menuItem from "examples/Items/NotificationItem/styles";
-import {CheckCircleOutlined, ErrorOutline} from "@mui/icons-material";
+import {CheckCircleOutlined, ErrorOutline, InfoOutlined} from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -38,6 +38,8 @@ const typeToIcon=(severity)=>{
             return <CheckCircleOutlined />
         case "error":
             return <ErrorOutline/>
+        case "info":
+            return <InfoOutlined />
     }
 }
 
