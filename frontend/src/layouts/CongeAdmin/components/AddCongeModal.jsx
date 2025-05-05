@@ -12,12 +12,17 @@ import {useNotificationStore} from "../../../service/notificationService";
 AddCongeModal.propTypes= {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    handleNewConge: PropTypes.func.isRequired
+    handleNewConge: PropTypes.func.isRequired,
+    id: PropTypes.number.isRequired
 }
-export function AddCongeModal({open, onClose, handleNewConge}){
+//TODO: test this one out à tête reposée
+export function AddCongeModal({open, onClose, handleNewConge, id}){
     const [newConge, setNewConge] = useState({
-        cin: "B987654",
-        type_id:0,
+        personCin: "B987654",
+        type:{
+            id: 0,
+            nom: "Congé annuelle"
+        },
         dateDebut:"",
         dateFin: "",
         duree: 5,
@@ -26,10 +31,18 @@ export function AddCongeModal({open, onClose, handleNewConge}){
     const [typesConges, setTypesConges] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const showFloatingNotification = useNotificationStore((state)=>state.showFloatingNotification)
-
     const handleNewCongeChange = (e) => {
         setNewConge({ ...newConge, [e.target.name]: e.target.value });
     };
+
+    const handleTypeCongeChange= (e)=>{
+        const type = typesConges.find(type=> type.id === e.target.value)
+        console.log(type)
+        setNewConge({...newConge, type:{
+                id: e.target.value,
+                nom: type.nom
+            }})
+    }
 
     const handleCloseModal= ()=>{
         clearValues()
@@ -58,7 +71,17 @@ export function AddCongeModal({open, onClose, handleNewConge}){
     }
     const ajouterDemandeConge= async()=>{
         setIsLoading(true)
-        await myApi.addDemandeConge(newConge).then(res=>{
+        const demandeConge={
+            id: id,
+            dateDebut: newConge.dateDebut,
+            dateFin: newConge.dateFin,
+            dateRetour: newConge.dateRetour,
+            duree: newConge.duree,
+            cin: newConge.personCin,
+            type_id: newConge.type.id
+
+        }
+        await myApi.addDemandeConge(demandeConge).then(res=>{
             // notification showed for the user, not the Admin/RH
             showFloatingNotification({
                 type:"success",
@@ -66,6 +89,7 @@ export function AddCongeModal({open, onClose, handleNewConge}){
                 title:"Demande Conge"
             })
             /* Add the new entry to the root congeList*/
+
             handleNewConge(newConge)
         }).catch(err=>{
             console.error("Error adding Conge", err)
@@ -142,7 +166,7 @@ export function AddCongeModal({open, onClose, handleNewConge}){
                             disabled
                             label={"Cin"}
                             name={"cin"}
-                            value={newConge.cin}
+                            value={newConge.personCin}
                             variant={"outlined"}
                             margin={"normal"}
                             InputLabelProps={{
@@ -177,10 +201,9 @@ export function AddCongeModal({open, onClose, handleNewConge}){
                         <TextField
                             select={typesConges?.length>0}
                             fullWidth
-                            value={newConge.type_id}
-                            onChange={handleNewCongeChange}
+                            value={newConge.type.id}
+                            onChange={handleTypeCongeChange}
                             label="Type congé"
-                            name="type_id"
                             variant="outlined"
                             margin="normal"
                             sx={{
@@ -199,7 +222,7 @@ export function AddCongeModal({open, onClose, handleNewConge}){
                             }}
                         >
                             {typesConges?.map((typeConge) => (
-                                <MenuItem value={typeConge.id} key={typeConge.id}>
+                                <MenuItem value={typeConge.id} key={typeConge.id} name={typeConge.nom}>
                                     {typeConge.nom}
                                 </MenuItem>
                             ))}
@@ -221,13 +244,23 @@ export function AddCongeModal({open, onClose, handleNewConge}){
                             <TextField
                                 label={"Durée"}
                                 name={"duree"}
-                                type={"number"}
                                 value={newConge.duree}
                                 variant="outlined"
                                 margin="normal"
                                 onChange={handleNewCongeChange}
                                 InputLabelProps={{
                                     shrink: true,
+                                }}
+                                onBlur={(e) => {
+                                    const val = parseFloat(e.target.value);
+                                    if (!isNaN(val)) {
+                                        handleNewCongeChange({
+                                            target: {
+                                                name: "duree",
+                                                value: val
+                                            }
+                                        });
+                                    }
                                 }}
                             />
                         </div>
