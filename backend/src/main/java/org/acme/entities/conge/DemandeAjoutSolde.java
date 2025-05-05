@@ -4,11 +4,13 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.acme.entities.Person;
 
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "demande_ajout_solde")
 //TODO: To implement this further
 public class DemandeAjoutSolde extends PanacheEntity{
     @Column(name="justif")
