@@ -89,7 +89,6 @@ function Table_enseignants() {
       field: "telephone",
       headerName: "telephone",
       sortable: false,
-      type: "number",
       width: 140,
       "renderCell": (params)=>(params.row.telephone && params.row.telephone.trim() !== '' ? params.row.telephone : "⸻")
     },
