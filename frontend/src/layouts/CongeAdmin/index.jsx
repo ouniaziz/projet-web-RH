@@ -116,9 +116,8 @@ function CongeAdmin(){
         {
             field: "id",
             headerName: "Id",
-            sortable: false,
             flex: 1, // This column will grow/shrink
-            maxWidth: 50
+            maxWidth: 80
         },
         {
             field: "personCin",
@@ -160,7 +159,6 @@ function CongeAdmin(){
         {
             field: "type",
             headerName: "Type Conge",
-            sortable: true,
             flex: 1, // This column will grow/shrink
             minWidth: 100,
             renderCell: (params)=>(params.row.type.nom)
@@ -168,7 +166,6 @@ function CongeAdmin(){
         {
             field: "statusConge",
             headerName: "Status Congé",
-            sortable: true,
             flex: 1, // This column will grow/shrink
             minWidth: 100,
             renderCell:(param)=>(<Chip variant={"outlined"} label={statusToText(param.row.statusConge)} color={statusToColor(param.row.statusConge)} icon={statusToIcon(param.row.statusConge)}/>)
@@ -177,7 +174,8 @@ function CongeAdmin(){
     const paginationModel = { page: 0, pageSize: 10 };
 
     const addToCongeList = (newConge)=>{
-        setCongeList([...congeList, {...newConge}])
+        console.log(newConge)
+        setCongeList([...congeList, {...newConge, id:congeList.length, statusConge:-1}])
     }
 
     const fetchConges = async()=>{
@@ -192,6 +190,14 @@ function CongeAdmin(){
     const showCongeDetail= (params, e)=>{
         setSelectedConge(params.row)
         setOpenDetailsModal(true)
+    }
+
+    const updateCongeStatus= (congeId, status)=>{
+        setCongeList(prev=>
+            prev.map((conge, i)=>
+                conge.id ===congeId ? {...conge, statusConge: status}: conge
+            )
+        )
     }
     useEffect(() => {
         fetchConges()
@@ -218,14 +224,13 @@ function CongeAdmin(){
                                 <IconButton size="large" aria-label="add" onClick={()=>setOpenAddModal(true)}>
                                     <AddIcon color="white" fontSize="inherit"/>
                                 </IconButton>
-                                <AddCongeModal open={openAddModal} onClose={()=>setOpenAddModal(false)} handleNewConge={addToCongeList} />
-                                <CongeDetailsModal open={openDetailsModal} onClose={()=>setOpenDetailsModal(false)} conge={selectedConge} />
+                                <AddCongeModal id={congeList.length} open={openAddModal} onClose={()=>setOpenAddModal(false)} handleNewConge={addToCongeList} />
+                                <CongeDetailsModal updateCongeStatus={updateCongeStatus} open={openDetailsModal} onClose={()=>setOpenDetailsModal(false)} conge={selectedConge} />
                             </MDBox>
                             <MDBox pt={3}>
                                 <ThemeProvider theme={theme}>
                                     <Paper sx={{ height: 400, width: "100%" }}>
                                         {/*TODO: increase items per page*/}
-
                                         <DataGrid
                                             rows={congeList}
                                             columns={congeColumns}
@@ -243,12 +248,7 @@ function CongeAdmin(){
                                             slots={{
                                                 noRowsOverlay: CustomNoRowsOverlay,
                                             }}
-                                            sx={{
-                                                '& .MuiDataGrid-virtualScroller': {
-                                                    overflow: 'hidden', // Prevents unnecessary scrollbar
-                                                },
-                                                border: 0
-                                            }}
+
                                             initialState={{
                                                 columns: {
                                                     columnVisibilityModel: {
