@@ -1,14 +1,5 @@
 import { useNotificationStore } from '../service/notificationService';
-import MDSnackbar from 'components/MDSnackbar';
-import PropTypes from "prop-types";
 import { SnackbarProvider } from 'notistack';
-import {forwardRef} from "react";
-import CloseIcon from "@mui/icons-material/Close";
-import {Alert} from "@mui/material";
-import Fade from "@mui/material/Fade";
-import IconButton from "@mui/material/IconButton";
-import Icon from "@mui/material/Icon";
-import Snackbar from "@mui/material/Snackbar";
 import {CustomNotification} from "./CustomComponents";
 
 
