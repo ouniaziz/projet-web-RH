@@ -33,6 +33,12 @@ public class CongeResource {
     public Response getCongeOfPerson(@PathParam(value = "cin")String cin, @Context SecurityContext ctx){
         return Response.ok(new ApiResponseDTO(200,"Fetched successfully", null,congeService.getCongesByCin(cin,ctx))).build();
     }
+    //TODO: Add @GET endpoint for DemandeConge BUT with CIN
+    @GET
+    @Path("/demande/{cin}")
+    public Response getDemandeByCin(@PathParam(value = "cin")String cin, @Context SecurityContext ctx){
+        return Response.ok(new ApiResponseDTO(200,"Fetched successfully", null,congeService.getDemandesByCin(cin,ctx))).build();
+    }
 
     @GET
     @Path("/type")
