@@ -5,11 +5,10 @@ import MDTypography from "../../../components/MDTypography";
 import {useState} from "react";
 
 import styles from "../assets/CongeDetailsModal.module.css"
-import {statusToColor, statusToText} from "../index";
+import {statusToColor, statusToText} from "../CongeAdmin";
 import MDButton from "../../../components/MDButton";
 import {myApi} from "../../../service/myApi";
 import {useNotificationStore} from "../../../service/notificationService";
-import {useStore} from "../../../service/store";
 
 CongeDetailsModal.propTypes= {
     open: PropTypes.bool.isRequired,
