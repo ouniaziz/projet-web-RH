@@ -105,14 +105,12 @@ function statusToColor(status){
 }
 //TODO: To be developed
 
-function CongeAdmin(){
+function CongeDefault(){
     const [congeList, setCongeList] = useState([])
     const [openAddModal, setOpenAddModal] = useState(false);
-    const [openDetailsModal, setOpenDetailsModal] = useState(false);
-    const [selectedConge, setSelectedConge] = useState(null)
     const [isLoading, setIsLoading] = useState(false);
 
-    const role = useStore(state=>state.role);
+    const cin = useStore(state=>state.cin);
 
     const theme = useTheme();
     const congeColumns = [
@@ -183,25 +181,15 @@ function CongeAdmin(){
 
     const fetchConges = async()=>{
         setIsLoading(true)
-        await myApi.getDemandesConges().then((res)=>{
+        // Enseignant
+        // Employé
+        await myApi.getDemandesCongesByCin(cin).then((res)=>{
             setCongeList(res.data)
         }).catch(err=>{
-            console.error("Error fetching congés", err)
+            console.error(`Error fetching ${cin}'s congés:`, err)
         }).finally(()=>setIsLoading(false))
     }
 
-    const showCongeDetail= (params, e)=>{
-        setSelectedConge(params.row)
-        setOpenDetailsModal(true)
-    }
-
-    const updateCongeStatus= (congeId, status)=>{
-        setCongeList(prev=>
-            prev.map((conge, i)=>
-                conge.id ===congeId ? {...conge, statusConge: status}: conge
-            )
-        )
-    }
     useEffect(() => {
         fetchConges()
     }, []);
@@ -228,7 +216,6 @@ function CongeAdmin(){
                                     <AddIcon color="white" fontSize="inherit"/>
                                 </IconButton>
                                 <AddCongeModal id={congeList.length} open={openAddModal} onClose={()=>setOpenAddModal(false)} handleNewConge={addToCongeList} />
-                                <CongeDetailsModal updateCongeStatus={updateCongeStatus} open={openDetailsModal} onClose={()=>setOpenDetailsModal(false)} conge={selectedConge} />
                             </MDBox>
                             <MDBox pt={3}>
                                 <ThemeProvider theme={theme}>
@@ -239,7 +226,6 @@ function CongeAdmin(){
                                             columns={congeColumns}
                                             pageSizeOptions={[5, 10]}
                                             getRowId={(row) => row.id || `temp-id-${Math.random()}`}
-                                            onRowClick={showCongeDetail}
                                             style={{ cursor: 'pointer' }}
                                             loading={isLoading}
                                             slotProps={{
@@ -272,7 +258,7 @@ function CongeAdmin(){
         </DashboardLayout>
     )
 }
-export {CongeAdmin, statusToColor, statusToIcon, statusToText}
+export {CongeDefault, statusToColor, statusToIcon, statusToText}
 
 /*
     columnHeaderHeight={46}
