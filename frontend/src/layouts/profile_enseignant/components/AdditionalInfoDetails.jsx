@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import styles from "../assets/addModalStyle.module.css";
+import styles from "../assests/addModalStyle.module.css";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
@@ -16,7 +16,6 @@ AdditionalInfoDetails.propTypes={
 
 export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsChange, setNewEnseignant}){
     const [ grades , setGrades] = useState([]);
-
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -27,7 +26,16 @@ export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsCh
             reader.readAsDataURL(file);
         }
     };
-
+    let departement;
+    if(newEnseignant.depart.nomDep==="Informatique"){
+        departement="INFO";
+    }else if(newEnseignant.depart.nomDep==="Mathématiques"){
+        departement="MATH";
+    }else if(newEnseignant.depart.nomDep==="Physique"){
+        departement="PHYS";
+    }else if(newEnseignant.depart.nomDep==="Electronique"){
+        departement="ELEC";
+    }
     useEffect(() => {
         myApi.getGrades().then(grades=>{
             setGrades(grades.data);
@@ -61,7 +69,7 @@ export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsCh
                             select={grades?.length>0}
                             className={styles.span2}
                             fullWidth
-                            value={newEnseignant.gradId}
+                            value={newEnseignant.gradList[0]?.grad?.id || ""}
                             onChange={handleNewEnsChange}
                             label="Grade"
                             name="gradId"
@@ -91,7 +99,7 @@ export function AdditionalInfoDetails({b64ToImage, newEnseignant, handleNewEnsCh
                             fullWidth
                             label="Département"
                             name="departement"
-                            value={newEnseignant.departement}
+                            value={departement}
                             onChange={handleNewEnsChange}
                             variant="outlined"
                             margin="normal"

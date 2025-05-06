@@ -6,7 +6,6 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { useLocation } from "react-router-dom";
 import Handicaps from './components/Handicaps';
-import Conges from './components/Conges';
 import {
   Modal,
   TextField,
@@ -18,7 +17,8 @@ import {
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import { myApi } from "../../service/myApi";
-
+import AddModal from './components/AddModal';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 function Profile_enseignant() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
@@ -134,7 +134,9 @@ function Profile_enseignant() {
           </DashboardLayout>
       );
   }
-    
+  const editfrontEnseignant = (newEnseignant)=>{
+    setEnseignant(newEnseignant);
+  }  
   return (
     <DashboardLayout>
       <DashboardNavbar />  
@@ -200,9 +202,10 @@ function Profile_enseignant() {
                                             </div>
                                             {enseignant.soldeList.length > 0 && (
                                               <>
-                                              <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem" }}>Congés</h6>
+                                              <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem",display: "flex"}}>Congés <ListAltIcon style={{marginTop:"7px",marginLeft:"7px",fontSize: "28px"}}/></h6>
                                               <hr style={{ margin: "0 0 1rem 0" }} />
-                                              <Conges conges={enseignant.soldeList}/>
+                                              <p style={{ fontSize: "0.9rem", margin: 0 }}><b>Solde Restant :</b> {enseignant.soldeList[0]?.soldeRestant}</p>
+                                              <p style={{ fontSize: "0.9rem", margin: 0 }}><b>Solde compensation Restant :</b> {enseignant.soldeList[0]?.soldeCompRestant}</p>
                                             </>
                                             )}
                                             {enseignant.handicaps.length > 0 && (
@@ -215,11 +218,7 @@ function Profile_enseignant() {
 
                                   </div>
                         </div>
-
-
-
-
-                   <Modal
+                   {/* <Modal
                     open={open}
                     onClose={handleClose}
                     aria-labelledby="modal-modal-title"
@@ -417,8 +416,16 @@ function Profile_enseignant() {
                         </MDBox>
                       </MDBox>
                     </MDBox>
-                  </Modal>
+                  </Modal> */}
+                          
+                <AddModal
+                    open1={open}
+                    handleClose1={handleClose}
+                    b64ToImage={displayImgFromB64}
+                    enseignantToEdit={enseignant}
+                    Modifieenseignant={editfrontEnseignant}
 
+                    />
 
 
       </section>

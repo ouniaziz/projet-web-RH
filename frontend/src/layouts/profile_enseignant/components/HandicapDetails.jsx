@@ -1,5 +1,5 @@
 import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
-import styles from "../assets/addModalStyle.module.css"
+import styles from "../assests/addModalStyle.module.css"
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -12,10 +12,9 @@ import PropTypes from "prop-types";
 import MenuItem from "@mui/material/MenuItem";
 import {MinusIcon, PlusIcon} from "lucide-react";
 import {myApi} from "../../../service/myApi";
-
 const filter = createFilterOptions();
 
-HandicapAutoComplete.propTypes={
+HandicapAutoComplete.propTypes = {
     index: PropTypes.number.isRequired,
     handicapValue: PropTypes.any,
     setHandicapValue: PropTypes.func.isRequired,
@@ -25,19 +24,18 @@ HandicapAutoComplete.propTypes={
     isDialogOpen: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     handleDialogSubmit: PropTypes.func.isRequired,
-    dialogValue: PropTypes.object.isRequired
+    dialogValue: PropTypes.object.isRequired,
+    newEnseignant: PropTypes.object.isRequired
 }
 
-function HandicapAutoComplete({index, handicapValue, setHandicapValue, setIsDialogOpen,setDialogValue, handicaps,dialogValue, handleDialogSubmit, handleClose, isDialogOpen}){
+function HandicapAutoComplete({index, handicapValue, setHandicapValue, setIsDialogOpen, setDialogValue, handicaps, dialogValue, handleDialogSubmit, handleClose, isDialogOpen}) {
     return(
         <>
             <Autocomplete
-
                 className={styles.span2}
                 value={handicapValue}
                 onChange={(event, newValue) => {
                     if (typeof newValue === 'string') {
-                        // timeout to avoid instant validation of the dialog's form.
                         setTimeout(() => {
                             setIsDialogOpen(true);
                             setDialogValue({
@@ -57,7 +55,6 @@ function HandicapAutoComplete({index, handicapValue, setHandicapValue, setIsDial
                 }}
                 filterOptions={(options, params) => {
                     const filtered = filter(options, params);
-
                     const exactMatch = options.some(option =>
                         option.name_h.toLowerCase() === params.inputValue.toLowerCase()
                     );
@@ -73,40 +70,32 @@ function HandicapAutoComplete({index, handicapValue, setHandicapValue, setIsDial
                 }}
                 options={handicaps}
                 getOptionLabel={(option) => {
-                    // for example value selected with enter, right from the input
-                    if (typeof option === 'string') {
-                        return option;
-                    }
-                    if (option.inputValue) {
-                        return option.inputValue;
-                    }
+                    if (typeof option === 'string') return option;
+                    if (option.inputValue) return option.inputValue;
                     return option.name_h;
                 }}
                 selectOnFocus
                 clearOnBlur
                 handleHomeEndKeys
                 renderOption={(props, option) => {
-                    // eslint-disable-next-line react/prop-types
-                    const { key, ...optionProps } = props;
                     return (
-                        // eslint-disable-next-line react/jsx-props-no-spreading
-                        <li key={key} {...optionProps}>
+                        <li {...props}>
                             {option.name_h}
                         </li>
                     );
                 }}
                 freeSolo
-                renderInput={(params) =>
-                    (<TextField
+                renderInput={(params) => (
+                    <TextField
                         {...params}
                         label="Handicappe"
                         sx={{
                             '& .MuiInputBase-root': {
-                                height: 45, // Match your other TextFields
+                                height: 45,
                             },
                         }}
-                    />)
-                }
+                    />
+                )}
             />
             <Dialog open={isDialogOpen} onClose={handleClose}>
                 <form>
@@ -143,7 +132,7 @@ function HandicapAutoComplete({index, handicapValue, setHandicapValue, setIsDial
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={()=>handleDialogSubmit(index)}>Add</Button>
+                        <Button onClick={() => handleDialogSubmit(index)}>Add</Button>
                     </DialogActions>
                 </form>
             </Dialog>
@@ -151,36 +140,45 @@ function HandicapAutoComplete({index, handicapValue, setHandicapValue, setIsDial
     )
 }
 
-// TODO: make the handicapList a prop to inject from AddModal component
-export const HandicapDetails = forwardRef((props, ref)=>{
-    const [storedHandicaps, setStoredHandicaps] = useState([
-
-    ])
+export const HandicapDetails = forwardRef(({ newEnseignant }, ref) => {
+    const [storedHandicaps, setStoredHandicaps] = useState([]);
     const [dialogValue, setDialogValue] = useState({
         name_h: '',
         desc_h: '',
     });
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [handicapsList, setHandicapsList] = useState([
-        {
-            handicap: null,
-            severity: "",
-            assistiveDevice:""
-        }
-    ])
+    
+    // Initialize with existing handicaps if they exist
+    const [handicapsList, setHandicapsList] = useState(
+        newEnseignant?.handicaps?.length > 0 
+            ? newEnseignant.handicaps.map(h => ({
+                handicap: {
+                    id_hand: h.handicapId,
+                    name_h: h.handicapName,
+                    desc_h: h.desc_h || ""
+                },
+                severity: h.severity,
+                assistiveDevice: h.assistive_devices || h.assistiveDevice || ""
+            })) 
+            : [{
+                handicap: null,
+                severity: "",
+                assistiveDevice: ""
+            }]
+    );
 
     const severityStyles = {
         Mild: {
-            text: 'success.main',        // Green text
-            hoverBg: 'rgba(76, 175, 80, 0.1)',  // 10% opacity dark green
+            text: 'success.main',
+            hoverBg: 'rgba(76, 175, 80, 0.1)',
         },
         Moderate: {
-            text: 'warning.main',        // Orange text
-            hoverBg: 'rgba(255, 152, 0, 0.1)',  // 10% opacity dark orange
+            text: 'warning.main',
+            hoverBg: 'rgba(255, 152, 0, 0.1)',
         },
         Severe: {
-            text: 'error.main',          // Red text
-            hoverBg: 'rgba(244, 67, 54, 0.1)',  // 10% opacity dark red
+            text: 'error.main',
+            hoverBg: 'rgba(244, 67, 54, 0.1)',
         },
     };
 
@@ -188,15 +186,17 @@ export const HandicapDetails = forwardRef((props, ref)=>{
         setHandicapsList([...handicapsList, {
             handicap: null,
             severity: "",
-            assistiveDevice:""
+            assistiveDevice: ""
         }]);
     };
 
-    const popHandicap = ()=>{
-        setHandicapsList(prev=>prev.slice(0,-1))
-    }
-    // ==================================Handle Handicap Values===================================
-    const handleHandicaps=(index, newValue)=>{
+    const popHandicap = () => {
+        if (handicapsList.length > 1) {
+            setHandicapsList(prev => prev.slice(0, -1));
+        }
+    };
+
+    const handleHandicaps = (index, newValue) => {
         setHandicapsList(prev => prev.map((handicapElement, i) =>
             i === index ? {
                 ...handicapElement,
@@ -207,9 +207,7 @@ export const HandicapDetails = forwardRef((props, ref)=>{
                 }
             } : handicapElement
         ));
-
-        console.log(newValue)
-    }
+    };
 
     const handleSeverity = (index, value) => {
         setHandicapsList(prev => prev.map((item, i) =>
@@ -217,11 +215,11 @@ export const HandicapDetails = forwardRef((props, ref)=>{
         ));
     };
 
-    const handleAssistiveChange = (index, value)=>{
+    const handleAssistiveChange = (index, value) => {
         setHandicapsList(prev => prev.map((item, i) =>
             i === index ? { ...item, assistiveDevice: value } : item
         ));
-    }
+    };
 
     const handleClose = () => {
         setDialogValue({
@@ -232,56 +230,45 @@ export const HandicapDetails = forwardRef((props, ref)=>{
     };
 
     const handleDialogSubmit = (index) => {
-        const newHandicap ={
+        const newHandicap = {
             id_hand: storedHandicaps.length + 1,
             name_h: dialogValue.name_h,
             desc_h: dialogValue.desc_h,
-        }
+        };
 
-        myApi.addHandicap(newHandicap).then(response=>{
-            if(response.status === 200){
-                // Change the handicaps locally
-                setStoredHandicaps(prev=> {
-                    return [
-                        ...prev,
-                        newHandicap
-                    ];
-                })
-
-                // set the new autocomplete value:
-                setHandicapsList(prev=>{
-                        return prev.map((handicapElement,i)=>
-                            i===index ? {
-                                ...handicapElement,
-                                handicap:{
-                                    id_hand: storedHandicaps.length+1,
-                                    name_h: dialogValue.name_h,
-                                    desc_h: dialogValue.desc_h,
-                                }
-                            } : handicapElement)
-                    }
-                )
+        myApi.addHandicap(newHandicap).then(response => {
+            if (response.status === 200) {
+                setStoredHandicaps(prev => [...prev, newHandicap]);
+                setHandicapsList(prev => prev.map((handicapElement, i) =>
+                    i === index ? {
+                        ...handicapElement,
+                        handicap: {
+                            id_hand: storedHandicaps.length + 1,
+                            name_h: dialogValue.name_h,
+                            desc_h: dialogValue.desc_h,
+                        }
+                    } : handicapElement
+                ));
+            } else {
+                console.log("Error occurred", response);
             }
-            else
-                console.log("Error occured?", response)
-        })
-
+        });
 
         handleClose();
     };
 
-    useImperativeHandle(ref, ()=>({
-        getHandicaps: ()=>handicapsList
-    }))
+    useImperativeHandle(ref, () => ({
+        getHandicaps: () => handicapsList
+    }));
 
     useEffect(() => {
-        myApi.getHandicaps().then(handicaps=>{
+        myApi.getHandicaps().then(handicaps => {
             setStoredHandicaps(prev => [...prev, ...handicaps.data]);
-        }).catch(err=>{
-            console.error("Error while fetching records", err)
-        })
-        console.log("FETCHED")
+        }).catch(err => {
+            console.error("Error while fetching records", err);
+        });
     }, []);
+
     return(
         <>
             {handicapsList.map((handicapElement, index) => (
@@ -297,7 +284,7 @@ export const HandicapDetails = forwardRef((props, ref)=>{
                         handleDialogSubmit={handleDialogSubmit}
                         handleClose={handleClose}
                         isDialogOpen={isDialogOpen}
-                        />
+                    />
                     <TextField
                         className={styles.flexItem}
                         select
@@ -306,7 +293,7 @@ export const HandicapDetails = forwardRef((props, ref)=>{
                         name="severity"
                         variant="outlined"
                         value={handicapElement.severity}
-                        onChange={(e)=>handleSeverity(index, e.target.value)}
+                        onChange={(e) => handleSeverity(index, e.target.value)}
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '& .MuiSelect-select': {
@@ -324,22 +311,21 @@ export const HandicapDetails = forwardRef((props, ref)=>{
                                 key={severity}
                                 value={severity}
                                 sx={{
-                                    color: severityStyles[severity].text,  // Persistent text color
+                                    color: severityStyles[severity].text,
                                     '&:hover': {
-                                        backgroundColor: severityStyles[severity].hoverBg,  // Semi-transparent dark bg
+                                        backgroundColor: severityStyles[severity].hoverBg,
                                     },
                                     '&.Mui-selected': {
-                                        backgroundColor: severityStyles[severity].hoverBg,  // Keep style when selected
+                                        backgroundColor: severityStyles[severity].hoverBg,
                                         '&:hover': {
-                                            backgroundColor: severityStyles[severity].hoverBg,  // Override MUI defaults
+                                            backgroundColor: severityStyles[severity].hoverBg,
                                         },
                                     },
                                 }}
                             >
                                 {severity}
                             </MenuItem>
-                            )
-                        )}
+                        ))}
                     </TextField>
                     <TextField
                         className={styles.span2}
@@ -348,17 +334,16 @@ export const HandicapDetails = forwardRef((props, ref)=>{
                         label={"Assistive devices"}
                         variant={"outlined"}
                         value={handicapElement.assistiveDevice}
-                        onChange={(e)=>handleAssistiveChange(index,e.target.value)}
+                        onChange={(e) => handleAssistiveChange(index, e.target.value)}
                     />
                 </div>
-
             ))}
 
-            <div style={{display: "flex", gap:"10px"}}>
-                <Button variant="outlined" startIcon={<PlusIcon />} onClick={(e)=> {
-                    console.log(handicapsList);
-                    addHandicap();
-                }}
+            <div style={{display: "flex", gap: "10px"}}>
+                <Button 
+                    variant="outlined" 
+                    startIcon={<PlusIcon />} 
+                    onClick={addHandicap}
                     sx={{
                         color: '#1565c0',
                         '&:hover': {
@@ -371,22 +356,42 @@ export const HandicapDetails = forwardRef((props, ref)=>{
                     Ajouter handicappe
                 </Button>
 
-                <Button variant="outlined" startIcon={<MinusIcon />} onClick={(e)=> {
-                    popHandicap();
-                }}
-                        sx={{
+                <Button 
+                    variant="outlined" 
+                    startIcon={<MinusIcon />} 
+                    onClick={popHandicap}
+                    sx={{
+                        color: '#c01515',
+                        borderColor: '#c01515 !important',
+                        '&:hover': {
                             color: '#c01515',
                             borderColor: '#c01515 !important',
-                            '&:hover': {
-                                color: '#c01515',
-                                borderColor: '#c01515 !important',
-                                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                            },
-                        }}
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        },
+                    }}
                 >
                     Supprimer
                 </Button>
             </div>
         </>
     )
-})
+});
+HandicapDetails.propTypes = {
+    newEnseignant: PropTypes.shape({
+      handicaps: PropTypes.arrayOf(
+        PropTypes.shape({
+          handicapId: PropTypes.number,
+          handicapName: PropTypes.string,
+          severity: PropTypes.string,
+          assistive_devices: PropTypes.string,
+          desc_h: PropTypes.string
+        })
+      )
+    })
+  };
+  
+  HandicapDetails.defaultProps = {
+    newEnseignant: {
+      handicaps: []
+    }
+  };
