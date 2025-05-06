@@ -386,7 +386,6 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                     {/* Buttons*/}
                     <div className={styles.buttonContainer}>
                         <MDButton color={"info"} onClick={handleAjouter} loading={isLoading}>Ajouter</MDButton>
-                        <MDButton color={"warning"} onClick={testNotification}>Test the notification</MDButton>
                     </div>
                 </MDBox>
             </MDBox>
