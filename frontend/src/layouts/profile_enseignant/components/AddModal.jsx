@@ -10,7 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import PropTypes from "prop-types";
 import {myApi} from "../../../service/myApi";
 import {useRef, useState} from "react";
-import styles from "../assets/addModalStyle.module.css"
+import styles from "../assests/addModalStyle.module.css"
 import {Accordion, AccordionDetails, AccordionSummary, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import {styled} from "@mui/material/styles";
 import {ExpandMore, Woman2, Man2, CommentBankOutlined} from '@mui/icons-material';
@@ -23,8 +23,9 @@ import {useNotificationStore} from "../../../service/notificationService";
 AddModal.propTypes={
     open1: PropTypes.bool.isRequired,
     handleClose1: PropTypes.func.isRequired,
-    addToEnseignants: PropTypes.func.isRequired,
-    b64ToImage: PropTypes.func.isRequired
+    enseignantToEdit: PropTypes.object,
+    b64ToImage: PropTypes.func.isRequired,
+    Modifieenseignant: PropTypes.func.isRequired
 }
 
 // Custom toggle button
@@ -114,69 +115,17 @@ const MyAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
     borderTop: '1px solid rgba(0, 0, 0, .125)',
 }));
 
-export default function AddModal({open1, handleClose1, addToEnseignants, b64ToImage}){
+export default function AddModal({open1, handleClose1, enseignantToEdit,Modifieenseignant, b64ToImage}){
     const handiRef = useRef(null);
-    const [newEnseignant, setNewEnseignant] = useState({
-        image: null,
-        nom: "",
-        prenom: "",
-        email: "",
-        cin: "",
-        adresse: "",
-        telephone: "",
-        gradId: "",
-        dateN: "",
-        sexe: "Homme",
-        departement: "",
-        anciennete: 0,
-        handicaps:null,
-        roleId:2
-    });
+    const [newEnseignant, setNewEnseignant] = useState(enseignantToEdit);
     const [gender, setGender] = useState("Homme");
     const [expanded, setExpanded] = useState('0');
     const [isLoading, setIsLoading] = useState(false)
-
+    console.log(`!!!!!!!!!!!!!!!!!!!!!!!!! ${JSON.stringify(enseignantToEdit, null, 2)}`);
     const showNotification = useNotificationStore((state) => state.showNotification);
 
-    const handleAddEnseignant = async () => {
-        if (
-            !newEnseignant.nom ||
-            !newEnseignant.prenom ||
-            !newEnseignant.cin ||
-            !newEnseignant.email ||
-            !newEnseignant.dateN
-        ) {
-            alert("Veuillez remplir tous les champs obligatoires ");
-            return;
-        }
+    const handleEditEnseignant = async () => {
 
-        setIsLoading(true)
-        try {
-            // TODO: Display notification && validation
-            await myApi.addEnseignant(newEnseignant).then((response)=>{
-                if(response.status===201){
-                    addToEnseignants(newEnseignant);
-                    showNotification({
-                        type: 'success',
-                        message: response.message,
-                        title: 'Une personne ajouté avec succes!',
-                    })
-                }
-                else
-                    console.log(response)
-            });
-            handleClose1();
-        } catch (error) {
-            console.error("Erreur lors de l’ajout de l’enseignant :", error);
-            alert("Une erreur est survenue lors de l’ajout.");
-            showNotification({
-                type: 'error',
-                message: "S'il vous plaît, contacter l'administrateur",
-                title: "Une erreur s'est produit",
-            })
-        }finally {
-            setIsLoading(false)
-        }
     };
 
     const handleNewEnsChange = (e) => {
@@ -195,42 +144,6 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
 
     const handleCloseModal = ()=>{
         handleClose1()
-        setNewEnseignant({
-            image: null,
-            nom: "",
-            prenom: "",
-            email: "",
-            cin: "",
-            adresse: "",
-            telephone: "",
-            gradId: "",
-            dateN: "",
-            sexe: "",
-            departement: "",
-            anciennete: 0,
-            handicaps:null,
-            roleId:2
-        })
-    }
-
-    const handleAjouter = ()=>{
-        const handicapData =handiRef.current.getHandicaps()
-            .filter(({handicap}) => handicap!=null).map(({handicap: {id_hand}, ...rest})=>({
-            id: id_hand,
-            ...rest
-        }))
-        setNewEnseignant(prev=>{
-            const newState = {
-                ...prev,
-                sexe:gender,
-                handicaps: handicapData
-            }
-
-            console.log(newState)
-            return newState
-        })
-
-        handleAddEnseignant()
     }
     return(
         <Modal
@@ -259,7 +172,7 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                 }}
                 >
                 <MDTypography id="modal-title" variant="h4" mb={3}>
-                    Ajouter un enseignant
+                    Modifier enseignant
                 </MDTypography>
                 <MDBox
                     components={"form"}
@@ -286,7 +199,7 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                                 fullWidth
                                 label="date de naissance"
                                 name="dateN"
-                                value={newEnseignant.dateN}
+                                value={newEnseignant.date_n}
                                 onChange={handleNewEnsChange}
                                 type="date"
                                 variant="outlined"
@@ -378,13 +291,16 @@ export default function AddModal({open1, handleClose1, addToEnseignants, b64ToIm
                                 <MDTypography component="span" color={"secondary"} sx={{marginLeft: "8px"}}>(optional)</MDTypography>
                             </MyAccordionSummary>
                             <MyAccordionDetails className={styles.handicappeContainer}>
-                                <HandicapDetails ref={handiRef}/>
+                                <HandicapDetails 
+                                    ref={handiRef}
+                                    newEnseignant={newEnseignant}
+                                />
                             </MyAccordionDetails>
                         </MyAccordion>
                     </div>
                     {/* Buttons*/}
                     <div className={styles.buttonContainer}>
-                        <MDButton color={"info"} onClick={handleAjouter} loading={isLoading}>Ajouter</MDButton>
+                        <MDButton color={"info"} onClick={handleEditEnseignant} loading={isLoading}>Enregistrer</MDButton>
                     </div>
                 </MDBox>
             </MDBox>

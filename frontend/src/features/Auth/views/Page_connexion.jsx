@@ -23,7 +23,7 @@ export default function PageConnexion() {
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    localStorage.setItem("isAuthenticated", "false");
+    localStorage.setItem("isAuthenticated", "true");
 
     //TODO: Set store states
     /*
