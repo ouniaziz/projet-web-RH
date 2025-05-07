@@ -105,6 +105,36 @@ class MyAPI {
       return Promise.reject(e);
     }
   }
+  async EditEnseignant(data) {
+    try {
+      const res = await this._instance.put(`/persons/update`, data);
+      return res.data;
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+ 
+  async AffecterEmploi(cin, formData) {
+    return this._instance.put(`/persons/update/emploi/${cin}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  }
+  async GetEmploi(cin) {
+    try {
+      const res = await this._instance.get(`/persons/emploi/${cin}`, {
+        responseType: 'arraybuffer',
+        headers: {
+          'Accept': 'application/pdf'
+        }
+      });
+      return new Uint8Array(res.data);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  
   async getPerson(cin) {
     try {
       const res = await this._instance.get(`/persons/${cin}`);
