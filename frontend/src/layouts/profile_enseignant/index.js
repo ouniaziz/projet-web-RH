@@ -20,6 +20,12 @@ import MDTypography from "components/MDTypography";
 import { myApi } from "../../service/myApi";
 import AddModal from './components/AddModal';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import IconButton from "@mui/material/IconButton";
+import AddIcon from "@mui/icons-material/Add";
+import {PDFPreviewModal} from "./components/PdfPreview";
+import {AddSoldeModal} from "./components/AddSoldeModal";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import ClearIcon from "@mui/icons-material/Clear";
 function Profile_enseignant() {
   const location = useLocation();
   const [open, setOpen] = useState(false);

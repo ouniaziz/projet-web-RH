@@ -30,11 +30,12 @@ import { Document, Page } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { pdfjs } from 'react-pdf';
+import {useStore} from "../../service/store";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 function ProfilePage() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const cin ="XX999X19"; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  const cin =useStore(state=>state.cin); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   const [enseignant, setEnseignant] = useState({
     cin: "",
     nom: "",
@@ -258,7 +259,7 @@ const handleClearFile = () => {
                                             </div>
                                             {enseignant.soldeList.length > 0 && (
                                               <>
-                                              <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem",display: "flex"}}>Congés <ListAltIcon style={{marginTop:"7px",marginLeft:"7px",fontSize: "28px"}}/></h6>
+                                              <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem",display: "flex"}}>Congés</h6>
                                               <hr style={{ margin: "0 0 1rem 0" }} />
                                               <p style={{ fontSize: "0.9rem", margin: 0 }}><b>Solde Restant :</b> {enseignant.soldeList[0]?.soldeRestant}</p>
                                               <p style={{ fontSize: "0.9rem", margin: 0 }}><b>Solde compensation Restant :</b> {enseignant.soldeList[0]?.soldeCompRestant}</p>

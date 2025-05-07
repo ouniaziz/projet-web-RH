@@ -197,7 +197,7 @@ export default function AddModal({open1, handleClose1, enseignantToEdit,Modifiee
                     showNotification({
                         type: 'success',
                         content: response.message,
-                        title: 'le personne est Modifié avec succes!',
+                        title: 'la personne est Modifiée avec succes!',
                     })
                 }
 

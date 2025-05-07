@@ -16,6 +16,7 @@ import {useStore} from "../../service/store";
 export default function MainLayout() {
   const [controller, dispatch] = useMaterialUIController();
   const role = useStore(state=>state.role)
+  const cin = useStore(state=>state.cin)
   const showNotification = useNotificationStore((state)=>state.showNotification)
   const {
     miniSidenav,
@@ -52,7 +53,7 @@ export default function MainLayout() {
 
   // Establir connection SSE (Server-side-event) pour la notification
   useEffect(() => {
-    const es = new EventSource("http://localhost:8080/notify/user/admin11")
+    const es = new EventSource(`http://localhost:8080/notify/user/${cin}`)
     es.onopen = ()=> {
       console.info("Connection established")
     };
