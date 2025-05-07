@@ -10,7 +10,7 @@
 ## Description
 Ce projet sert à répondre au cahier de charge proposé par monsieur Lazher.
 
-Ce projet est une application web entière ayant comme frontend React +Mui et comme backend Quarkus Java, développé par Mohamed Aziz Ouni et Mohamed Yassine Kharrat
+Ce projet est une application web entière ayant comme frontend React +Mui et comme backend Quarkus Java, développé par ***Mohamed Aziz Ouni*** et ***Mohamed Yassine Kharrat***
 
 🔴: Admin et Personnel RH<br>
 🔵: Les utilisateurs normals
