@@ -7,13 +7,15 @@ import Sidenav from "examples/Sidenav";
 import Configurator from "examples/Configurator";
 
 import theme from "assets/theme";
-import routes from "routes";
+import {superRoutes, employeRoutes, enseignantRoutes} from "routes";
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
 import {useNotificationStore} from "../../service/notificationService";
+import {useStore} from "../../service/store";
 
 
 export default function MainLayout() {
   const [controller, dispatch] = useMaterialUIController();
+  const role = useStore(state=>state.role)
   const showNotification = useNotificationStore((state)=>state.showNotification)
   const {
     miniSidenav,
@@ -82,7 +84,7 @@ export default function MainLayout() {
           <Sidenav
             color={sidenavColor}
             brandName="ISIMM"
-            routes={routes || []}
+            routes={(role==="Administrateur" || role==="Personnel RH")? superRoutes:(role==="Enseignant")? enseignantRoutes: employeRoutes}
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
           /> {/* Removed Dark mode: brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}*/}

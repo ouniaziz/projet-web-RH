@@ -167,6 +167,15 @@ class MyAPI {
     }
   }
 
+  async getDemandesCongesByCin(cin){
+    try{
+      const res = await this._instance.get(`/conges/demande/${cin}`)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
   async getDateFinRetour(dateDebutDuree){
     try{
       const res = await this._instance.post("/conges/dateFinRetour", dateDebutDuree)

@@ -205,9 +205,10 @@ public class CongeService {
     //TODO: to test
     public List<Conge> getCongesByCin(String cin, SecurityContext ctx) {
         // Check if the user has admin/RH privileges or is the concerned person
+        /*
         if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't view people's congés history", 401);
-
+        */
         return Conge.list("cin=?1", cin);
     }
 
@@ -255,4 +256,11 @@ public class CongeService {
             return new DateFinRetourDTO(dateFin, dateRetour);
     }
 
+    public List<DemandeConge> getDemandesByCin(String cin, SecurityContext ctx) {
+        /*
+        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+            throw new EntityException("You can't view people's congés history", 401);
+         */
+        return demandeCongeRepository.findByCinOptimized(cin);
+    }
 }

@@ -183,11 +183,15 @@ function CongeAdmin(){
 
     const fetchConges = async()=>{
         setIsLoading(true)
-        await myApi.getDemandesConges().then((res)=>{
-            setCongeList(res.data)
-        }).catch(err=>{
-            console.error("Error fetching congés", err)
-        }).finally(()=>setIsLoading(false))
+        // Administrateur
+        // Personnel RH
+        if(role === "Administrateur" || role==="Personnel RH"){
+            await myApi.getDemandesConges().then((res)=>{
+                setCongeList(res.data)
+            }).catch(err=>{
+                console.error("Error fetching congés", err)
+            }).finally(()=>setIsLoading(false))
+        }
     }
 
     const showCongeDetail= (params, e)=>{

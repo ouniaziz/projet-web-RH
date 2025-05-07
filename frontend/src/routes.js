@@ -9,9 +9,41 @@ import ProfilePage from "layouts/user_profile";
 import Mes_taches from "layouts/mes_taches";
 import Table_demandes from "layouts/Mes_demandes";
 import Icon from "@mui/material/Icon";
-import {CongeAdmin} from "./layouts/CongeAdmin";
+import {CongeAdmin} from "./layouts/Conge/CongeAdmin";
+import {CongeDefault} from "./layouts/Conge/CongeDefault";
 
-const routes = [
+
+//TODO: Make another routes for default enseignant & employé
+
+const nonSudoRoutes = [
+  {
+    type: "collapse",
+    name: "dashboard ",
+    key: "main/dashboard",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "dashboard",
+    component: <Dashboard />,
+  },
+  {
+    type: "collapse",
+    name: "Conge",
+    key: "main/conge_defaut",
+    icon: <Icon fontSize="small">calendar_today</Icon>,
+    route: "conge_defaut",
+    component: <CongeDefault />,
+  },
+  {
+    type: "collapse",
+    name: "Profile",
+    key: "main/mon_profile",
+    icon: <Icon fontSize="small">person</Icon>,
+    route: "mon_profile",
+    component: <ProfilePage />,
+  },
+]
+
+
+const superRoutes = [
   {
     type: "collapse",
     name: "dashboard ",
@@ -84,7 +116,51 @@ const routes = [
     route: "mon_profile",
     component: <ProfilePage />,
   },
-
 ];
 
-export default routes;
+const employeRoutes = [
+  {
+    type: "collapse",
+    name: "Documents Administratifs",
+    key: "main/DocumentsAdministratifs",
+    icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "DocumentsAdministratifs",
+    component: <Billing />,
+  },
+  {
+    type: "collapse",
+    name: "Mes demandes",
+    key: "main/Mes_demandes",
+    icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "Mes_demandes",
+    component: <Table_demandes />,
+  },
+  {
+    key: "main/Mes_taches",
+    route: "Mes_taches",
+    component: <Mes_taches />,
+  },
+
+    ...nonSudoRoutes
+]
+
+const enseignantRoutes=[
+  {
+    type: "collapse",
+    name: "Documents Administratifs",
+    key: "main/DocumentsAdministratifs",
+    icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "DocumentsAdministratifs",
+    component: <Billing />,
+  },
+  {
+    type: "collapse",
+    name: "Mes demandes",
+    key: "main/Mes_demandes",
+    icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "Mes_demandes",
+    component: <Table_demandes />,
+  },
+  ...nonSudoRoutes
+]
+export {superRoutes, employeRoutes, enseignantRoutes};

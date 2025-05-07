@@ -23,18 +23,7 @@ export default function PageConnexion() {
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    localStorage.setItem("isAuthenticated", "true");
 
-    //TODO: Set store states
-    /*
-        set({
-            role: response.data.role,
-            username: response.data.nom,
-            cin: response.data.cin,
-            isAuthenticated: true,
-            isLoading: false,
-        });
-    */
     const handledLogin = async (event) => {
         event.preventDefault();
         setIsLoading(true)
@@ -50,8 +39,15 @@ export default function PageConnexion() {
                     content:"Bienvenu, "+response.data.nom
                 })
                 fillUserInfo(response.data.cin, response.data.nom, response.data.role)
-                localStorage.setItem("isAuthenticated", "true");
-                navigate("/main/dashboard");
+
+                console.log(response.data.role)
+                if(response.data.role === "Administrateur" || response.data.role==="Personnel RH"){
+                    console.log("NAVIGATE DAHSBOARD")
+                    navigate("/main/dashboard")
+                }else{
+                    console.log("NAVIGATE PROFILE")
+                    navigate("/main/mon_profile")
+                }
 
             })
             /* Comment this:*/
