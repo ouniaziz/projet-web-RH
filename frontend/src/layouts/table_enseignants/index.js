@@ -134,7 +134,6 @@ function Table_enseignants() {
     {
       "field": "status",
       "headerName": "Status",
-      "sortable": false,
       "width": 100,
       "renderCell": (params)=>(<Chip  label={params.row.status?"Actif":"Inactif"} variant={"outlined"} color={params.row.status?"success":"error"}/>)
     },

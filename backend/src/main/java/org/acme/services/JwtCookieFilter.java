@@ -1,4 +1,5 @@
 package org.acme.services;
+/*
 
 import com.auth0.jwt.JWTVerifier;
 import jakarta.annotation.Priority;
@@ -34,4 +35,4 @@ public class JwtCookieFilter implements ContainerRequestFilter {
         }
 
     }
-}
+}*/

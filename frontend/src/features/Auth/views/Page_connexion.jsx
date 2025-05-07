@@ -40,7 +40,9 @@ export default function PageConnexion() {
                 })
                 fillUserInfo(response.data.cin, response.data.nom, response.data.role)
 
-                console.log(response.data.role)
+                localStorage.setItem("accessToken", response.data.accessToken)
+                localStorage.setItem("refreshToken", response.data.refreshToken)
+
                 if(response.data.role === "Administrateur" || response.data.role==="Personnel RH"){
                     console.log("NAVIGATE DAHSBOARD")
                     navigate("/main/dashboard")

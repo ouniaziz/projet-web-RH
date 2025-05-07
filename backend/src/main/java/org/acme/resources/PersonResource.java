@@ -4,6 +4,7 @@ import jakarta.ws.rs.*;
 import org.acme.dto.response.ApiResponseDTO;
 import org.acme.dto.PersonDTO;
 import org.acme.entities.Person;
+import org.acme.entities.RolePerson;
 import org.acme.services.PersonService;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -37,7 +38,7 @@ public class PersonResource {
 
     @POST
     @Transactional
-    //@RolesAllowed({"Personnel RH", "Administrator"})
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response addPerson(PersonDTO personDTO){
         try{
             String token = personService.addPerson(personDTO);
@@ -52,7 +53,7 @@ public class PersonResource {
     @DELETE
     @Path("/{cin}")
     @Transactional
-    //@RolesAllowed("**")
+    @RolesAllowed("**")
     public Response deletePerson(@PathParam("cin") String cin, @Context SecurityContext ctx){
         if(personService.deletePerson(cin, ctx))
             return Response.ok().build();
@@ -61,14 +62,14 @@ public class PersonResource {
 
     @GET
     @Path("/employe")
-    //@RolesAllowed({"Personnel RH", "Administrator"})
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response getEmployes(){
         return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEmployers())).build();
     }
 
     @GET
     @Path("/enseignant")
-    //@RolesAllowed({"Personnel RH", "Administrator"})
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response getEnseignants(){
         return Response.ok().entity(new ApiResponseDTO(200,null,null,personService.getEnseignant())).build();
     }
@@ -77,7 +78,7 @@ public class PersonResource {
     // Get person by Id
     @GET
     @Path("/{cin}")
-    //@RolesAllowed("**") // similar to @Authenticated
+    @RolesAllowed("**") // similar to @Authenticated
     public Response getDetailedPersonById(@PathParam(value = "cin") String cin, @Context SecurityContext ctx){
         Person p = personService.getPerson(cin, ctx);
         return Response.ok().entity(new ApiResponseDTO(200, null, null, p)).build();
@@ -86,7 +87,7 @@ public class PersonResource {
     @PUT
     @Path("/update")
     @Transactional
-    //@RolesAllowed("**")
+    @RolesAllowed("**")
     public Response modifyPerson(PersonDTO personDto, @Context SecurityContext ctx){
         personService.modifyPerson(personDto, ctx);
         return Response.status(200).entity(new ApiResponseDTO(200, "Modified person "+personDto.cin.get()+" successfully", null, null)).build();
@@ -95,7 +96,7 @@ public class PersonResource {
     // For test only
     @GET
     @Path("/all")
-    //RolseAllowed({"Personnel RH", "Admin"})
+    @RolesAllowed({"Personnel RH", "Admin"})
     public Response getAll(){
         return Response.ok(new ApiResponseDTO(200,"Fetched records successfully",null,personService.getPersons())).build();
     }
@@ -105,7 +106,7 @@ public class PersonResource {
     @PUT
     @Path("/update/emploi/{cin}")
     @Transactional
-    //RolesAllowed({"Personnel RH", "Admin"})
+    @RolesAllowed({"Personnel RH", "Admin"})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response updateEmploi(
             @PathParam("cin") String cin,

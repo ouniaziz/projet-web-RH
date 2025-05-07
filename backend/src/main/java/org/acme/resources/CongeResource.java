@@ -1,5 +1,6 @@
 package org.acme.resources;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -9,6 +10,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import org.acme.dto.conge.*;
 import org.acme.dto.response.ApiResponseDTO;
+import org.acme.entities.RolePerson;
 import org.acme.entities.conge.DemandeAjoutSolde;
 import org.acme.entities.conge.JoursFeriers;
 import org.acme.services.CongeService;
@@ -24,6 +26,7 @@ public class CongeResource {
 
 
     @GET
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response getConges(){
         return Response.ok(new ApiResponseDTO(200,"Fetched conges successfully", null, congeService.getConges())).build();
     }
@@ -31,23 +34,27 @@ public class CongeResource {
     //This is to get état(history) of the conges of A person
     @GET
     @Path("/{cin}")
+    @RolesAllowed("**")
     public Response getCongeOfPerson(@PathParam(value = "cin")String cin, @Context SecurityContext ctx){
         return Response.ok(new ApiResponseDTO(200,"Fetched successfully", null,congeService.getCongesByCin(cin,ctx))).build();
     }
     @GET
     @Path("/demande/{cin}")
+    @RolesAllowed("**")
     public Response getDemandeByCin(@PathParam(value = "cin")String cin, @Context SecurityContext ctx){
         return Response.ok(new ApiResponseDTO(200,"Fetched successfully", null,congeService.getDemandesByCin(cin,ctx))).build();
     }
 
     @GET
     @Path("/type")
+    @RolesAllowed("**")
     public Response getTypesConge(){
         return Response.ok(new ApiResponseDTO(200,"Fetched Types conge successfully", null,congeService.getTypesConges())).build();
     }
 
     @POST
     @Path("/type")
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response addType(TypeCongeDTO type){
         congeService.createTypeConge(type);
         return Response.accepted(new ApiResponseDTO(201, "Type congé created successfully", null, null)).build();
@@ -55,6 +62,7 @@ public class CongeResource {
 
     @GET
     @Path("/demande")
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response getDemandes(){
         return Response.ok(new ApiResponseDTO(200, "Fetched demandes de congés", null, congeService.getDemandes())).build();
     }
@@ -69,6 +77,7 @@ public class CongeResource {
 
     @POST
     @Path("/demande")
+    @RolesAllowed("**")
     public Response addDemande(DemandeCongeDTO demande){
         Long id = congeService.createDemande(demande);
         return Response.accepted(new ApiResponseDTO(201, "Demande congé id="+id+" created successfully", null, null)).build();
@@ -76,6 +85,7 @@ public class CongeResource {
 
     @PUT
     @Path("/demande/accept/{id}")
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response acceptDemande(@PathParam("id") Long demande_id){
         congeService.acceptConge(demande_id);
         return Response.accepted(new ApiResponseDTO(201, "Demande congé id="+demande_id+ " accepted successfully", null, null)).build();
@@ -83,6 +93,7 @@ public class CongeResource {
 
     @PUT
     @Path("/demande/refuse/{id}")
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response refuseDemande(@PathParam("id") Long demande_id){
         congeService.refuseConge(demande_id);
         return Response.accepted(new ApiResponseDTO(201, "Demande congé id="+demande_id+ " refused successfully", null, null)).build();
@@ -97,7 +108,7 @@ public class CongeResource {
     @Path("/jours_feriers")
     @POST
     @Transactional
-    //RolesAllowed(...)
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response addJoursFeriers(JoursFeriersDTO joursFerier){
         congeService.addJoursFeriers(joursFerier);
         return Response.ok(new ApiResponseDTO(200, "Jours feriers ajouté avec succes", null, null)).build();
@@ -106,7 +117,7 @@ public class CongeResource {
     @Path("/ajout_solde")
     @POST
     @Transactional
-    //RolesAllowed(...)
+    @RolesAllowed({RolePerson.RH_NAME, RolePerson.ADMIN_NAME})
     public Response addSolde(DemandeAjoutSoldeDTO dto, @Context SecurityContext ctx){
         congeService.addSoldeConge(dto, ctx);
         return Response.ok(new ApiResponseDTO(200, "Added "+dto.soldeAjouter+" jours au solde du "+dto.cin, null, null)).build();

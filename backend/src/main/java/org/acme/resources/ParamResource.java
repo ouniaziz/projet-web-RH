@@ -1,5 +1,6 @@
 package org.acme.resources;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -20,14 +21,14 @@ public class ParamResource {
 
     @Path("/grad")
     @GET
-    //RolesAllowed(**)
+    @RolesAllowed("**")
     public Response getGrads() {
         return Response.ok(new ApiResponseDTO(200, "Fetched Grads", null, Grad.listAll())).build();
     }
 
     @Path("/handicap")
     @GET
-    //RolesAllowed(**)
+    @RolesAllowed("**")
     public Response getHandicaps() {
         return Response.ok(new ApiResponseDTO(200, "Handicappe fetched", null, Handicap.listAll())).build();
     }
@@ -35,6 +36,7 @@ public class ParamResource {
     @Path("/handicap")
     @POST
     @Transactional
+    @RolesAllowed("**")
     public Response addHandicap(Handicap handicap) {
         Handicap.persist(handicap);
         return Response.ok(new ApiResponseDTO(200, "Handicap id=" + handicap.getId_hand() + " added successfully", null, null)).build();
@@ -42,7 +44,7 @@ public class ParamResource {
 
     @Path("/departement")
     @GET
-    //RolesAllowed(**)
+    @RolesAllowed("**")
     public Response getDepartement() {
         return Response.ok(new ApiResponseDTO(200, "Departements fetched", null, Department.list("SELECT d FROM Department d"))).build();
     }

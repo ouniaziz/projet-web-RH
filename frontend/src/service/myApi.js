@@ -6,14 +6,60 @@ class MyAPI {
       baseURL,
     });
     //TODO Check the problem with error.response, error is undefined
+    // interceptor for adding Auth headers
+    this._instance.interceptors.request.use(config => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      } else {
+        console.log('No token found in localStorage');
+      }
+      return config;
+    }, error => {
+      return Promise.reject(error);
+    });
+
+    // interceptor for handling refresh token
+    // Response Interceptor: Handle token refresh
     this._instance.interceptors.response.use(
-        response => response,
-        error => {
-          if (error.response.status === 401) {
-            //TODO: Handle unauthorized (redirect to login)
-            console.log("You ARE DISCONNECTED")
-            //window.location.href = '/';
+        (response) => response,
+        async (error) => {
+          const { response } = error;
+          const originalRequest = error.config|| {};
+
+          // Check for token expiration
+          if (response.data && response.data.status === 401 && response.data.data === 'Token expired') {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (refreshToken) {
+              try {
+                const refreshResponse = await axios.post(`${baseURL}/users/refresh`, {
+                  refreshToken
+                });
+
+                const { newAccessToken, newRefreshToken } = refreshResponse.data;
+
+                // Save the new tokens
+                localStorage.setItem('accessToken', newAccessToken);
+                localStorage.setItem('refreshToken', newRefreshToken);
+
+                // Retry the original request with the new access token
+                if (originalRequest.headers) {
+                  originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                } else {
+                  originalRequest.headers = { 'Authorization': `Bearer ${newAccessToken}` };
+                }
+                console.log("Token refreshed")
+                return this._instance.request(originalRequest);
+              } catch (refreshError) {
+                console.error('Token refresh failed:', refreshError);
+                throw new Error("Invalid Refresh Token");
+              }
+            } else {
+              console.log('No refresh token found in localStorage');
+              throw new Error("No refresh token found");
+            }
           }
+
           return Promise.reject(error);
         }
     );

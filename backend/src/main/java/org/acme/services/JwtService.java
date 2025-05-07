@@ -109,7 +109,7 @@ public class JwtService {
 					.expiresIn(ACCESS_TOKEN_DURATION)
 					.sign();
         } catch (ParseException e) {
-            throw new EntityException("Couldn't parse refreshToken", 500);
+            throw new EntityException("Couldn't parse refreshToken", 401);
         }
 
 

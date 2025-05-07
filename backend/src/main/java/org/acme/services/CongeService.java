@@ -205,10 +205,9 @@ public class CongeService {
     //TODO: to test
     public List<Conge> getCongesByCin(String cin, SecurityContext ctx) {
         // Check if the user has admin/RH privileges or is the concerned person
-        /*
-        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+
+        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) && !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't view people's congés history", 401);
-        */
         return Conge.list("person.cin=?1", cin);
     }
 
@@ -257,18 +256,14 @@ public class CongeService {
     }
 
     public List<DemandeConge> getDemandesByCin(String cin, SecurityContext ctx) {
-        /*
-        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) && !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't view people's congés history", 401);
-         */
         return demandeCongeRepository.findByCinOptimized(cin);
     }
 
     public void addSoldeConge(DemandeAjoutSoldeDTO dto, SecurityContext ctx) {
-        /*
-        if(!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME))
+        if(!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) && !jwtService.getAuthRoles().contains(RolePerson.RH_NAME))
             throw new EntityException("You can't view people's congés history", 401);
-         */
         DemandeAjoutSolde demandeAjoutSolde = congeMapper.dtoToDemandeAjout(dto);
         demandeAjoutSolde.setDateCreated(LocalDate.now());
         demandeAjoutSolde.persist();

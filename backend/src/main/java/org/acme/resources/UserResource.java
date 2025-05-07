@@ -2,10 +2,8 @@ package org.acme.resources;
 
 
 import jakarta.ws.rs.core.NewCookie;
-import org.acme.dto.auth.ActivationRequestDTO;
+import org.acme.dto.auth.*;
 import org.acme.dto.response.ApiResponseDTO;
-import org.acme.dto.auth.LoginRequestDTO;
-import org.acme.dto.auth.PasswordResetRequestDTO;
 import org.acme.dto.response.LoginResponseDTO;
 import org.acme.services.CustomAuthService;
 import org.acme.services.JwtService;
@@ -52,18 +50,8 @@ public class UserResource {
                     String accessToken = jwtService.generateAccessToken(securityIden);
                     String refreshToken = jwtService.generateRefreshToken(securityIden);
 
-                    NewCookie accessTokenCookie = createHttpOnlyCookie(
-                            "access_token",
-                            accessToken,
-                            JwtService.ACCESS_TOKEN_DURATION);
-
-                    NewCookie refreshTokenCookie = createHttpOnlyCookie(
-                            "refresh_token",
-                            refreshToken,
-                            JwtService.REFRESH_TOKEN_DURATION);
-
-                    ApiResponseDTO response = new ApiResponseDTO(200, "Logged in successfully", null, new LoginResponseDTO(securityIden.getAttribute("role"),securityIden.getAttribute("nom"), securityIden.getPrincipal().getName()));
-                    return Response.ok().entity(response).cookie(accessTokenCookie,refreshTokenCookie).build();
+                    ApiResponseDTO response = new ApiResponseDTO(200, "Logged in successfully", null, new LoginResponseDTO(securityIden.getAttribute("role"),securityIden.getAttribute("nom"), securityIden.getPrincipal().getName(), accessToken, refreshToken));
+                    return Response.ok().entity(response).build();
                 });
     }
 
@@ -114,14 +102,13 @@ public class UserResource {
     }
 
 
-    private NewCookie createHttpOnlyCookie(String name, String value, Duration duration) {
-        return new NewCookie.Builder(name)
-                .value(value)
-                .maxAge((int)duration.toSeconds())
-                .httpOnly(true)
-                .secure(true) // Enable in production (requires HTTPS)
-                .sameSite(NewCookie.SameSite.STRICT) // Helps prevent CSRF
-                .path("/")
-                .build();
+    @POST
+    @Path("/refresh")
+    @Consumes("application/json")
+    public Response refreshToken(RefreshRequestDTO request) {
+        // Validate the refresh token and generate a new JWT
+        String newAccessToken = jwtService.generateAccessFromRefresh(request.getRefreshToken());
+        RefreshResponseDTO refreshTokenResponse = new RefreshResponseDTO(newAccessToken, request.getRefreshToken());
+        return Response.ok(refreshTokenResponse).build();
     }
 }

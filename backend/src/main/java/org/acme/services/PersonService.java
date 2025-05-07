@@ -93,10 +93,8 @@ public class PersonService {
     }
 
     public void modifyPerson(PersonDTO personDTO, SecurityContext ctx) {
-        /*
-        if(!ctx.getUserPrincipal().getName().equals(personDTO.cin.get()) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+        if(!ctx.getUserPrincipal().getName().equals(personDTO.cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) && !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't modify other people's credentials", 401);
-        */
         // For now, can't modify cin and email as they foreign key & unique constraint
         Person person = personRepository.findByIdOptional(personDTO.cin.get()).orElseThrow(()-> new EntityException("Person id="+personDTO.cin.get()+" not found", 404));
         personDTO.nom.ifPresent(person::setNom);
@@ -148,10 +146,11 @@ public class PersonService {
     }
 
     public Person getPerson(String cin, SecurityContext ctx){
-        /*
-        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+        log.warn(jwtService.getAuthRoles());
+        log.warn((!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)));
+
+        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) && !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't access other people's credentials", 401);
-        */
         return personRepository.findByIdOptional(cin).orElseThrow(()->new EntityException("User cin="+cin+" not found", 404));
     }
 
@@ -201,12 +200,10 @@ public class PersonService {
     }
 
     public boolean deletePerson(String cin, SecurityContext ctx){
-        /*
-        TODO: ONLY the admin can delete, the users can not delete their own accounts, but we can let them flag their accounts for deletion!
-        if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
+        //TODO: ONLY the admin can delete, the users can not delete their own accounts, but we can let them flag their accounts for deletion!
+        if((!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) && !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't modify other people's credentials", 401);
 
-        */
         return personRepository.deleteById(cin);
     }
 
