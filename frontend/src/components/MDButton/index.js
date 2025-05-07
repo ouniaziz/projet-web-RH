@@ -35,7 +35,8 @@ const MDButton = forwardRef(
           circular,
           iconOnly,
           children,
-          loading = false, // New loading prop
+          loading = false,
+          loadingColor="white",// New loading prop
           ...rest
         },
         ref
@@ -56,7 +57,7 @@ const MDButton = forwardRef(
             {loading ? (
                 <CircularProgress
                     size={size === "small" ? 20 : 24}
-                    color="white"
+                    color={loadingColor}
                 />
             ) : (
                 children
@@ -95,5 +96,6 @@ MDButton.propTypes = {
   iconOnly: PropTypes.bool,
   loading: PropTypes.bool, // New prop type
   children: PropTypes.node.isRequired,
+  loadingColor: PropTypes.string
 };
 export default MDButton;

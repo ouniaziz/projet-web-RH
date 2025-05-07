@@ -20,7 +20,7 @@ public class DemandeAjoutSolde extends PanacheEntity{
     private Integer soldeAjoute;
 
     @Column(name = "date_creation")
-    private LocalDate dateCreating;
+    private LocalDate dateCreated;
 
     @ManyToOne
     private TypeConge type;
@@ -47,12 +47,12 @@ public class DemandeAjoutSolde extends PanacheEntity{
         this.soldeAjoute = soldeAjoute;
     }
 
-    public LocalDate getDateCreating() {
-        return dateCreating;
+    public LocalDate getDateCreated() {
+        return dateCreated;
     }
 
-    public void setDateCreating(LocalDate dateCreating) {
-        this.dateCreating = dateCreating;
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public TypeConge getType() {

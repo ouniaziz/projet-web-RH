@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import org.acme.dto.conge.*;
 import org.acme.dto.response.ApiResponseDTO;
+import org.acme.entities.conge.DemandeAjoutSolde;
 import org.acme.entities.conge.JoursFeriers;
 import org.acme.services.CongeService;
 
@@ -33,7 +34,6 @@ public class CongeResource {
     public Response getCongeOfPerson(@PathParam(value = "cin")String cin, @Context SecurityContext ctx){
         return Response.ok(new ApiResponseDTO(200,"Fetched successfully", null,congeService.getCongesByCin(cin,ctx))).build();
     }
-    //TODO: Add @GET endpoint for DemandeConge BUT with CIN
     @GET
     @Path("/demande/{cin}")
     public Response getDemandeByCin(@PathParam(value = "cin")String cin, @Context SecurityContext ctx){
@@ -101,5 +101,14 @@ public class CongeResource {
     public Response addJoursFeriers(JoursFeriersDTO joursFerier){
         congeService.addJoursFeriers(joursFerier);
         return Response.ok(new ApiResponseDTO(200, "Jours feriers ajouté avec succes", null, null)).build();
+    }
+
+    @Path("/ajout_solde")
+    @POST
+    @Transactional
+    //RolesAllowed(...)
+    public Response addSolde(DemandeAjoutSoldeDTO dto, @Context SecurityContext ctx){
+        congeService.addSoldeConge(dto, ctx);
+        return Response.ok(new ApiResponseDTO(200, "Added "+dto.soldeAjouter+" jours au solde du "+dto.cin, null, null)).build();
     }
 }

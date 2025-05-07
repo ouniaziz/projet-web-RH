@@ -1,0 +1,9 @@
+.flexContainer{
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.flexElement{
+    display: flex;
+    gap: 10px;
+}

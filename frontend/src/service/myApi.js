@@ -181,5 +181,23 @@ class MyAPI {
       return Promise.reject(err)
     }
   }
+
+  async fetchEtatConge(cin){
+    try{
+      const res = await this._instance.get(`/conges/${cin}`)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
+
+  async addDemandeSolde(demande) {
+    try{
+      const res = await this._instance.post(`/conges/ajout_solde`, demande)
+      return res.data;
+    }catch(err){
+      return Promise.reject(err)
+    }
+  }
 }
 export const myApi  =new MyAPI("http://localhost:8080/api");

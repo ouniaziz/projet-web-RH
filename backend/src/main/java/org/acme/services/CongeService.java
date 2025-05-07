@@ -209,7 +209,7 @@ public class CongeService {
         if(!ctx.getUserPrincipal().getName().equals(cin) && (!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME)))
             throw new EntityException("You can't view people's congés history", 401);
         */
-        return Conge.list("cin=?1", cin);
+        return Conge.list("person.cin=?1", cin);
     }
 
     public void ajouterSoldeConge(DemandeAjoutSoldeDTO dto){
@@ -262,5 +262,29 @@ public class CongeService {
             throw new EntityException("You can't view people's congés history", 401);
          */
         return demandeCongeRepository.findByCinOptimized(cin);
+    }
+
+    public void addSoldeConge(DemandeAjoutSoldeDTO dto, SecurityContext ctx) {
+        /*
+        if(!jwtService.getAuthRoles().contains(RolePerson.ADMIN_NAME) || !jwtService.getAuthRoles().contains(RolePerson.RH_NAME))
+            throw new EntityException("You can't view people's congés history", 401);
+         */
+        DemandeAjoutSolde demandeAjoutSolde = congeMapper.dtoToDemandeAjout(dto);
+        demandeAjoutSolde.setDateCreated(LocalDate.now());
+        demandeAjoutSolde.persist();
+        if(demandeAjoutSolde.isPersistent()){
+            updateSolde(dto.soldeAjouter, dto.typeId, dto.cin);
+            Notification notif = new Notification("Modification du solde du congé","Votre solde du congé est augmenté par "+dto.soldeAjouter+" jours", "info",dto.cin);
+            notificationService.sendMsg(notif);
+        }
+    }
+
+    private void updateSolde(Integer soldeAjouter, Integer type, String cin){
+        if(type == TypeConge.ID_CONGE_ANNUELLE){
+            soldeCongeRepository.update("soldeRestant = soldeRestant + ?1 WHERE person.cin =?2", soldeAjouter, cin);
+        }
+        else if(type == TypeConge.ID_CONGE_COMPENSATOIRE){
+            soldeCongeRepository.update("soldeCompRestant = soldeCompRestant + ?1 WHERE person.cin =?2", soldeAjouter, cin);
+        }
     }
 }

@@ -19,6 +19,12 @@ import MDTypography from "components/MDTypography";
 import { myApi } from "../../service/myApi";
 import AddModal from './components/AddModal';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import IconButton from "@mui/material/IconButton";
+import {PlusIcon} from "lucide-react";
+import {PlusOneRounded} from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import {PDFPreviewModal} from "./components/PdfPreview";
+import {AddSoldeModal} from "./components/AddSoldeModal";
 function Profile_enseignant() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
@@ -68,6 +74,10 @@ function Profile_enseignant() {
     currentGrad: ""
   }
 );
+
+  const [showPdfPreview, setShowPdfPreview] = useState(false)
+  const [showSoldModal, setShowSoldModal] = useState(false)
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -136,7 +146,34 @@ function Profile_enseignant() {
   }
   const editfrontEnseignant = (newEnseignant)=>{
     setEnseignant(newEnseignant);
-  }  
+  }
+
+  const updateSoldeEns = (typeId, soldeAjouter)=>{
+      //TODO: To develop even further beyond!!
+      setEnseignant(prev => {
+          // Create a new object to maintain immutability
+          const newEnseignant = { ...prev };
+
+          // Make sure soldeList exists and has at least one item
+          if (!newEnseignant.soldeList || newEnseignant.soldeList.length === 0) {
+              console.warn("soldeList is empty or undefined");
+              return prev; // Return unchanged if invalid
+          }
+
+          // Create a new soldeList array with the updated item
+          newEnseignant.soldeList = [...newEnseignant.soldeList];
+          newEnseignant.soldeList[0] = { ...newEnseignant.soldeList[0] };
+
+          // Update the appropriate field
+          if (typeId === 0) {
+              newEnseignant.soldeList[0].soldeRestant += soldeAjouter;
+          } else {
+              newEnseignant.soldeList[0].soldeCompRestant += soldeAjouter;
+          }
+
+          return newEnseignant;
+      });
+  }
   return (
     <DashboardLayout>
       <DashboardNavbar />  
@@ -202,7 +239,15 @@ function Profile_enseignant() {
                                             </div>
                                             {enseignant.soldeList.length > 0 && (
                                               <>
-                                              <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem",display: "flex"}}>Congés <ListAltIcon style={{marginTop:"7px",marginLeft:"7px",fontSize: "28px"}}/></h6>
+                                              <h6 style={{ fontWeight: "bold", marginBottom: "1rem", fontSize: "25px",marginTop: "1rem",display: "flex"}}>
+                                                  Congés
+                                                  <IconButton size={"medium"} onClick={()=>setShowPdfPreview(true)}>
+                                                      <ListAltIcon />
+                                                  </IconButton>
+                                                  <IconButton size={"medium"} onClick={()=>setShowSoldModal(true)}>
+                                                      <AddIcon />
+                                                  </IconButton>
+                                              </h6>
                                               <hr style={{ margin: "0 0 1rem 0" }} />
                                               <p style={{ fontSize: "0.9rem", margin: 0 }}><b>Solde Restant :</b> {enseignant.soldeList[0]?.soldeRestant}</p>
                                               <p style={{ fontSize: "0.9rem", margin: 0 }}><b>Solde compensation Restant :</b> {enseignant.soldeList[0]?.soldeCompRestant}</p>
@@ -218,6 +263,19 @@ function Profile_enseignant() {
 
                                   </div>
                         </div>
+
+
+          <PDFPreviewModal
+              cin={enseignant.cin}
+              username={`${enseignant.prenom} ${enseignant.nom}`}
+              onCloseMethod={() => setShowPdfPreview(false)}
+              open={showPdfPreview}/>
+          <AddSoldeModal
+              open={showSoldModal}
+              onCloseMethod={()=>setShowSoldModal(false)}
+              cin={enseignant.cin}
+              updateSolde={updateSoldeEns}/>
+
                    {/* <Modal
                     open={open}
                     onClose={handleClose}

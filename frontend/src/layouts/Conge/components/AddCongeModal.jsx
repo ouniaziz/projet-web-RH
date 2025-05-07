@@ -71,6 +71,7 @@ export function AddCongeModal({open, onClose, handleNewConge, id}){
         })
     }
 
+    //TODO: Check if this doesn't bug out the system
     const clearValues =()=>{
         setNewConge({...newConge, dateDebut: "", duree: 5, type_id: 0})
     }
