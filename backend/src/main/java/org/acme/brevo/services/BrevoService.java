@@ -22,7 +22,7 @@ private final TransactionalEmailsApi apiInstance;
     public BrevoService() {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-        apiKey.setApiKey("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");
+        apiKey.setApiKey("INSERT API KEY HERE");
         this.apiInstance = new TransactionalEmailsApi(defaultClient);
     }
 
